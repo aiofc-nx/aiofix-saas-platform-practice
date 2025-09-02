@@ -1,0 +1,29 @@
+{
+  "extends": "../../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": [],
+    "paths": {
+      "@aiofix/department/*": ["src/*"],
+      "@aiofix/shared/*": ["../../shared/src/*"],
+      "@aiofix/database/*": ["../../database/src/*"],
+      "@aiofix/iam/*": ["../iam/src/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}

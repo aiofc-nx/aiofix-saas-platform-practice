@@ -1,0 +1,11 @@
+/**
+ * @fileoverview
+ * 共享领域模块 - 领域事件导出
+ *
+ * 领域事件表示领域中发生的重大事件。
+ * 事件驱动架构的核心，用于解耦和异步处理。
+ */
+
+// 领域事件基类
+export * from './domain-event.base';
+export * from './base-event';

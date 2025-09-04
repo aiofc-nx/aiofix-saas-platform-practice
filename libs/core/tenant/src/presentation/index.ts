@@ -1,11 +1,11 @@
 /**
- * @description Tenant模块表现层索引文件
+ * @description 租户表现层导出文件
  * @author 江郎
- * @since 2.1.0
+ * @since 1.0.0
  */
 
 export * from './controllers';
-export * from './dtos';
-export * from './validators';
 export * from './guards';
 export * from './interceptors';
+export * from './validators';
+export * from './dtos';

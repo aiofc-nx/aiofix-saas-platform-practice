@@ -37,6 +37,7 @@
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
 │  │ PostgreSQL  │  │  MongoDB    │  │    Redis    │        │
 │  │ (Command DB)│  │ (Query DB)  │  │   (Cache)   │        │
+│  │ MikroORM    │  │ MikroORM    │  │             │        │
 │  └─────────────┘  └─────────────┘  └─────────────┘        │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
 │  │Event Store  │  │Read Models  │  │ External Svc│        │

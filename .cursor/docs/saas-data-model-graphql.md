@@ -78,11 +78,11 @@
 ```typescript
 // 数据隔离级别枚举
 export enum DataIsolationLevel {
-  PLATFORM = 'platform', // 平台级隔离
-  TENANT = 'tenant', // 租户级隔离
-  ORGANIZATION = 'organization', // 组织级隔离
-  DEPARTMENT = 'department', // 部门级隔离
-  USER = 'user', // 用户级隔离
+  PLATFORM = 'platform', // 平台级隔离 - 全局共享数据
+  TENANT = 'tenant', // 租户级隔离 - 租户内共享数据
+  ORGANIZATION = 'organization', // 组织级隔离 - 组织内共享数据
+  DEPARTMENT = 'department', // 部门级隔离 - 部门内共享数据
+  USER = 'user', // 用户级隔离 - 用户私有数据
 }
 
 // 数据隐私级别枚举

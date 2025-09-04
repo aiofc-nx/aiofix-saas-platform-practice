@@ -41,6 +41,7 @@ import {
   DataIsolationLevel,
   DataPrivacyLevel,
   TenantId,
+  TenantIdAdapter,
 } from '@aiofix/shared';
 import { UserStatus } from '../enums/user-status.enum';
 import { UserType } from '../enums/user-type.enum';
@@ -142,11 +143,15 @@ export class UserEntity extends DataIsolationAwareEntity {
     username: Username,
     email: Email,
   ): UserEntity {
+    // 使用特殊的UUID来代表平台租户
+    const platformTenantId = new TenantId(
+      '00000000-0000-4000-8000-000000000000',
+    );
     return new UserEntity(
       id,
       username,
       email,
-      TenantId.create('platform'), // 平台级租户ID
+      platformTenantId, // 平台级租户ID
       undefined,
       [],
       UserType.PLATFORM_USER,
@@ -204,10 +209,10 @@ export class UserEntity extends DataIsolationAwareEntity {
 
   /**
    * 修改用户电话
-   * @description 更新用户的电话号码
-   * @param {Phone} newPhone 新的电话号码
+   * @description 更新用户的电话号码，允许设置为undefined来清除电话
+   * @param {PhoneNumber | undefined} newPhone 新的电话号码，可以是undefined
    */
-  public changePhone(newPhone: PhoneNumber): void {
+  public changePhone(newPhone: PhoneNumber | undefined): void {
     this._phone = newPhone;
   }
 
@@ -372,7 +377,7 @@ export class UserEntity extends DataIsolationAwareEntity {
    * @returns {TenantId | undefined} 组织ID
    */
   public get organizationId(): TenantId | undefined {
-    return this._organizationId;
+    return TenantIdAdapter.fromUuidSafe(this._organizationId);
   }
 
   /**
@@ -381,6 +386,6 @@ export class UserEntity extends DataIsolationAwareEntity {
    * @returns {TenantId[]} 部门ID列表
    */
   public get departmentIds(): TenantId[] {
-    return [...this._departmentIds];
+    return TenantIdAdapter.fromUuidArray(this._departmentIds);
   }
 }

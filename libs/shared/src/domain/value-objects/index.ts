@@ -20,6 +20,11 @@ export { EmailAddress } from './email-address.vo';
 export { PhoneNumber } from './phone-number.vo';
 export type { PhoneNumberType, PhoneNumberInfo } from './phone-number.vo';
 
+// 租户相关值对象
+export { TenantName, InvalidTenantNameError } from './tenant-name.vo';
+export { TenantCode, InvalidTenantCodeError } from './tenant-code.vo';
+export { TenantDomain, InvalidTenantDomainError } from './tenant-domain.vo';
+
 // 新增通用值对象
 export { WebhookUrl } from './webhook-url.vo';
 export type { WebhookProtocol, WebhookUrlInfo } from './webhook-url.vo';

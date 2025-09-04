@@ -11,13 +11,12 @@
     "types": ["jest", "node"],
     "paths": {
       "@aiofix/user/*": ["src/*"],
-      "@aiofix/shared": ["../../../shared/src"],
-      "@aiofix/database/*": ["../../../database/src/*"],
-      "@aiofix/iam/*": ["../iam/src/*"],
-      "@aiofix/logging/*": ["../../../logging/src/*"],
-      "@aiofix/config/*": ["../../../config/src/*"]
+      "@aiofix/shared": ["../../shared/src"],
+      "@aiofix/database/*": ["../../database/src/*"],
+      "@aiofix/logging/*": ["../../logging/src/*"],
+      "@aiofix/config/*": ["../../config/src/*"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist"]
 }

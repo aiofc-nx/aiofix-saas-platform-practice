@@ -1619,10 +1619,15 @@ libs/shared/ # 共享基础设施模块
 ├── 测试审查: 代码审查包含测试
 └── 测试监控: 持续监控测试质量
 
-```
+# **重要说明**
 
-```
+这份文档总结了本项目的系统架构与代码组织架构的原则，全面了解本项目的技术设计方案需要阅读以下文档：
 
-```
-
-```
+1. **[SAAS平台技术设计概述](../docs/saas-technical-design-overview.md)** (本文档) - 技术选型、设计目标、架构原则
+2. **[SAAS平台系统架构设计](../docs/saas-system-architecture.md)** - 系统架构、领域模块、目录结构
+3. **[SAAS平台Clean Architecture设计](../docs/saas-clean-architecture.md)** - Clean Architecture、CQRS、事件溯源
+4. **[SAAS平台安全架构与数据隔离](../docs/saas-security-data-isolation.md)** - 安全架构、数据隔离、访问控制
+5. **[SAAS平台数据模型与GraphQL](../docs/saas-data-model-graphql.md)** - 数据模型、数据库设计、GraphQL
+6. **[SAAS平台性能优化与部署](../docs/saas-performance-optimization.md)** - 性能优化、缓存策略、部署架构
+7. **[SAAS平台测试策略与架构](../docs/saas-testing-strategy.md)** - 测试策略、验证方法、CI/CD
+8. **[SAAS平台开发指南与最佳实践](../docs/saas-development-guide.md)** - 开发指南、最佳实践、代码规范

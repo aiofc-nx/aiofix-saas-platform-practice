@@ -6,29 +6,15 @@
  * 该层不依赖任何外部框架或基础设施，纯粹表达业务规则。
  */
 
-// 实体导出
+// 领域层导出
 export * from './entities';
-
-// 值对象导出
 export * from './value-objects';
-
-// 聚合根导出
-export * from './aggregates';
-
-// 领域事件导出
-export * from './domain-events';
-
-// 领域服务导出
-export * from './domain-services';
-
-// 仓储接口导出
-export * from './repositories';
-
-// 领域异常导出
-export * from './exceptions';
-
-// 枚举导出
 export * from './enums';
-
-// 类型定义导出
+export * from './exceptions';
+export * from './repositories';
+export * from './services';
+export * from './aggregates';
+export * from './domain-events';
+export * from './domain-services';
 export * from './types';
+export * from './utils/tenant-id-adapter.util';

@@ -12,6 +12,14 @@ export {
   DataPrivacyLevel,
 } from '../entities/data-isolation-aware.entity';
 
+// 租户相关枚举
+export {
+  TenantStatus,
+  TenantStatusInfo,
+  TENANT_STATUS_INFO,
+  TenantStatusHelper,
+} from './tenant-status.enum';
+
 // 通知相关枚举 - 从 types 目录导入
 export {
   NotificationType,

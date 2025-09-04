@@ -61,6 +61,16 @@ export class TenantId extends Uuid {
   }
 
   /**
+   * @method fromUuidArray
+   * @description 从Uuid数组创建TenantId数组
+   * @param uuids Uuid对象数组
+   * @returns {TenantId[]} 租户ID值对象数组
+   */
+  static fromUuidArray(uuids: Uuid[]): TenantId[] {
+    return uuids.map(uuid => TenantId.fromUuid(uuid));
+  }
+
+  /**
    * @method equals
    * @description 比较两个租户ID是否相等
    * @param other 另一个租户ID

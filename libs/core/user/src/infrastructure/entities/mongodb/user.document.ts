@@ -4,10 +4,10 @@
  * @since 2.1.0
  */
 
-import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/core';
+import { Document, PrimaryKey, Property, Index } from '@mikro-orm/core';
 import { UuidType } from '@mikro-orm/core';
 
-@Entity({ collection: 'users' })
+@Document({ collection: 'users' })
 @Index({ properties: ['username'] })
 @Index({ properties: ['email'] })
 @Index({ properties: ['tenantId'] })

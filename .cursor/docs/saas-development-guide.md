@@ -15,6 +15,14 @@
 - Redis 7.x
 - Docker & Docker Compose
 
+**技术栈要求**
+
+- **ORM**: 统一使用 MikroORM
+- **PostgreSQL**: 命令端，写操作
+- **MongoDB**: 查询端，读操作
+- **日志**: 必须使用 PinoLoggerService
+- **UUID**: 统一使用 uuid v4
+
 **推荐工具**
 
 - VS Code + 扩展

@@ -57,7 +57,11 @@ export class GetUsersByTenantQuery {
   public readonly options: GetUsersByTenantQueryOptions;
   public readonly requestUserId?: string; // 请求用户的ID，用于权限控制
 
-  constructor(tenantId: string, options: GetUsersByTenantQueryOptions = {}, requestUserId?: string) {
+  constructor(
+    tenantId: string,
+    options: GetUsersByTenantQueryOptions = {},
+    requestUserId?: string,
+  ) {
     this.queryId = `qry-tenant-users-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     this.timestamp = new Date();
     this.occurredOn = new Date();
@@ -100,7 +104,10 @@ export class GetUsersByTenantQuery {
       throw new Error('偏移量不能为负数');
     }
 
-    if (this.options.sortOrder && !['asc', 'desc'].includes(this.options.sortOrder)) {
+    if (
+      this.options.sortOrder &&
+      !['asc', 'desc'].includes(this.options.sortOrder)
+    ) {
       throw new Error('排序顺序必须是 asc 或 desc');
     }
   }
@@ -126,7 +133,7 @@ export class GetUsersByTenantQuery {
       occurredOn: this.occurredOn,
       tenantId: this.tenantId.toString(),
       options: this.options,
-      requestUserId: this.requestUserId
+      requestUserId: this.requestUserId,
     };
   }
 
@@ -148,7 +155,7 @@ export class GetUsersByTenantQuery {
     return new GetUsersByTenantQuery(
       this.tenantId.toString(),
       { ...this.options },
-      this.requestUserId
+      this.requestUserId,
     );
   }
 
@@ -187,7 +194,7 @@ export class GetUsersByTenantQuery {
   getPaginationInfo(): { limit: number; offset: number } {
     return {
       limit: this.options.limit || 20,
-      offset: this.options.offset || 0
+      offset: this.options.offset || 0,
     };
   }
 
@@ -199,7 +206,7 @@ export class GetUsersByTenantQuery {
   getSortInfo(): { sortBy?: string; sortOrder: 'asc' | 'desc' } {
     return {
       sortBy: this.options.sortBy,
-      sortOrder: this.options.sortOrder || 'asc'
+      sortOrder: this.options.sortOrder || 'asc',
     };
   }
 
@@ -209,12 +216,16 @@ export class GetUsersByTenantQuery {
    * @returns {object} 过滤条件
    */
   getFilterConditions(): object {
-    const filters: any = {};
-    
-    if (this.options.filterByStatus) filters.status = this.options.filterByStatus;
-    if (this.options.filterByUserType) filters.userType = this.options.filterByUserType;
-    if (this.options.filterByOrganization) filters.organization = this.options.filterByOrganization;
-    if (this.options.filterByDepartment) filters.department = this.options.filterByDepartment;
+    const filters: unknown = {};
+
+    if (this.options.filterByStatus)
+      filters.status = this.options.filterByStatus;
+    if (this.options.filterByUserType)
+      filters.userType = this.options.filterByUserType;
+    if (this.options.filterByOrganization)
+      filters.organization = this.options.filterByOrganization;
+    if (this.options.filterByDepartment)
+      filters.department = this.options.filterByDepartment;
 
     return filters;
   }
@@ -225,9 +236,11 @@ export class GetUsersByTenantQuery {
    * @returns {boolean} 是否有过滤条件
    */
   hasFilters(): boolean {
-    return !!(this.options.filterByStatus || 
-              this.options.filterByUserType || 
-              this.options.filterByOrganization || 
-              this.options.filterByDepartment);
+    return !!(
+      this.options.filterByStatus ||
+      this.options.filterByUserType ||
+      this.options.filterByOrganization ||
+      this.options.filterByDepartment
+    );
   }
 }

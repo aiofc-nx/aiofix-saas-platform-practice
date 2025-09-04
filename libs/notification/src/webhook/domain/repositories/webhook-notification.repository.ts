@@ -51,7 +51,7 @@ export interface WebhookNotificationRepository {
   findByTenant(
     tenantId: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -62,7 +62,7 @@ export interface WebhookNotificationRepository {
     status: NotificationStatus,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -73,7 +73,7 @@ export interface WebhookNotificationRepository {
     priority: NotificationPriority,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -84,7 +84,7 @@ export interface WebhookNotificationRepository {
     templateId: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -95,7 +95,7 @@ export interface WebhookNotificationRepository {
     recipient: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -106,7 +106,7 @@ export interface WebhookNotificationRepository {
     protocol: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -116,7 +116,7 @@ export interface WebhookNotificationRepository {
   findPendingNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -128,7 +128,7 @@ export interface WebhookNotificationRepository {
     toDate: Date,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -138,7 +138,7 @@ export interface WebhookNotificationRepository {
   findFailedNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<WebhookNotification[]>;
 
   /**
@@ -170,7 +170,7 @@ export interface WebhookNotificationRepository {
    * @description 按优先级统计Webhook通知数量
    */
   countByPriority(
-    tenantId?: string
+    tenantId?: string,
   ): Promise<Record<NotificationPriority, number>>;
 
   /**
@@ -186,7 +186,7 @@ export interface WebhookNotificationRepository {
   getStatistics(
     tenantId?: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;

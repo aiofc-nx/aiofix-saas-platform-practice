@@ -21,7 +21,7 @@ export {
   EventHandler,
   EventStore,
   StoredEvent,
-  InMemoryEventStore
+  InMemoryEventStore,
 } from './application';
 
 // 基础设施层导出

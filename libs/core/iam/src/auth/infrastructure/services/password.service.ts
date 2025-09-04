@@ -65,12 +65,10 @@ export class IamPasswordService {
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.logger = logger;
-    this.config = this.configService.get<PasswordConfig>(
-      'iam.password'
-    ) ?? {
+    this.config = this.configService.get<PasswordConfig>('iam.password') ?? {
       saltRounds: 12,
       minLength: 8,
       maxLength: 128,
@@ -110,7 +108,7 @@ export class IamPasswordService {
         'Failed to hash password',
         LogContext.BUSINESS,
         { error: (error as Error).message, saltRounds: rounds },
-        error as Error
+        error as Error,
       );
       throw new Error('Password hashing failed');
     }
@@ -139,7 +137,7 @@ export class IamPasswordService {
         'Failed to compare password',
         LogContext.BUSINESS,
         { error: (error as Error).message },
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -158,13 +156,13 @@ export class IamPasswordService {
     // 检查长度
     if (password.length < this.config.minLength) {
       errors.push(
-        `Password must be at least ${this.config.minLength} characters long`
+        `Password must be at least ${this.config.minLength} characters long`,
       );
     }
 
     if (password.length > this.config.maxLength) {
       errors.push(
-        `Password must be no more than ${this.config.maxLength} characters long`
+        `Password must be no more than ${this.config.maxLength} characters long`,
       );
     }
 
@@ -204,7 +202,7 @@ export class IamPasswordService {
 
     if (commonPasswords.includes(password.toLowerCase())) {
       warnings.push(
-        'Password is too common, consider using a stronger password'
+        'Password is too common, consider using a stronger password',
       );
     }
 
@@ -216,7 +214,7 @@ export class IamPasswordService {
     // 检查连续字符
     if (
       /(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|123|234|345|456|567|678|789|012)/i.test(
-        password
+        password,
       )
     ) {
       warnings.push('Password contains sequential characters');
@@ -244,7 +242,7 @@ export class IamPasswordService {
       includeNumbers?: boolean;
       includeSymbols?: boolean;
       excludeSimilar?: boolean;
-    }
+    },
   ): string {
     const {
       includeUppercase = true,
@@ -314,7 +312,7 @@ export class IamPasswordService {
    */
   async generateHash(
     password: string,
-    saltRounds?: number
+    saltRounds?: number,
   ): Promise<PasswordHashResult> {
     const hash = await this.hash(password, saltRounds);
     const salt = hash.split('$')[3] || '';
@@ -341,7 +339,7 @@ export class IamPasswordService {
         'Failed to get rounds from hash',
         LogContext.BUSINESS,
         { error: (error as Error).message },
-        error as Error
+        error as Error,
       );
       return 0;
     }

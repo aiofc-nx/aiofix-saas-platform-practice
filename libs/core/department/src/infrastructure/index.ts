@@ -1,6 +1,6 @@
 /**
  * @description Department模块基础设施层索引文件
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 

@@ -10,7 +10,10 @@
  */
 
 import { BaseEntity } from './base-entity';
-import { PlatformAwareEntity, PlatformAccessDeniedError } from './platform-aware.entity';
+import {
+  PlatformAwareEntity,
+  PlatformAccessDeniedError,
+} from './platform-aware.entity';
 import {
   DataIsolationAwareEntity,
   DataIsolationLevel,
@@ -44,10 +47,10 @@ describe('Entities Integration', () => {
       const platformConfig = new PlatformConfiguration(
         'test.key',
         'test-value',
-        'test-category'
+        'test-category',
       );
       expect(platformConfig).toBeInstanceOf(PlatformConfiguration);
-              expect(platformConfig).toBeInstanceOf(PlatformAwareEntity);
+      expect(platformConfig).toBeInstanceOf(PlatformAwareEntity);
       expect(platformConfig).toBeInstanceOf(BaseEntity);
 
       // BaseEntity -> DataIsolationAwareEntity -> UserProfile
@@ -61,7 +64,7 @@ describe('Entities Integration', () => {
       const platformConfig = new PlatformConfiguration(
         'test.key',
         'test-value',
-        'test-category'
+        'test-category',
       );
       const userProfile = new UserProfile(tenantId1, userId1, 'Test User');
 
@@ -81,7 +84,7 @@ describe('Entities Integration', () => {
       const platformConfig = new PlatformConfiguration(
         'test.key',
         'test-value',
-        'test-category'
+        'test-category',
       );
       const userProfile = new UserProfile(tenantId1, userId1, 'Test User');
 
@@ -103,11 +106,11 @@ describe('Entities Integration', () => {
       const platformConfig = new PlatformConfiguration(
         'test.key',
         'test-value',
-        'test-category'
+        'test-category',
       );
       const userProfile = new UserProfile(tenantId1, userId1, 'Test User');
 
-              // PlatformAwareEntity should have platform-level access control
+      // PlatformAwareEntity should have platform-level access control
       expect(platformConfig.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
 
       // UserProfile should have user-level isolation
@@ -119,22 +122,22 @@ describe('Entities Integration', () => {
       const sharedConfig = PlatformConfiguration.createPublicConfig(
         'shared.key',
         'shared-value',
-        'shared-category'
+        'shared-category',
       );
       const protectedConfig = PlatformConfiguration.createSystemConfig(
         'protected.key',
         'protected-value',
-        'protected-category'
+        'protected-category',
       );
       const publicProfile = UserProfile.createPublicProfile(
         tenantId1,
         userId1,
-        'Public User'
+        'Public User',
       );
       const privateProfile = UserProfile.createPrivateProfile(
         tenantId1,
         userId1,
-        'Private User'
+        'Private User',
       );
 
       expect(sharedConfig.isSharedData()).toBe(true);
@@ -149,12 +152,12 @@ describe('Entities Integration', () => {
       const sharedConfig = PlatformConfiguration.createPublicConfig(
         'shared.key',
         'shared-value',
-        'shared-category'
+        'shared-category',
       );
       const protectedConfig = PlatformConfiguration.createSystemConfig(
         'protected.key',
         'protected-value',
-        'protected-category'
+        'protected-category',
       );
 
       // Shared data should be accessible
@@ -183,7 +186,7 @@ describe('Entities Integration', () => {
       const protectedConfig = PlatformConfiguration.createSystemConfig(
         'protected.key',
         'protected-value',
-        'protected-category'
+        'protected-category',
       );
       expect(protectedConfig.canAccess(protectedConfig)).toBe(false);
 
@@ -200,14 +203,14 @@ describe('Entities Integration', () => {
         'system.key',
         'system-value',
         'system-category',
-        'System configuration'
+        'System configuration',
       );
 
       const publicConfig = PlatformConfiguration.createPublicConfig(
         'public.key',
         'public-value',
         'public-category',
-        'Public configuration'
+        'Public configuration',
       );
 
       const publicProfile = UserProfile.createPublicProfile(
@@ -215,7 +218,7 @@ describe('Entities Integration', () => {
         userId1,
         'Public User',
         organizationId1,
-        [Uuid.generate()]
+        [Uuid.generate()],
       );
 
       const privateProfile = UserProfile.createPrivateProfile(
@@ -223,7 +226,7 @@ describe('Entities Integration', () => {
         userId1,
         'Private User',
         organizationId1,
-        [Uuid.generate()]
+        [Uuid.generate()],
       );
 
       expect(systemConfig.isSystem).toBe(true);
@@ -244,7 +247,7 @@ describe('Entities Integration', () => {
         'test-value',
         'test-category',
         true,
-        'Test configuration'
+        'Test configuration',
       );
 
       const userProfile = new UserProfile(tenantId1, userId1, 'Test User');
@@ -285,7 +288,7 @@ describe('Entities Integration', () => {
       const platformConfig = new PlatformConfiguration(
         'test.key',
         'test-value',
-        'test-category'
+        'test-category',
       );
       const userProfile = new UserProfile(tenantId1, userId1, 'Test User');
 
@@ -308,11 +311,11 @@ describe('Entities Integration', () => {
       const platformConfig = new PlatformConfiguration(
         'test.key',
         'test-value',
-        'test-category'
+        'test-category',
       );
 
       // Mock createdAt for testing
-      (platformConfig as any)._createdAt = oldDate;
+      (platformConfig as unknown)._createdAt = oldDate;
 
       const age = platformConfig.getAge();
       expect(age).toBeGreaterThan(0);
@@ -329,7 +332,7 @@ describe('Entities Integration', () => {
         false,
         undefined,
         DataPrivacyLevel.PROTECTED,
-        id
+        id,
       );
       const config2 = new PlatformConfiguration(
         'test.key',
@@ -338,7 +341,7 @@ describe('Entities Integration', () => {
         false,
         undefined,
         DataPrivacyLevel.PROTECTED,
-        id
+        id,
       );
       const config3 = new PlatformConfiguration(
         'test.key',
@@ -347,7 +350,7 @@ describe('Entities Integration', () => {
         false,
         undefined,
         DataPrivacyLevel.PROTECTED,
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       expect(config1.equals(config2)).toBe(true);
@@ -361,13 +364,13 @@ describe('Entities Integration', () => {
       const sharedConfig = PlatformConfiguration.createPublicConfig(
         'shared.key',
         'shared-value',
-        'shared-category'
+        'shared-category',
       );
       const userProfile = UserProfile.createPublicProfile(
         tenantId1,
         userId1,
         'Test User',
-        organizationId1
+        organizationId1,
       );
 
       // Shared entities should be accessible across different types
@@ -380,12 +383,12 @@ describe('Entities Integration', () => {
       const protectedConfig = PlatformConfiguration.createSystemConfig(
         'protected.key',
         'protected-value',
-        'protected-category'
+        'protected-category',
       );
       const privateProfile = UserProfile.createPrivateProfile(
         tenantId1,
         userId1,
-        'Test User'
+        'Test User',
       );
 
       // Protected entities should maintain their isolation
@@ -399,7 +402,7 @@ describe('Entities Integration', () => {
       const protectedConfig = PlatformConfiguration.createSystemConfig(
         'protected.key',
         'protected-value',
-        'protected-category'
+        'protected-category',
       );
       const profile1 = new UserProfile(tenantId1, userId1, 'User 1');
       const profile2 = new UserProfile(tenantId2, userId2, 'User 2');

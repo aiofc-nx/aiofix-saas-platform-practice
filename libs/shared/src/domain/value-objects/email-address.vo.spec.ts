@@ -5,6 +5,11 @@
 
 import { EmailAddress } from './email-address.vo';
 
+// Jest类型定义
+declare const describe: (name: string, fn: () => void) => void;
+declare const it: (name: string, fn: () => void) => void;
+declare const expect: any;
+
 describe('EmailAddress', () => {
   // 有效的邮箱地址
   const validEmail = 'test@example.com';
@@ -83,15 +88,21 @@ describe('EmailAddress', () => {
     });
 
     it('should throw error for empty email', () => {
-      expect(() => new EmailAddress(invalidEmailEmpty)).toThrow('邮箱地址不能为空');
+      expect(() => new EmailAddress(invalidEmailEmpty)).toThrow(
+        '邮箱地址不能为空',
+      );
     });
 
     it('should throw error for null email', () => {
-      expect(() => new EmailAddress(null as any)).toThrow('邮箱地址不能为空');
+      expect(() => new EmailAddress(null as unknown as string)).toThrow(
+        '邮箱地址不能为空',
+      );
     });
 
     it('should throw error for undefined email', () => {
-      expect(() => new EmailAddress(undefined as any)).toThrow('邮箱地址不能为空');
+      expect(() => new EmailAddress(undefined as unknown as string)).toThrow(
+        '邮箱地址不能为空',
+      );
     });
 
     it('should throw error for email with only spaces', () => {
@@ -99,43 +110,63 @@ describe('EmailAddress', () => {
     });
 
     it('should throw error for email without @ symbol', () => {
-      expect(() => new EmailAddress(invalidEmailNoAt)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailNoAt)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email without domain', () => {
-      expect(() => new EmailAddress(invalidEmailNoDomain)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailNoDomain)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email without local part', () => {
-      expect(() => new EmailAddress(invalidEmailNoLocal)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailNoLocal)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email too long', () => {
-      expect(() => new EmailAddress(invalidEmailTooLong)).toThrow('邮箱地址长度不能超过254字符');
+      expect(() => new EmailAddress(invalidEmailTooLong)).toThrow(
+        '邮箱地址长度不能超过254字符',
+      );
     });
 
     it('should throw error for email with invalid characters', () => {
-      expect(() => new EmailAddress(invalidEmailInvalidChars)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailInvalidChars)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email with multiple @ symbols', () => {
-      expect(() => new EmailAddress(invalidEmailMultipleAt)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailMultipleAt)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email with spaces', () => {
-      expect(() => new EmailAddress(invalidEmailSpace)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailSpace)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email with leading dot', () => {
-      expect(() => new EmailAddress(invalidEmailLeadingDot)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailLeadingDot)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email with trailing dot', () => {
-      expect(() => new EmailAddress(invalidEmailTrailingDot)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailTrailingDot)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
 
     it('should throw error for email with consecutive dots', () => {
-      expect(() => new EmailAddress(invalidEmailConsecutiveDots)).toThrow('邮箱地址格式无效');
+      expect(() => new EmailAddress(invalidEmailConsecutiveDots)).toThrow(
+        '邮箱地址格式无效',
+      );
     });
   });
 
@@ -314,7 +345,9 @@ describe('EmailAddress', () => {
   describe('edge cases', () => {
     it('should handle email with maximum length', () => {
       const maxLengthEmail = 'a'.repeat(64) + '@' + 'b'.repeat(189) + '.com';
-      expect(() => new EmailAddress(maxLengthEmail)).toThrow('邮箱地址长度不能超过254字符');
+      expect(() => new EmailAddress(maxLengthEmail)).toThrow(
+        '邮箱地址长度不能超过254字符',
+      );
     });
 
     it('should handle email with complex local part', () => {
@@ -347,7 +380,7 @@ describe('EmailAddress', () => {
         '" "@example.org',
         '"john..doe"@example.org',
         'mailhost!username@example.org',
-        'user%example.com@example.org'
+        'user%example.com@example.org',
       ];
 
       rfc5322Emails.forEach(emailStr => {

@@ -8,3 +8,6 @@
 
 // 数据隔离相关类型定义
 export type { TenantContext } from '../entities/data-isolation-aware.entity';
+
+// 分页相关类型定义
+export * from './pagination.types';

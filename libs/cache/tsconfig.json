@@ -11,12 +11,11 @@
     "emitDecoratorMetadata": true,
     "types": ["jest", "node"],
     "paths": {
-      "@aiofix/cache/*": ["src/*"]
+      "@aiofix/cache/*": ["src/*"],
+      "@aiofix/logging": ["../logging/src"]
     }
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "dist",

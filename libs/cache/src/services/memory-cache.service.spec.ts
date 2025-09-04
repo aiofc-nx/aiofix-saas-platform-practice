@@ -145,7 +145,7 @@ describe('MemoryCacheService', () => {
       expect(await service.get(key)).toEqual(value);
 
       // 等待过期
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await new Promise(resolve => setTimeout(resolve, 150));
 
       // 过期后应该返回null
       expect(await service.get(key)).toBeNull();
@@ -158,7 +158,7 @@ describe('MemoryCacheService', () => {
       await service.set(key, value, { ttl: 0 });
 
       // 等待一段时间后仍然应该能获取到
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
       expect(await service.get(key)).toEqual(value);
     });
 
@@ -169,7 +169,7 @@ describe('MemoryCacheService', () => {
       await service.set(key, value, { ttl: 50 }); // 50ms TTL
 
       // 等待过期
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // 手动触发清理（通过访问来触发过期检查）
       await service.get(key);
@@ -493,13 +493,13 @@ describe('MemoryCacheService', () => {
       const key = keyFactory.create('concurrent-get-key');
       await service.set(key, 'test-value');
 
-      const promises: Promise<any>[] = [];
+      const promises: Promise<unknown>[] = [];
       for (let i = 0; i < 10; i++) {
         promises.push(service.get(key));
       }
 
       const results = await Promise.all(promises);
-      results.forEach((result) => {
+      results.forEach(result => {
         expect(result).toBe('test-value');
       });
     });

@@ -69,7 +69,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     private readonly eventEmitter: EventEmitter2,
     private readonly configService: PinoLoggerConfigService,
     private readonly loggerFactory: PinoLoggerFactory,
-    private readonly cls: ClsService
+    private readonly cls: ClsService,
   ) {
     this.initializeStats();
     this.initializeLogger();
@@ -83,7 +83,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     message: string,
     context?: LogContext,
     metadata?: LogMetadata,
-    error?: Error
+    error?: Error,
   ): void {
     this.log('debug', message, context, metadata, error);
   }
@@ -96,7 +96,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     message: string,
     context?: LogContext,
     metadata?: LogMetadata,
-    error?: Error
+    error?: Error,
   ): void {
     this.log('info', message, context, metadata, error);
   }
@@ -109,7 +109,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     message: string,
     context?: LogContext,
     metadata?: LogMetadata,
-    error?: Error
+    error?: Error,
   ): void {
     this.log('warn', message, context, metadata, error);
   }
@@ -122,7 +122,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     message: string,
     context?: LogContext,
     metadata?: LogMetadata,
-    error?: Error
+    error?: Error,
   ): void {
     this.log('error', message, context, metadata, error);
   }
@@ -135,7 +135,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     message: string,
     context?: LogContext,
     metadata?: LogMetadata,
-    error?: Error
+    error?: Error,
   ): void {
     this.log('fatal', message, context, metadata, error);
   }
@@ -148,7 +148,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     message: string,
     context?: LogContext,
     metadata?: LogMetadata,
-    error?: Error
+    error?: Error,
   ): void {
     this.log('trace', message, context, metadata, error);
   }
@@ -161,7 +161,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     operation: string,
     duration: number,
     context?: LogContext,
-    metadata?: LogMetadata
+    metadata?: LogMetadata,
   ): void {
     const performanceMetadata: LogMetadata = {
       ...metadata,
@@ -173,7 +173,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
       'info',
       `Performance: ${operation} took ${duration}ms`,
       context || LogContext.PERFORMANCE,
-      performanceMetadata
+      performanceMetadata,
     );
   }
 
@@ -208,7 +208,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
       this.eventEmitter,
       this.configService,
       this.loggerFactory,
-      this.cls
+      this.cls,
     );
     (
       childService as unknown as {
@@ -370,7 +370,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
     message: string,
     context?: LogContext,
     metadata?: LogMetadata,
-    error?: Error
+    error?: Error,
   ): void {
     const config = this.configService.getConfig();
 
@@ -423,7 +423,7 @@ export class PinoLoggerService implements ILoggerService, OnModuleDestroy {
   private updateStats(
     level: LogLevel,
     context: LogContext,
-    logSize: number
+    logSize: number,
   ): void {
     this.stats.totalLogs++;
     this.stats.logsByLevel[level]++;

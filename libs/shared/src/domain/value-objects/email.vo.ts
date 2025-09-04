@@ -188,7 +188,7 @@ export class Email extends BaseValueObject {
     if (value.length > 254) {
       throw new InvalidEmailError(
         'Email is too long (max 254 characters)',
-        value
+        value,
       );
     }
 
@@ -204,7 +204,7 @@ export class Email extends BaseValueObject {
     if (localPart.length > 64) {
       throw new InvalidEmailError(
         'Email local part is too long (max 64 characters)',
-        value
+        value,
       );
     }
 
@@ -213,7 +213,7 @@ export class Email extends BaseValueObject {
     if (domainPart.length > 253) {
       throw new InvalidEmailError(
         'Email domain part is too long (max 253 characters)',
-        value
+        value,
       );
     }
   }

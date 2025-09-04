@@ -29,7 +29,7 @@ export class TemplateService {
    * @param templateRepository 模板仓储
    */
   constructor(
-    private readonly templateRepository: TemplateRepositoryInterface
+    private readonly templateRepository: TemplateRepositoryInterface,
   ) {}
 
   /**
@@ -57,12 +57,12 @@ export class TemplateService {
     category: string,
     subject?: string,
     tags: string[] = [],
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): Promise<Template> {
     // 验证模板名称是否已存在
     const existingTemplate = await this.templateRepository.findByName(
       name,
-      tenantId.toString()
+      tenantId.toString(),
     );
     if (existingTemplate) {
       throw new Error(`模板名称 "${name}" 已存在`);
@@ -79,7 +79,7 @@ export class TemplateService {
       category,
       subject,
       tags,
-      metadata
+      metadata,
     );
 
     // 验证模板内容
@@ -106,7 +106,7 @@ export class TemplateService {
     tenantId: Uuid,
     content: string,
     variables: string[],
-    subject?: string
+    subject?: string,
   ): Promise<Template> {
     // 查找模板
     const template = await this.templateRepository.findById(templateId);
@@ -140,7 +140,7 @@ export class TemplateService {
    */
   async activateTemplate(
     templateId: string,
-    tenantId: Uuid
+    tenantId: Uuid,
   ): Promise<Template> {
     // 查找模板
     const template = await this.templateRepository.findById(templateId);
@@ -169,7 +169,7 @@ export class TemplateService {
    */
   async deactivateTemplate(
     templateId: string,
-    tenantId: Uuid
+    tenantId: Uuid,
   ): Promise<Template> {
     // 查找模板
     const template = await this.templateRepository.findById(templateId);
@@ -226,12 +226,12 @@ export class TemplateService {
   async getActiveTemplate(
     name: string,
     type: NotificationType,
-    tenantId: Uuid
+    tenantId: Uuid,
   ): Promise<Template | null> {
     return await this.templateRepository.findActiveTemplateByTypeAndName(
       type,
       name,
-      tenantId.toString()
+      tenantId.toString(),
     );
   }
 
@@ -246,7 +246,7 @@ export class TemplateService {
   async renderTemplate(
     templateId: string,
     tenantId: Uuid,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Promise<string> {
     // 查找模板
     const template = await this.templateRepository.findById(templateId);
@@ -279,7 +279,7 @@ export class TemplateService {
   validateTemplateContent(
     content: string,
     type: NotificationType,
-    variables: string[]
+    variables: string[],
   ): boolean {
     // 检查内容是否为空
     if (!content || content.trim().length === 0) {
@@ -294,7 +294,7 @@ export class TemplateService {
     // 检查变量是否在内容中使用
     const usedVariables = this.extractVariablesFromContent(content);
     const unusedVariables = variables.filter(
-      (variable) => !usedVariables.includes(variable)
+      variable => !usedVariables.includes(variable),
     );
 
     return unusedVariables.length === 0;
@@ -329,19 +329,19 @@ export class TemplateService {
    */
   async getTemplateStatistics(tenantId: Uuid): Promise<Record<string, number>> {
     const totalTemplates = await this.templateRepository.count(
-      tenantId.toString()
+      tenantId.toString(),
     );
     const activeTemplates = await this.templateRepository.countByStatus(
       TemplateStatus.ACTIVE,
-      tenantId.toString()
+      tenantId.toString(),
     );
     const draftTemplates = await this.templateRepository.countByStatus(
       TemplateStatus.DRAFT,
-      tenantId.toString()
+      tenantId.toString(),
     );
     const archivedTemplates = await this.templateRepository.countByStatus(
       TemplateStatus.ARCHIVED,
-      tenantId.toString()
+      tenantId.toString(),
     );
 
     return {

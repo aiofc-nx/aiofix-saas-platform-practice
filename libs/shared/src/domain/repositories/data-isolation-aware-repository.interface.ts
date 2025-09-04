@@ -19,8 +19,16 @@
  */
 
 import { Uuid } from '../value-objects/uuid.vo';
-import { BaseRepository, QueryOptions, QueryResult } from './base-repository.interface';
-import { DataIsolationAwareEntity, DataIsolationLevel, DataPrivacyLevel } from '../entities/data-isolation-aware.entity';
+import {
+  BaseRepository,
+  QueryOptions,
+  QueryResult,
+} from './base-repository.interface';
+import {
+  DataIsolationAwareEntity,
+  DataIsolationLevel,
+  DataPrivacyLevel,
+} from '../entities/data-isolation-aware.entity';
 
 /**
  * @interface DataIsolationQueryOptions
@@ -53,7 +61,9 @@ export interface DataIsolationFilterCriteria {
  * @interface DataIsolationAwareRepository<T>
  * @description 数据隔离感知仓储接口
  */
-export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity> extends BaseRepository<T> {
+export interface DataIsolationAwareRepository<
+  T extends DataIsolationAwareEntity,
+> extends BaseRepository<T> {
   /**
    * @method findByTenant
    * @description 根据租户查找实体
@@ -61,7 +71,10 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param options 查询选项
    * @returns 查询结果
    */
-  findByTenant(tenantId: Uuid, options?: DataIsolationQueryOptions): Promise<QueryResult<T>>;
+  findByTenant(
+    tenantId: Uuid,
+    options?: DataIsolationQueryOptions,
+  ): Promise<QueryResult<T>>;
 
   /**
    * @method findByOrganization
@@ -140,7 +153,10 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param options 查询选项
    * @returns 查询结果
    */
-  findPublicData(tenantId: Uuid, options?: DataIsolationQueryOptions): Promise<QueryResult<T>>;
+  findPublicData(
+    tenantId: Uuid,
+    options?: DataIsolationQueryOptions,
+  ): Promise<QueryResult<T>>;
 
   /**
    * @method findProtectedData
@@ -149,7 +165,10 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param options 查询选项
    * @returns 查询结果
    */
-  findProtectedData(tenantId: Uuid, options?: DataIsolationQueryOptions): Promise<QueryResult<T>>;
+  findProtectedData(
+    tenantId: Uuid,
+    options?: DataIsolationQueryOptions,
+  ): Promise<QueryResult<T>>;
 
   /**
    * @method findByIdAndTenant
@@ -168,7 +187,11 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param tenantId 租户ID
    * @returns 实体实例或null
    */
-  findByIdAndOrganization(id: Uuid, organizationId: Uuid, tenantId: Uuid): Promise<T | null>;
+  findByIdAndOrganization(
+    id: Uuid,
+    organizationId: Uuid,
+    tenantId: Uuid,
+  ): Promise<T | null>;
 
   /**
    * @method findByIdAndDepartment
@@ -178,7 +201,11 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param tenantId 租户ID
    * @returns 实体实例或null
    */
-  findByIdAndDepartment(id: Uuid, departmentId: Uuid, tenantId: Uuid): Promise<T | null>;
+  findByIdAndDepartment(
+    id: Uuid,
+    departmentId: Uuid,
+    tenantId: Uuid,
+  ): Promise<T | null>;
 
   /**
    * @method findByIdAndUser
@@ -197,7 +224,10 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param criteria 过滤条件
    * @returns 实体数量
    */
-  countByTenant(tenantId: Uuid, criteria?: DataIsolationFilterCriteria): Promise<number>;
+  countByTenant(
+    tenantId: Uuid,
+    criteria?: DataIsolationFilterCriteria,
+  ): Promise<number>;
 
   /**
    * @method countByOrganization
@@ -258,7 +288,11 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param tenantId 租户ID
    * @returns 是否存在
    */
-  existsByOrganization(id: Uuid, organizationId: Uuid, tenantId: Uuid): Promise<boolean>;
+  existsByOrganization(
+    id: Uuid,
+    organizationId: Uuid,
+    tenantId: Uuid,
+  ): Promise<boolean>;
 
   /**
    * @method existsByDepartment
@@ -268,7 +302,11 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param tenantId 租户ID
    * @returns 是否存在
    */
-  existsByDepartment(id: Uuid, departmentId: Uuid, tenantId: Uuid): Promise<boolean>;
+  existsByDepartment(
+    id: Uuid,
+    departmentId: Uuid,
+    tenantId: Uuid,
+  ): Promise<boolean>;
 
   /**
    * @method existsByUser
@@ -288,7 +326,11 @@ export interface DataIsolationAwareRepository<T extends DataIsolationAwareEntity
    * @param hardDelete 是否硬删除
    * @returns 是否删除成功
    */
-  deleteByTenant(id: Uuid, tenantId: Uuid, hardDelete?: boolean): Promise<boolean>;
+  deleteByTenant(
+    id: Uuid,
+    tenantId: Uuid,
+    hardDelete?: boolean,
+  ): Promise<boolean>;
 
   /**
    * @method deleteByOrganization

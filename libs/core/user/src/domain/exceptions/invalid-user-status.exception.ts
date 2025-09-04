@@ -43,11 +43,11 @@ export class InvalidUserStatusException extends Error {
     public readonly currentStatus?: UserStatus,
     public readonly targetStatus?: UserStatus,
     public readonly userId?: string,
-    public readonly reason?: string
+    public readonly reason?: string,
   ) {
     super(message);
     this.message = message;
-    
+
     // 设置原型链，确保 instanceof 正常工作
     Object.setPrototypeOf(this, InvalidUserStatusException.prototype);
   }
@@ -65,14 +65,14 @@ export class InvalidUserStatusException extends Error {
     currentStatus: UserStatus,
     targetStatus: UserStatus,
     userId?: string,
-    reason?: string
+    reason?: string,
   ): InvalidUserStatusException {
     return new InvalidUserStatusException(
       `无法从状态 ${currentStatus} 转换到状态 ${targetStatus}${reason ? `: ${reason}` : ''}`,
       currentStatus,
       targetStatus,
       userId,
-      reason
+      reason,
     );
   }
 
@@ -89,14 +89,14 @@ export class InvalidUserStatusException extends Error {
     expectedStatus: UserStatus,
     actualStatus: UserStatus,
     userId?: string,
-    reason?: string
+    reason?: string,
   ): InvalidUserStatusException {
     return new InvalidUserStatusException(
       `期望状态 ${expectedStatus}，但实际状态为 ${actualStatus}${reason ? `: ${reason}` : ''}`,
       actualStatus,
       expectedStatus,
       userId,
-      reason
+      reason,
     );
   }
 
@@ -113,14 +113,14 @@ export class InvalidUserStatusException extends Error {
     currentStatus: UserStatus,
     operation: string,
     userId?: string,
-    reason?: string
+    reason?: string,
   ): InvalidUserStatusException {
     return new InvalidUserStatusException(
       `在状态 ${currentStatus} 下无法执行操作 ${operation}${reason ? `: ${reason}` : ''}`,
       currentStatus,
       undefined,
       userId,
-      reason
+      reason,
     );
   }
 
@@ -135,14 +135,14 @@ export class InvalidUserStatusException extends Error {
   static invalidStatusValue(
     invalidStatus: string,
     userId?: string,
-    reason?: string
+    reason?: string,
   ): InvalidUserStatusException {
     return new InvalidUserStatusException(
       `无效的状态值: ${invalidStatus}${reason ? `: ${reason}` : ''}`,
       undefined,
       undefined,
       userId,
-      reason
+      reason,
     );
   }
 
@@ -169,7 +169,7 @@ export class InvalidUserStatusException extends Error {
       targetStatus: this.targetStatus,
       userId: this.userId,
       reason: this.reason,
-      stack: this.stack
+      stack: this.stack,
     };
   }
 

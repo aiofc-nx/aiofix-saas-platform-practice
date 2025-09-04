@@ -19,7 +19,7 @@ import { PinoLoggerService } from '@aiofix/logging';
  * @description 模拟缓存服务，用于测试
  */
 class MockCacheService implements ICacheService {
-  private cache = new Map<string, any>();
+  private cache = new Map<string, unknown>();
   private stats = {
     totalEntries: 0,
     hits: 0,
@@ -32,7 +32,7 @@ class MockCacheService implements ICacheService {
     lastReset: Date.now(),
   };
 
-  async get<T = any>(key: CacheKey): Promise<T | null> {
+  async get<T = unknown>(key: CacheKey): Promise<T | null> {
     const cacheKey = this.buildKey(key);
     const value = this.cache.get(cacheKey);
     if (value !== undefined) {
@@ -43,7 +43,7 @@ class MockCacheService implements ICacheService {
     return null;
   }
 
-  async set<T = any>(key: CacheKey, value: T): Promise<boolean> {
+  async set<T = unknown>(key: CacheKey, value: T): Promise<boolean> {
     const cacheKey = this.buildKey(key);
     this.cache.set(cacheKey, value);
     this.stats.totalEntries = this.cache.size;
@@ -117,7 +117,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createNamespace(
     namespace: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, namespace });
   }
@@ -125,7 +125,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createTenant(
     tenantId: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, tenantId });
   }
@@ -133,7 +133,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createUser(
     userId: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, userId });
   }
@@ -141,7 +141,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createTagged(
     key: string,
     tags: string[],
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, tags });
   }
@@ -180,14 +180,14 @@ describe('CacheManagerService', () => {
   beforeEach(async () => {
     mockEventEmitter = {
       emit: jest.fn(),
-    } as any;
+    } as unknown;
 
     mockLogger = {
       info: jest.fn(),
       error: jest.fn(),
       warn: jest.fn(),
       debug: jest.fn(),
-    } as any;
+    } as unknown;
 
     mockKeyFactory = new MockCacheKeyFactory();
     mockLayer1 = new MockCacheService();
@@ -303,7 +303,10 @@ describe('CacheManagerService', () => {
     });
 
     it('should return null for non-existent key', async () => {
-      const key = mockKeyFactory.createNamespace('test-namespace', 'non-existent');
+      const key = mockKeyFactory.createNamespace(
+        'test-namespace',
+        'non-existent',
+      );
       const result = await service.get(key);
 
       expect(result).toBeNull();
@@ -468,7 +471,7 @@ describe('CacheManagerService', () => {
           resetStats: jest.fn().mockRejectedValue(new Error('Layer error')),
         },
         enabled: true,
-      } as any;
+      } as unknown;
 
       service.addLayer(errorLayer);
 
@@ -508,7 +511,7 @@ describe('CacheManagerService', () => {
         expect.objectContaining({
           type: 'cache_set',
           data: expect.objectContaining({ key, value }),
-        })
+        }),
       );
 
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(
@@ -516,7 +519,7 @@ describe('CacheManagerService', () => {
         expect.objectContaining({
           type: 'cache_hit',
           data: expect.objectContaining({ key, value }),
-        })
+        }),
       );
     });
   });

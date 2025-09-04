@@ -66,7 +66,7 @@ export class EmailNotificationCreatedEvent extends BaseEvent {
     subject?: string,
     scheduledAt?: Date,
     metadata: Record<string, unknown> = {},
-    operatorId?: string
+    _operatorId?: string,
   ) {
     super();
 
@@ -132,7 +132,7 @@ export class EmailNotificationCreatedEvent extends BaseEvent {
     subject?: string,
     scheduledAt?: Date,
     metadata: Record<string, unknown> = {},
-    operatorId?: string
+    operatorId?: string,
   ): EmailNotificationCreatedEvent {
     return new EmailNotificationCreatedEvent(
       notificationId,
@@ -145,7 +145,7 @@ export class EmailNotificationCreatedEvent extends BaseEvent {
       subject,
       scheduledAt,
       metadata,
-      operatorId
+      operatorId,
     );
   }
 }

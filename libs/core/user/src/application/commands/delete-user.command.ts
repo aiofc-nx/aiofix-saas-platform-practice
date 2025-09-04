@@ -113,7 +113,7 @@ export class DeleteUserCommand {
       softDelete: this.softDelete,
       reason: this.reason,
       deletedBy: this.deletedBy,
-      cascadeDelete: this.cascadeDelete
+      cascadeDelete: this.cascadeDelete,
     };
   }
 
@@ -137,7 +137,7 @@ export class DeleteUserCommand {
       softDelete: this.softDelete,
       reason: this.reason,
       deletedBy: this.deletedBy,
-      cascadeDelete: this.cascadeDelete
+      cascadeDelete: this.cascadeDelete,
     });
   }
 

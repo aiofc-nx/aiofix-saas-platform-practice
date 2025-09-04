@@ -10,7 +10,10 @@
  * - 边界情况处理
  */
 
-import { EmailNotificationFailedEvent, EmailFailureInfo } from './email-notification-failed.event';
+import {
+  EmailNotificationFailedEvent,
+  EmailFailureInfo,
+} from './email-notification-failed.event';
 import { NotificationType } from '@aiofix/shared';
 
 describe('EmailNotificationFailedEvent', () => {
@@ -23,10 +26,10 @@ describe('EmailNotificationFailedEvent', () => {
   const mockCanRetry = true;
   const mockProvider = 'smtp-provider';
   const mockFailedAt = new Date('2024-01-01T10:00:00Z');
-  const mockErrorDetails = { 
+  const mockErrorDetails = {
     host: 'smtp.example.com',
     port: 587,
-    timeout: 30000 
+    timeout: 30000,
   };
   const mockOperatorId = 'operator-123';
 
@@ -43,7 +46,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         mockErrorDetails,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -72,7 +75,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         undefined,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.errorDetails).toBeUndefined();
@@ -89,7 +92,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockCanRetry,
         mockProvider,
         mockFailedAt,
-        mockErrorDetails
+        mockErrorDetails,
       );
 
       // operatorId 在 BaseEvent 中处理，这里不直接暴露
@@ -105,7 +108,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockMaxRetries,
         mockCanRetry,
         mockProvider,
-        mockFailedAt
+        mockFailedAt,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -138,7 +141,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         mockErrorDetails,
-        mockOperatorId
+        mockOperatorId,
       );
     });
 
@@ -196,7 +199,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         mockErrorDetails,
-        mockOperatorId
+        mockOperatorId,
       );
     });
 
@@ -226,7 +229,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockMaxRetries,
         mockCanRetry,
         mockProvider,
-        mockFailedAt
+        mockFailedAt,
       );
 
       const eventData = eventWithoutOptional.getEventData();
@@ -250,7 +253,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         mockErrorDetails,
-        mockOperatorId
+        mockOperatorId,
       );
     });
 
@@ -270,7 +273,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockMaxRetries,
         mockCanRetry,
         mockProvider,
-        mockFailedAt
+        mockFailedAt,
       );
       const event2 = new EmailNotificationFailedEvent(
         mockNotificationId,
@@ -281,7 +284,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockMaxRetries,
         mockCanRetry,
         mockProvider,
-        mockFailedAt
+        mockFailedAt,
       );
 
       expect(event1.eventId).not.toBe(event2.eventId);
@@ -316,7 +319,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         mockErrorDetails,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -352,7 +355,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockMaxRetries,
         mockCanRetry,
         mockProvider,
-        mockFailedAt
+        mockFailedAt,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -375,7 +378,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         {},
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.errorDetails).toEqual({});
@@ -394,7 +397,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         mockErrorDetails,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.errorMessage).toBe(specialErrorMessage);
@@ -407,7 +410,7 @@ describe('EmailNotificationFailedEvent', () => {
         { retryCount: 3, maxRetries: 3, canRetry: false },
         { retryCount: 5, maxRetries: 3, canRetry: false },
       ];
-      
+
       retryStates.forEach(({ retryCount, maxRetries, canRetry }) => {
         const event = new EmailNotificationFailedEvent(
           mockNotificationId,
@@ -420,7 +423,7 @@ describe('EmailNotificationFailedEvent', () => {
           mockProvider,
           mockFailedAt,
           mockErrorDetails,
-          mockOperatorId
+          mockOperatorId,
         );
 
         expect(event.retryCount).toBe(retryCount);
@@ -437,7 +440,7 @@ describe('EmailNotificationFailedEvent', () => {
         'INVALID_RECIPIENT',
         'QUOTA_EXCEEDED',
       ];
-      
+
       errorCodes.forEach(errorCode => {
         const event = new EmailNotificationFailedEvent(
           mockNotificationId,
@@ -450,7 +453,7 @@ describe('EmailNotificationFailedEvent', () => {
           mockProvider,
           mockFailedAt,
           mockErrorDetails,
-          mockOperatorId
+          mockOperatorId,
         );
 
         expect(event.errorCode).toBe(errorCode);
@@ -470,7 +473,7 @@ describe('EmailNotificationFailedEvent', () => {
         mockProvider,
         mockFailedAt,
         mockErrorDetails,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.errorMessage).toBe(unicodeErrorMessage);

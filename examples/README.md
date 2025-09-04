@@ -11,19 +11,19 @@ pnpm add @aiofix/logging
 ### 2. 在模块中注册
 
 ```typescript
-import { LoggingModule } from '@aiofix/logging';
+import { LoggingModule } from "@aiofix/logging";
 
 @Module({
   imports: [
     LoggingModule.register({
       config: {
-        level: 'info',
-        format: 'json',
-        colorize: false
+        level: "info",
+        format: "json",
+        colorize: false,
       },
-      global: true
-    })
-  ]
+      global: true,
+    }),
+  ],
 })
 export class AppModule {}
 ```
@@ -31,16 +31,16 @@ export class AppModule {}
 ### 3. 在服务中使用
 
 ```typescript
-import { PinoLoggerService } from '@aiofix/logging';
+import { PinoLoggerService } from "@aiofix/logging";
 
 @Injectable()
 export class UserService {
   constructor(private readonly logger: PinoLoggerService) {}
 
   async createUser(userData: any) {
-    this.logger.info('开始创建用户', 'BUSINESS', {
+    this.logger.info("开始创建用户", "BUSINESS", {
       userId: userData.id,
-      operation: 'create'
+      operation: "create",
     });
 
     // 业务逻辑...

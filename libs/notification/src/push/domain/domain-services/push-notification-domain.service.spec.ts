@@ -16,8 +16,14 @@ import { NotificationStatus, NotificationPriority, Uuid } from '@aiofix/shared';
 
 // 模拟 PushNotificationRepository 接口
 interface PushNotificationRepository {
-  getStatistics(tenantId: string, fromDate?: Date, toDate?: Date): Promise<any>;
-  countByPriority(tenantId: string): Promise<Record<NotificationPriority, number>>;
+  getStatistics(
+    tenantId: string,
+    fromDate?: Date,
+    toDate?: Date,
+  ): Promise<unknown>;
+  countByPriority(
+    tenantId: string,
+  ): Promise<Record<NotificationPriority, number>>;
   countByStatus(tenantId: string): Promise<Record<NotificationStatus, number>>;
   countByPlatform(tenantId: string): Promise<Record<string, number>>;
 }
@@ -34,8 +40,8 @@ describe('PushNotificationDomainService', () => {
       countByPlatform: jest.fn(),
     };
 
-    service = new PushNotificationDomainService(mockRepository as any);
-    mockPushNotificationRepository = mockRepository as any;
+    service = new PushNotificationDomainService(mockRepository as unknown);
+    mockPushNotificationRepository = mockRepository as unknown;
   });
 
   describe('validatePushNotification', () => {
@@ -45,9 +51,11 @@ describe('PushNotificationDomainService', () => {
       validNotification = PushNotification.create(
         Uuid.generate(),
         Uuid.generate(),
-        ['test_device_token_123_64_chars_long_string_for_testing_purposes_only'],
+        [
+          'test_device_token_123_64_chars_long_string_for_testing_purposes_only',
+        ],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -65,10 +73,12 @@ describe('PushNotificationDomainService', () => {
         Uuid.generate(),
         [],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.validatePushNotification(notificationWithNoRecipients);
+      const result = service.validatePushNotification(
+        notificationWithNoRecipients,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('推送通知必须包含至少一个收件人');
@@ -81,9 +91,11 @@ describe('PushNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validatePushNotification(notificationWithInvalidToken);
+      const result = service.validatePushNotification(
+        notificationWithInvalidToken,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('无效的设备令牌: invalid-token');
@@ -92,13 +104,15 @@ describe('PushNotificationDomainService', () => {
     it('应该检测无效的优先级', () => {
       const notificationWithInvalidPriority = {
         ...validNotification,
-        priority: 'INVALID_PRIORITY' as any,
+        priority: 'INVALID_PRIORITY' as unknown,
         recipients: validNotification.recipients,
         data: validNotification.data,
         templateId: validNotification.templateId,
-      } as any;
+      } as unknown;
 
-      const result = service.validatePushNotification(notificationWithInvalidPriority);
+      const result = service.validatePushNotification(
+        notificationWithInvalidPriority,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('推送通知必须包含有效的优先级');
@@ -115,9 +129,11 @@ describe('PushNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validatePushNotification(notificationWithPastSchedule);
+      const result = service.validatePushNotification(
+        notificationWithPastSchedule,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('计划发送时间必须晚于当前时间');
@@ -131,9 +147,11 @@ describe('PushNotificationDomainService', () => {
         recipients: validNotification.recipients,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validatePushNotification(notificationWithLargeData);
+      const result = service.validatePushNotification(
+        notificationWithLargeData,
+      );
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain('推送数据过大，可能影响发送性能');
@@ -141,8 +159,10 @@ describe('PushNotificationDomainService', () => {
 
     it('应该检测过多的收件人', () => {
       // 使用有效的设备令牌格式，但数量超过限制
-      const manyRecipients = Array.from({ length: 1001 }, (_, i) => 
-        `test_device_token_${i.toString().padStart(3, '0')}_64_chars_long_string_for_testing_purposes_only`
+      const manyRecipients = Array.from(
+        { length: 1001 },
+        (_, i) =>
+          `test_device_token_${i.toString().padStart(3, '0')}_64_chars_long_string_for_testing_purposes_only`,
       );
       const notificationWithManyRecipients = {
         ...validNotification,
@@ -150,9 +170,11 @@ describe('PushNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validatePushNotification(notificationWithManyRecipients);
+      const result = service.validatePushNotification(
+        notificationWithManyRecipients,
+      );
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain('收件人数量过多，建议分批发送');
@@ -168,7 +190,7 @@ describe('PushNotificationDomainService', () => {
         Uuid.generate(),
         ['test-device-token-123'],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -219,12 +241,15 @@ describe('PushNotificationDomainService', () => {
         Uuid.generate(),
         ['test-device-token-123'],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
     it('应该允许重试临时错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
@@ -232,14 +257,20 @@ describe('PushNotificationDomainService', () => {
     });
 
     it('应该允许重试频率限制错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'RATE_LIMIT_EXCEEDED');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'RATE_LIMIT_EXCEEDED',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
     });
 
     it('不应该重试永久错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'INVALID_TOKEN');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'INVALID_TOKEN',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -252,7 +283,10 @@ describe('PushNotificationDomainService', () => {
         maxRetries: 3,
       } as PushNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithMaxRetries, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithMaxRetries,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -264,7 +298,10 @@ describe('PushNotificationDomainService', () => {
         retryCount: 2,
       } as PushNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithRetryCount, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithRetryCount,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBe(40000); // 40秒 (10 * 2^2)
@@ -281,21 +318,21 @@ describe('PushNotificationDomainService', () => {
           Uuid.generate(),
           ['device-token-1'],
           {},
-          NotificationPriority.HIGH
+          NotificationPriority.HIGH,
         ),
         PushNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           ['device-token-2'],
           {},
-          NotificationPriority.NORMAL
+          NotificationPriority.NORMAL,
         ),
         PushNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           ['device-token-3'],
           {},
-          NotificationPriority.LOW
+          NotificationPriority.LOW,
         ),
       ];
     });
@@ -318,7 +355,10 @@ describe('PushNotificationDomainService', () => {
     });
 
     it('应该处理单个通知', async () => {
-      const batches = await service.optimizeBatchSending([notifications[0]], 10);
+      const batches = await service.optimizeBatchSending(
+        [notifications[0]],
+        10,
+      );
 
       expect(batches).toHaveLength(1);
       expect(batches[0]).toHaveLength(1);
@@ -387,7 +427,7 @@ describe('PushNotificationDomainService', () => {
       expect(mockPushNotificationRepository.getStatistics).toHaveBeenCalledWith(
         tenantId,
         fromDate,
-        toDate
+        toDate,
       );
     });
   });
@@ -396,7 +436,9 @@ describe('PushNotificationDomainService', () => {
     it('应该处理无效的推送通知对象', () => {
       const invalidNotification = {} as PushNotification;
 
-      expect(() => service.validatePushNotification(invalidNotification)).toThrow();
+      expect(() =>
+        service.validatePushNotification(invalidNotification),
+      ).toThrow();
     });
 
     it('应该处理空的路由设置', () => {
@@ -405,7 +447,7 @@ describe('PushNotificationDomainService', () => {
         Uuid.generate(),
         ['test-device-token-123'],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
       const result = service.determinePushRouting(validNotification, {});
@@ -420,10 +462,13 @@ describe('PushNotificationDomainService', () => {
         Uuid.generate(),
         ['test-device-token-123'],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.calculateRetryStrategy(validNotification, 'UNKNOWN_ERROR');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'UNKNOWN_ERROR',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);

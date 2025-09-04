@@ -51,7 +51,7 @@ export interface WebhookRoutingResult {
 @Injectable()
 export class WebhookNotificationDomainService {
   constructor(
-    private readonly webhookNotificationRepository: WebhookNotificationRepository
+    private readonly webhookNotificationRepository: WebhookNotificationRepository,
   ) {}
 
   /**
@@ -59,7 +59,7 @@ export class WebhookNotificationDomainService {
    * @description 验证Webhook通知
    */
   validateWebhookNotification(
-    notification: WebhookNotification
+    notification: WebhookNotification,
   ): WebhookValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -107,15 +107,15 @@ export class WebhookNotificationDomainService {
 
     // 7. 验证URL协议一致性
     const protocols = new Set(
-      notification.recipients.map((url) => this.getUrlProtocol(url))
+      notification.recipients.map(url => this.getUrlProtocol(url)),
     );
     if (protocols.size > 1) {
       warnings.push('不同协议的URL混合发送，可能影响安全性');
     }
 
     // 8. 验证HTTPS安全性
-    const hasHttp = notification.recipients.some((url) =>
-      url.startsWith('http://')
+    const hasHttp = notification.recipients.some(url =>
+      url.startsWith('http://'),
     );
     if (hasHttp) {
       warnings.push('包含HTTP协议URL，建议使用HTTPS以确保安全性');
@@ -134,7 +134,7 @@ export class WebhookNotificationDomainService {
    */
   determineWebhookRouting(
     notification: WebhookNotification,
-    tenantSettings?: Record<string, unknown>
+    tenantSettings?: Record<string, unknown>,
   ): WebhookRoutingResult {
     // 1. 检查是否应该立即发送
     if (notification.scheduledAt) {
@@ -200,7 +200,7 @@ export class WebhookNotificationDomainService {
    */
   calculateRetryStrategy(
     notification: WebhookNotification,
-    errorCode: string
+    errorCode: string,
   ): {
     shouldRetry: boolean;
     retryDelay: number;
@@ -254,15 +254,15 @@ export class WebhookNotificationDomainService {
    */
   async optimizeBatchSending(
     notifications: WebhookNotification[],
-    batchSize: number = 50
+    batchSize: number = 50,
   ): Promise<WebhookNotification[][]> {
     // 1. 按协议分组
     const httpsNotifications: WebhookNotification[] = [];
     const httpNotifications: WebhookNotification[] = [];
 
     for (const notification of notifications) {
-      const hasHttps = notification.recipients.some((url) =>
-        url.startsWith('https://')
+      const hasHttps = notification.recipients.some(url =>
+        url.startsWith('https://'),
       );
       if (hasHttps) {
         httpsNotifications.push(notification);
@@ -336,7 +336,7 @@ export class WebhookNotificationDomainService {
   async getWebhookStatistics(
     tenantId: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;
@@ -351,18 +351,15 @@ export class WebhookNotificationDomainService {
     const statistics = await this.webhookNotificationRepository.getStatistics(
       tenantId,
       fromDate,
-      toDate
+      toDate,
     );
 
-    const byPriority = await this.webhookNotificationRepository.countByPriority(
-      tenantId
-    );
-    const byStatus = await this.webhookNotificationRepository.countByStatus(
-      tenantId
-    );
-    const byProtocol = await this.webhookNotificationRepository.countByProtocol(
-      tenantId
-    );
+    const byPriority =
+      await this.webhookNotificationRepository.countByPriority(tenantId);
+    const byStatus =
+      await this.webhookNotificationRepository.countByStatus(tenantId);
+    const byProtocol =
+      await this.webhookNotificationRepository.countByProtocol(tenantId);
 
     return {
       ...statistics,
@@ -408,7 +405,7 @@ export class WebhookNotificationDomainService {
   private isInQuietHours(
     quietStart: string,
     quietEnd: string,
-    _timezone: string
+    _timezone: string,
   ): boolean {
     // 简化实现，实际应该使用moment.js或day.js处理时区
     const now = new Date();

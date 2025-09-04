@@ -36,36 +36,11 @@ export enum DatabaseTypeEnum {
 /**
  * @type MultiORM
  * @description
- * ORM类型定义，支持多种ORM框架。
- * 目前主要使用MikroORM，TypeORM为预留选项。
+ * ORM类型定义，系统统一使用MikroORM框架。
  *
- * @typedef {'typeorm' | 'mikro-orm'} MultiORM
+ * @typedef {'mikro-orm'} MultiORM
  */
-export type MultiORM = 'typeorm' | 'mikro-orm';
-
-/**
- * @enum MultiORMEnum
- * @description
- * ORM类型枚举，定义了系统支持的ORM框架类型。
- *
- * 主要原理与机制如下：
- * 1. 使用TypeScript枚举定义ORM类型常量
- * 2. 提供类型安全的ORM选择
- * 3. 支持多ORM框架切换
- * 4. 与配置系统集成
- *
- * 功能与业务规则：
- * 1. ORM类型定义
- * 2. 类型安全保证
- * 3. 配置验证支持
- * 4. 框架切换支持
- */
-enum MultiORMEnum {
-  /** TypeORM框架（预留） */
-  TypeORM = 'typeorm',
-  /** MikroORM框架（主要使用） */
-  MikroORM = 'mikro-orm',
-}
+export type MultiORM = 'mikro-orm';
 
 /**
  * @function getORMType
@@ -76,7 +51,6 @@ enum MultiORMEnum {
  * 1. 从环境变量DB_ORM中读取ORM类型
  * 2. 如果环境变量未设置，使用默认值
  * 3. 返回类型安全的ORM类型
- * 4. 支持运行时ORM框架切换
  *
  * 功能与业务规则：
  * 1. ORM类型获取
@@ -84,11 +58,11 @@ enum MultiORMEnum {
  * 3. 类型安全保证
  * 4. 环境配置支持
  *
- * @param {MultiORM} defaultValue - 默认ORM类型，默认为TypeORM
+ * @param {MultiORM} defaultValue - 默认ORM类型，默认为MikroORM
  * @returns {MultiORM} 返回ORM类型
  */
-function getORMType(defaultValue: MultiORM = MultiORMEnum.TypeORM): MultiORM {
-  return (process.env.DB_ORM as MultiORM) || defaultValue;
+function getORMType(): MultiORM {
+  return 'mikro-orm';
 }
 
 /**
@@ -149,7 +123,8 @@ console.log('NODE_ENV: %s', process.env.NODE_ENV);
 const dbORM: MultiORM = getORMType();
 console.log('DB ORM: %s', dbORM);
 
-const dbType = process.env.DB_TYPE || DatabaseTypeEnum.postgresql;
+const dbType: DatabaseTypeEnum =
+  (process.env.DB_TYPE as DatabaseTypeEnum) ?? DatabaseTypeEnum.postgresql;
 console.log(`Selected DB Type (DB_TYPE env var): ${dbType}`);
 console.log('DB Synchronize: ' + process.env.DB_SYNCHRONIZE);
 
@@ -187,12 +162,12 @@ if (dbType === DatabaseTypeEnum.postgresql) {
   // MikroORM PostgreSQL配置
   const mikroOrmPostgresConfig: MikroOrmPostgreSqlOptions = {
     driver: PostgreSqlDriver,
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST ?? 'localhost',
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
-    dbName: process.env.DB_NAME || 'aiofix_iam',
-    user: process.env.DB_USERNAME || 'postgres',
-    password: process.env.DB_PASS || 'password',
-    schema: process.env.DB_SCHEMA || 'public',
+    dbName: process.env.DB_NAME ?? 'aiofix_iam',
+    user: process.env.DB_USERNAME ?? 'postgres',
+    password: process.env.DB_PASS ?? 'password',
+    schema: process.env.DB_SCHEMA ?? 'public',
     migrations: {
       path: 'src/migrations/*.migration{.ts,.js}',
     },
@@ -222,11 +197,11 @@ if (dbType === DatabaseTypeEnum.postgresql) {
     config: {
       client: 'pg',
       connection: {
-        host: process.env.DB_HOST || 'localhost',
+        host: process.env.DB_HOST ?? 'localhost',
         port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
-        user: process.env.DB_USERNAME || 'postgres',
-        password: process.env.DB_PASS || 'password',
-        database: process.env.DB_NAME || 'aiofix_iam',
+        user: process.env.DB_USERNAME ?? 'postgres',
+        password: process.env.DB_PASS ?? 'password',
+        database: process.env.DB_NAME ?? 'aiofix_iam',
         ssl: getTlsOptions(dbSslMode),
       },
       pool: {
@@ -251,7 +226,7 @@ if (dbType === DatabaseTypeEnum.postgresql) {
   };
 } else {
   throw new Error(
-    `Database type ${dbType} is not supported yet. Only PostgreSQL is supported.`
+    `Database type ${dbType} is not supported yet. Only PostgreSQL is supported.`,
   );
 }
 

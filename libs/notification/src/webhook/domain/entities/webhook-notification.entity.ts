@@ -121,7 +121,7 @@ export class WebhookNotification
     data: Record<string, unknown>,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ) {
     super(tenantId, DataIsolationLevel.TENANT, id);
     this._templateId = templateId;
@@ -419,7 +419,7 @@ export class WebhookNotification
    * @returns {boolean} 收件人格式是否有效
    */
   validateRecipient(): boolean {
-    return this._recipients.every((url) => this.isValidWebhookUrl(url));
+    return this._recipients.every(url => this.isValidWebhookUrl(url));
   }
 
   /**
@@ -486,7 +486,7 @@ export class WebhookNotification
     data: Record<string, unknown>,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): WebhookNotification {
     const id = Uuid.generate();
     return new WebhookNotification(
@@ -497,7 +497,7 @@ export class WebhookNotification
       data,
       priority,
       scheduledAt,
-      metadata
+      metadata,
     );
   }
 }

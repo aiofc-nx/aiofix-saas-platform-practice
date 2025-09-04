@@ -40,12 +40,12 @@ export const RequireDataIsolation = (isolationLevel: DataIsolationLevel) => {
   return (
     target: unknown,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ): PropertyDescriptor => {
     Reflect.defineMetadata(
       'dataIsolationLevel',
       isolationLevel,
-      descriptor.value as object
+      descriptor.value as object,
     );
     return descriptor;
   };
@@ -59,12 +59,12 @@ export const SkipDataIsolation = () => {
   return (
     target: unknown,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ): PropertyDescriptor => {
     Reflect.defineMetadata(
       'skipDataIsolation',
       true,
-      descriptor.value as object
+      descriptor.value as object,
     );
     return descriptor;
   };
@@ -76,7 +76,7 @@ export const SkipDataIsolation = () => {
  */
 export interface TenantContextProvider {
   getTenantContext(
-    executionContext: ExecutionContext
+    executionContext: ExecutionContext,
   ): Promise<TenantContext | null>;
 }
 
@@ -96,7 +96,7 @@ export class DataIsolationGuard implements CanActivate {
     private readonly dataIsolationService: DataIsolationService,
     @Inject('TenantContextProvider')
     private readonly tenantContextProvider: TenantContextProvider,
-    private readonly reflector: Reflector
+    private readonly reflector: Reflector,
   ) {}
 
   /**
@@ -111,16 +111,15 @@ export class DataIsolationGuard implements CanActivate {
     // 1. 检查是否跳过数据隔离
     const skipIsolation = this.reflector.get<boolean>(
       'skipDataIsolation',
-      handler
+      handler,
     );
     if (skipIsolation) {
       return true;
     }
 
     // 2. 获取租户上下文
-    const tenantContext = await this.tenantContextProvider.getTenantContext(
-      context
-    );
+    const tenantContext =
+      await this.tenantContextProvider.getTenantContext(context);
     if (!tenantContext) {
       return false;
     }
@@ -155,7 +154,7 @@ export class DataIsolationGuard implements CanActivate {
     context: ExecutionContext,
     user: DataIsolationAwareEntity,
     target: DataIsolationAwareEntity,
-    isolationLevel: DataIsolationLevel
+    isolationLevel: DataIsolationLevel,
   ): Promise<string> {
     const accessRequest: DataAccessRequest = {
       source: user,
@@ -187,7 +186,7 @@ export class DataIsolationGuard implements CanActivate {
     const handler = context.getHandler();
     const level = this.reflector.get<DataIsolationLevel>(
       'dataIsolationLevel',
-      handler
+      handler,
     );
     return level || DataIsolationLevel.TENANT;
   }
@@ -206,14 +205,9 @@ export class DefaultTenantContextProvider implements TenantContextProvider {
    * @returns 租户上下文
    */
   async getTenantContext(
-    executionContext: ExecutionContext
+    executionContext: ExecutionContext,
   ): Promise<TenantContext | null> {
-    const request = executionContext.switchToHttp().getRequest() as {
-      headers: Record<string, string>;
-      body: Record<string, unknown>;
-      query: Record<string, unknown>;
-      params: Record<string, unknown>;
-    };
+    const request = executionContext.switchToHttp().getRequest();
 
     // 从请求头中获取租户信息
     let tenantId = request.headers['x-tenant-id'];
@@ -239,8 +233,8 @@ export class DefaultTenantContextProvider implements TenantContextProvider {
       departmentIds = Array.isArray(queryDeptIds)
         ? (queryDeptIds as string[])
         : typeof queryDeptIds === 'string'
-        ? queryDeptIds.split(',')
-        : [];
+          ? queryDeptIds.split(',')
+          : [];
       isolationLevel =
         (request.query.isolationLevel as DataIsolationLevel) ||
         DataIsolationLevel.TENANT;
@@ -254,8 +248,8 @@ export class DefaultTenantContextProvider implements TenantContextProvider {
       departmentIds = Array.isArray(paramDeptIds)
         ? (paramDeptIds as string[])
         : typeof paramDeptIds === 'string'
-        ? paramDeptIds.split(',')
-        : [];
+          ? paramDeptIds.split(',')
+          : [];
       isolationLevel =
         (request.params.isolationLevel as DataIsolationLevel) ||
         DataIsolationLevel.TENANT;

@@ -124,7 +124,7 @@ export interface TemplateRepositoryInterface {
    */
   findActiveTemplateByName(
     name: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<Template | null>;
 
   /**
@@ -138,7 +138,7 @@ export interface TemplateRepositoryInterface {
   findActiveTemplateByTypeAndName(
     type: NotificationType,
     name: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<Template | null>;
 
   /**
@@ -152,7 +152,7 @@ export interface TemplateRepositoryInterface {
   findTemplatesByTypeAndStatus(
     type: NotificationType,
     status: TemplateStatus,
-    tenantId: string
+    tenantId: string,
   ): Promise<Template[]>;
 
   /**
@@ -166,7 +166,7 @@ export interface TemplateRepositoryInterface {
   findTemplatesByTypeAndCategory(
     type: NotificationType,
     category: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<Template[]>;
 
   /**
@@ -180,7 +180,7 @@ export interface TemplateRepositoryInterface {
   findTemplatesByTypeAndLanguage(
     type: NotificationType,
     language: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<Template[]>;
 
   /**
@@ -200,7 +200,7 @@ export interface TemplateRepositoryInterface {
       category?: string;
       language?: string;
       tags?: string[];
-    }
+    },
   ): Promise<Template[]>;
 
   /**
@@ -265,7 +265,7 @@ export interface TemplateRepositoryInterface {
   existsByName(
     name: string,
     tenantId: string,
-    excludeId?: string
+    excludeId?: string,
   ): Promise<boolean>;
 
   /**
@@ -281,6 +281,6 @@ export interface TemplateRepositoryInterface {
     type: NotificationType,
     name: string,
     tenantId: string,
-    excludeId?: string
+    excludeId?: string,
   ): Promise<boolean>;
 }

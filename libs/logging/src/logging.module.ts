@@ -108,16 +108,16 @@ export class LoggingModule {
               // 设置请求上下文
               cls.set(
                 'requestId',
-                req.headers['x-request-id'] || cls.get('requestId')
+                req.headers['x-request-id'] || cls.get('requestId'),
               );
               cls.set(
                 'tenantId',
-                req.headers['x-tenant-id'] || cls.get('tenantId')
+                req.headers['x-tenant-id'] || cls.get('tenantId'),
               );
               cls.set('userId', req.headers['x-user-id'] || cls.get('userId'));
               cls.set(
                 'sessionId',
-                req.headers['x-session-id'] || cls.get('sessionId')
+                req.headers['x-session-id'] || cls.get('sessionId'),
               );
             },
           },

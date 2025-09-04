@@ -229,7 +229,7 @@ export class PinoLoggingMiddleware implements NestMiddleware {
     const logMethod = this.logger[logLevel as keyof PinoLoggerService] as (
       message: string,
       context: LogContext,
-      metadata?: Record<string, unknown>
+      metadata?: Record<string, unknown>,
     ) => void;
 
     logMethod.call(this.logger, 'HTTP Response', LogContext.HTTP_REQUEST, {
@@ -277,7 +277,7 @@ export class PinoLoggingMiddleware implements NestMiddleware {
     const sensitiveFields = ['password', 'token', 'secret', 'key'];
     const sanitized = { ...(body as Record<string, unknown>) };
 
-    sensitiveFields.forEach((field) => {
+    sensitiveFields.forEach(field => {
       if (sanitized[field]) {
         sanitized[field] = '***REDACTED***';
       }
@@ -294,12 +294,12 @@ export class PinoLoggingMiddleware implements NestMiddleware {
    * @returns {Record<string, string>} 清理后的请求头
    */
   private sanitizeHeaders(
-    headers: Record<string, string>
+    headers: Record<string, string>,
   ): Record<string, string> {
     const sensitiveHeaders = ['authorization', 'cookie', 'x-api-key'];
     const sanitized = { ...headers };
 
-    sensitiveHeaders.forEach((header) => {
+    sensitiveHeaders.forEach(header => {
       if (sanitized[header]) {
         sanitized[header] = '***REDACTED***';
       }

@@ -1,7 +1,11 @@
 /**
- * @description User基础设施层ORM实体索引文件
- * @author 技术架构师
+ * @description User基础设施层实体索引文件
+ * @author 江郎
  * @since 2.1.0
  */
 
-// TODO: 实现用户管理ORM实体
+// 导出PostgreSQL ORM实体
+export * from './postgresql';
+
+// 导出MongoDB文档实体
+export * from './mongodb';

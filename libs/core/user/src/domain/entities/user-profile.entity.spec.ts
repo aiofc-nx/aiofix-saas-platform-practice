@@ -1,11 +1,11 @@
 /**
  * @description UserProfileEntity单元测试
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 
-import { UserProfileEntity, UserProfileData } from './user-profile.entity';
-import { Uuid, DataIsolationLevel, DataPrivacyLevel } from '@aiofix/shared';
+import { UserProfileEntity } from './user-profile.entity';
+import { DataPrivacyLevel } from '@aiofix/shared';
 import { UserTestFactory } from '../../test/helpers/test-factory';
 
 describe('UserProfileEntity', () => {
@@ -32,7 +32,7 @@ describe('UserProfileEntity', () => {
       userId,
       organizationId,
       departmentIds,
-      DataPrivacyLevel.PROTECTED
+      DataPrivacyLevel.PROTECTED,
     );
   });
 
@@ -52,7 +52,9 @@ describe('UserProfileEntity', () => {
       expect(userProfileEntity.website).toBeUndefined();
       expect(userProfileEntity.socialLinks).toEqual({});
       expect(userProfileEntity.preferences).toEqual({});
-      expect(userProfileEntity.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
+      expect(userProfileEntity.dataPrivacyLevel).toBe(
+        DataPrivacyLevel.PROTECTED,
+      );
     });
 
     it('应该正确处理可选参数', () => {
@@ -60,12 +62,14 @@ describe('UserProfileEntity', () => {
         profileId,
         displayName,
         tenantId,
-        userId
+        userId,
       );
 
       expect(profileWithoutOptional.organizationId).toBeUndefined();
       expect(profileWithoutOptional.departmentIds).toEqual([]);
-      expect(profileWithoutOptional.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
+      expect(profileWithoutOptional.dataPrivacyLevel).toBe(
+        DataPrivacyLevel.PROTECTED,
+      );
     });
   });
 
@@ -214,10 +218,17 @@ describe('UserProfileEntity', () => {
     describe('addSocialLink', () => {
       it('应该成功添加社交链接', () => {
         userProfileEntity.addSocialLink('twitter', 'https://twitter.com/user');
-        userProfileEntity.addSocialLink('linkedin', 'https://linkedin.com/in/user');
+        userProfileEntity.addSocialLink(
+          'linkedin',
+          'https://linkedin.com/in/user',
+        );
 
-        expect(userProfileEntity.socialLinks.twitter).toBe('https://twitter.com/user');
-        expect(userProfileEntity.socialLinks.linkedin).toBe('https://linkedin.com/in/user');
+        expect(userProfileEntity.socialLinks.twitter).toBe(
+          'https://twitter.com/user',
+        );
+        expect(userProfileEntity.socialLinks.linkedin).toBe(
+          'https://linkedin.com/in/user',
+        );
       });
 
       it('应该验证社交链接URL格式', () => {
@@ -297,7 +308,7 @@ describe('UserProfileEntity', () => {
           location: 'Updated location',
           website: 'https://updated.com',
           socialLinks: { twitter: 'https://twitter.com/updated' },
-          preferences: { language: 'en-US' }
+          preferences: { language: 'en-US' },
         };
 
         // 使用单独的方法更新各个字段
@@ -305,14 +316,22 @@ describe('UserProfileEntity', () => {
         userProfileEntity.updateBio(profileData.bio);
         userProfileEntity.updateLocation(profileData.location);
         userProfileEntity.updateWebsite(profileData.website);
-        userProfileEntity.addSocialLink('twitter', profileData.socialLinks.twitter);
-        userProfileEntity.setPreference('language', profileData.preferences.language);
+        userProfileEntity.addSocialLink(
+          'twitter',
+          profileData.socialLinks.twitter,
+        );
+        userProfileEntity.setPreference(
+          'language',
+          profileData.preferences.language,
+        );
 
         expect(userProfileEntity.displayName).toBe('Updated Name');
         expect(userProfileEntity.bio).toBe('Updated bio');
         expect(userProfileEntity.location).toBe('Updated location');
         expect(userProfileEntity.website).toBe('https://updated.com');
-        expect(userProfileEntity.socialLinks.twitter).toBe('https://twitter.com/updated');
+        expect(userProfileEntity.socialLinks.twitter).toBe(
+          'https://twitter.com/updated',
+        );
         expect(userProfileEntity.preferences.language).toBe('en-US');
       });
 
@@ -336,7 +355,7 @@ describe('UserProfileEntity', () => {
           profileId,
           displayName,
           tenantId,
-          userId
+          userId,
         );
 
         expect(publicProfile.dataPrivacyLevel).toBe(DataPrivacyLevel.SHARED);
@@ -350,10 +369,12 @@ describe('UserProfileEntity', () => {
           profileId,
           displayName,
           tenantId,
-          userId
+          userId,
         );
 
-        expect(privateProfile.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
+        expect(privateProfile.dataPrivacyLevel).toBe(
+          DataPrivacyLevel.PROTECTED,
+        );
         expect(privateProfile.displayName).toBe(displayName);
       });
     });
@@ -372,7 +393,7 @@ describe('UserProfileEntity', () => {
         profileId,
         displayName,
         tenantId,
-        userId
+        userId,
       );
 
       expect(profileWithoutDepartments.departmentIds).toEqual([]);
@@ -383,7 +404,7 @@ describe('UserProfileEntity', () => {
         profileId,
         displayName,
         tenantId,
-        userId
+        userId,
       );
 
       expect(profileWithoutOrganization.organizationId).toBeUndefined();

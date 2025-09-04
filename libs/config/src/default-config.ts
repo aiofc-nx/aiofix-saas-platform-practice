@@ -61,29 +61,26 @@ export const defaultConfiguration: Partial<IamConfig> = {
       max: parseInt(process.env.DB_POOL_MAX || '20', 10),
       acquireTimeoutMillis: parseInt(
         process.env.DB_ACQUIRE_TIMEOUT || '60000',
-        10
+        10,
       ),
       createTimeoutMillis: parseInt(
         process.env.DB_CREATE_TIMEOUT || '30000',
-        10
+        10,
       ),
       destroyTimeoutMillis: parseInt(
         process.env.DB_DESTROY_TIMEOUT || '5000',
-        10
+        10,
       ),
       idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000', 10),
       reapIntervalMillis: parseInt(process.env.DB_REAP_INTERVAL || '1000', 10),
       createRetryIntervalMillis: parseInt(
         process.env.DB_CREATE_RETRY_INTERVAL || '200',
-        10
+        10,
       ),
     },
     mikroOrm: {
       debug: process.env.DB_LOGGING === 'true',
-      logger:
-        process.env.DB_LOGGING === 'true'
-          ? console.log.bind(console)
-          : undefined,
+      logger: undefined, // 移除 console.log.bind(console)，使用 undefined
       migrations: {
         path: 'src/migrations/*.migration{.ts,.js}',
         tableName: 'mikro_orm_migrations',
@@ -95,7 +92,7 @@ export const defaultConfiguration: Partial<IamConfig> = {
       level: process.env.DB_LOG_LEVEL || 'error',
       slowQueryThreshold: parseInt(
         process.env.DB_SLOW_QUERY_THRESHOLD || '1000',
-        10
+        10,
       ),
     },
   },
@@ -112,27 +109,27 @@ export const defaultConfiguration: Partial<IamConfig> = {
       max: parseInt(process.env.REDIS_POOL_MAX || '10', 10),
       acquireTimeoutMillis: parseInt(
         process.env.REDIS_ACQUIRE_TIMEOUT || '30000',
-        10
+        10,
       ),
       createTimeoutMillis: parseInt(
         process.env.REDIS_CREATE_TIMEOUT || '30000',
-        10
+        10,
       ),
       destroyTimeoutMillis: parseInt(
         process.env.REDIS_DESTROY_TIMEOUT || '5000',
-        10
+        10,
       ),
       idleTimeoutMillis: parseInt(
         process.env.REDIS_IDLE_TIMEOUT || '30000',
-        10
+        10,
       ),
       reapIntervalMillis: parseInt(
         process.env.REDIS_REAP_INTERVAL || '1000',
-        10
+        10,
       ),
       createRetryIntervalMillis: parseInt(
         process.env.REDIS_CREATE_RETRY_INTERVAL || '200',
-        10
+        10,
       ),
     },
     cache: {
@@ -141,7 +138,7 @@ export const defaultConfiguration: Partial<IamConfig> = {
       permissionTtl: parseInt(process.env.REDIS_PERMISSION_TTL || '1800', 10),
       tenantConfigTtl: parseInt(
         process.env.REDIS_TENANT_CONFIG_TTL || '3600',
-        10
+        10,
       ),
       maxMemory: process.env.REDIS_MAX_MEMORY || '2gb',
       maxMemoryPolicy: process.env.REDIS_MAX_MEMORY_POLICY || 'allkeys-lru',
@@ -156,7 +153,7 @@ export const defaultConfiguration: Partial<IamConfig> = {
       nodes: process.env.REDIS_CLUSTER_NODES?.split(',') || [],
       maxRedirections: parseInt(
         process.env.REDIS_CLUSTER_MAX_REDIRECTIONS || '16',
-        10
+        10,
       ),
     },
     sentinel: {
@@ -169,7 +166,7 @@ export const defaultConfiguration: Partial<IamConfig> = {
       enabled: process.env.REDIS_HEALTH_CHECK_ENABLED !== 'false',
       interval: parseInt(
         process.env.REDIS_HEALTH_CHECK_INTERVAL || '30000',
-        10
+        10,
       ),
       timeout: parseInt(process.env.REDIS_HEALTH_CHECK_TIMEOUT || '5000', 10),
     },
@@ -192,7 +189,7 @@ export const defaultConfiguration: Partial<IamConfig> = {
     accessToken: {
       expiresIn: parseInt(
         process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '3600',
-        10
+        10,
       ),
       algorithm: process.env.JWT_ACCESS_TOKEN_ALGORITHM || 'HS256',
       issuer: process.env.JWT_ISSUER || 'aiofix-iam',
@@ -201,7 +198,7 @@ export const defaultConfiguration: Partial<IamConfig> = {
     refreshToken: {
       expiresIn: parseInt(
         process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '2592000',
-        10
+        10,
       ),
       algorithm: process.env.JWT_REFRESH_TOKEN_ALGORITHM || 'HS256',
       issuer: process.env.JWT_ISSUER || 'aiofix-iam',
@@ -210,14 +207,14 @@ export const defaultConfiguration: Partial<IamConfig> = {
     resetPassword: {
       expiresIn: parseInt(
         process.env.JWT_RESET_PASSWORD_EXPIRES_IN || '3600',
-        10
+        10,
       ),
       algorithm: process.env.JWT_RESET_PASSWORD_ALGORITHM || 'HS256',
     },
     emailVerification: {
       expiresIn: parseInt(
         process.env.JWT_EMAIL_VERIFICATION_EXPIRES_IN || '86400',
-        10
+        10,
       ),
       algorithm: process.env.JWT_EMAIL_VERIFICATION_ALGORITHM || 'HS256',
     },
@@ -234,7 +231,7 @@ export const defaultConfiguration: Partial<IamConfig> = {
       rotationEnabled: process.env.JWT_ROTATION_ENABLED !== 'false',
       rotationThreshold: parseInt(
         process.env.JWT_ROTATION_THRESHOLD || '300',
-        10
+        10,
       ),
     },
     cache: {
@@ -319,15 +316,15 @@ export const defaultConfiguration: Partial<IamConfig> = {
       enabled: process.env.EMAIL_VERIFICATION_ENABLED !== 'false',
       linkExpiresIn: parseInt(
         process.env.EMAIL_VERIFICATION_LINK_EXPIRES_IN || '86400',
-        10
+        10,
       ),
       codeExpiresIn: parseInt(
         process.env.EMAIL_VERIFICATION_CODE_EXPIRES_IN || '1800',
-        10
+        10,
       ),
       codeLength: parseInt(
         process.env.EMAIL_VERIFICATION_CODE_LENGTH || '6',
-        10
+        10,
       ),
     },
     queue: {
@@ -406,11 +403,11 @@ export const defaultConfiguration: Partial<IamConfig> = {
       enabled: process.env.LOG_MONITORING_ENABLED !== 'false',
       interval: parseInt(process.env.LOG_MONITORING_INTERVAL || '30000', 10),
       errorRateThreshold: parseFloat(
-        process.env.LOG_ERROR_RATE_THRESHOLD || '0.1'
+        process.env.LOG_ERROR_RATE_THRESHOLD || '0.1',
       ),
       responseTimeThreshold: parseInt(
         process.env.LOG_RESPONSE_TIME_THRESHOLD || '1000',
-        10
+        10,
       ),
     },
     retention: {

@@ -69,7 +69,7 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
@@ -82,14 +82,14 @@ describe('PinoLoggingMiddleware', () => {
           tenantId: 'tenant-123',
           userId: 'user-456',
           ip: '192.168.1.1',
-          requestId: expect.any(String),
+          requestId: expect.unknown(String),
           headers: expect.objectContaining({
             authorization: '***REDACTED***',
             'user-agent': 'Mozilla/5.0',
           }),
           query: { page: '1', limit: '10' },
           body: { name: 'test' },
-        })
+        }),
       );
 
       expect(nextFunction).toHaveBeenCalled();
@@ -99,15 +99,15 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.any(String),
+        expect.unknown(String),
         LogContext.HTTP_REQUEST,
         expect.objectContaining({
-          requestId: expect.any(String),
-        })
+          requestId: expect.unknown(String),
+        }),
       );
     });
 
@@ -119,15 +119,15 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.any(String),
+        expect.unknown(String),
         LogContext.HTTP_REQUEST,
         expect.objectContaining({
           tenantId: 'query-tenant',
-        })
+        }),
       );
     });
 
@@ -139,25 +139,25 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.any(String),
+        expect.unknown(String),
         LogContext.HTTP_REQUEST,
         expect.objectContaining({
           userId: 'body-user',
-        })
+        }),
       );
     });
   });
 
   describe('response logging', () => {
-    it('should log successful response', (done) => {
+    it('should log successful response', done => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       // 模拟响应发送 - 直接调用重写后的send方法
@@ -169,21 +169,21 @@ describe('PinoLoggingMiddleware', () => {
           'HTTP Response',
           LogContext.HTTP_REQUEST,
           expect.objectContaining({
-            duration: expect.any(Number),
+            duration: expect.unknown(Number),
             statusCode: 200,
-          })
+          }),
         );
         done();
       }, 10);
     });
 
-    it('should log error response as warning', (done) => {
+    it('should log error response as warning', done => {
       mockResponse.statusCode = 404;
 
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       // 模拟响应发送
@@ -196,17 +196,17 @@ describe('PinoLoggingMiddleware', () => {
           LogContext.HTTP_REQUEST,
           expect.objectContaining({
             statusCode: 404,
-          })
+          }),
         );
         done();
       }, 10);
     });
 
-    it('should capture response size', (done) => {
+    it('should capture response size', done => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       // 模拟响应发送
@@ -215,11 +215,11 @@ describe('PinoLoggingMiddleware', () => {
       // 等待异步日志记录
       setTimeout(() => {
         expect(logger.info).toHaveBeenCalledWith(
-          expect.any(String),
+          expect.unknown(String),
           LogContext.HTTP_REQUEST,
           expect.objectContaining({
-            duration: expect.any(Number),
-          })
+            duration: expect.unknown(Number),
+          }),
         );
         done();
       }, 10);
@@ -231,18 +231,18 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.any(String),
+        expect.unknown(String),
         LogContext.HTTP_REQUEST,
         expect.objectContaining({
           headers: expect.objectContaining({
             authorization: '***REDACTED***',
             'user-agent': 'Mozilla/5.0',
           }),
-        })
+        }),
       );
     });
 
@@ -257,11 +257,11 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.any(String),
+        expect.unknown(String),
         LogContext.HTTP_REQUEST,
         expect.objectContaining({
           body: expect.objectContaining({
@@ -270,7 +270,7 @@ describe('PinoLoggingMiddleware', () => {
             token: '***REDACTED***',
             email: 'test@example.com',
           }),
-        })
+        }),
       );
     });
   });
@@ -289,17 +289,17 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.any(String),
+        expect.unknown(String),
         LogContext.HTTP_REQUEST,
         expect.objectContaining({
           ip: '192.168.1.100',
           tenantId: undefined,
           userId: undefined,
-        })
+        }),
       );
     });
 
@@ -314,15 +314,15 @@ describe('PinoLoggingMiddleware', () => {
       middleware.use(
         mockRequest as FastifyRequest,
         mockResponse as FastifyReply,
-        nextFunction
+        nextFunction,
       );
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.any(String),
+        expect.unknown(String),
         LogContext.HTTP_REQUEST,
         expect.objectContaining({
           ip: '192.168.1.200',
-        })
+        }),
       );
     });
   });

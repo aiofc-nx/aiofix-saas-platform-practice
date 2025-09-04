@@ -22,8 +22,8 @@ describe('UserId', () => {
     });
 
     it('should throw error for null UserId', () => {
-      expect(() => new UserId(null as any)).toThrow(InvalidUserIdError);
-      expect(() => new UserId(null as any)).toThrow('UUID cannot be empty');
+      expect(() => new UserId(null as unknown)).toThrow(InvalidUserIdError);
+      expect(() => new UserId(null as unknown)).toThrow('UUID cannot be empty');
     });
 
     it('should throw error for invalid UserId format', () => {
@@ -71,7 +71,8 @@ describe('UserId', () => {
 
     it('should generate UUID v4 format', () => {
       const userId = UserId.generate();
-      const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const uuidV4Regex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       expect(uuidV4Regex.test(userId.value)).toBe(true);
     });
   });
@@ -160,7 +161,7 @@ describe('UserId', () => {
   describe('inheritance from Uuid', () => {
     it('should inherit Uuid methods', () => {
       const userId = new UserId(validUuid);
-      
+
       // 测试继承的方法
       expect(typeof userId.toJSON).toBe('function');
       expect(typeof userId.toObject).toBe('function');
@@ -210,7 +211,9 @@ describe('UserId', () => {
 
     it('should throw error for JSON without value property', () => {
       const userId = new UserId(validUuid);
-      expect(() => userId.fromJSON('{"invalid": "data"}')).toThrow(InvalidUserIdError);
+      expect(() => userId.fromJSON('{"invalid": "data"}')).toThrow(
+        InvalidUserIdError,
+      );
     });
   });
 
@@ -243,7 +246,7 @@ describe('UserId', () => {
     it('should return readonly value', () => {
       const userId = new UserId(validUuid);
       expect(() => {
-        (userId as any).value = 'new-value';
+        (userId as unknown).value = 'new-value';
       }).toThrow();
     });
   });
@@ -252,7 +255,7 @@ describe('UserId', () => {
     it('should be distinct from Uuid type', () => {
       const userId = new UserId(validUuid);
       const uuid = new Uuid(validUuid);
-      
+
       // 类型检查
       expect(userId).toBeInstanceOf(UserId);
       expect(userId).toBeInstanceOf(Uuid);
@@ -262,7 +265,7 @@ describe('UserId', () => {
 
     it('should provide type safety for UserId specific operations', () => {
       const userId = new UserId(validUuid);
-      
+
       // UserId特有的方法
       expect(typeof userId.toUuid).toBe('function');
       expect(typeof UserId.fromUuid).toBe('function');
@@ -295,7 +298,7 @@ describe('UserId', () => {
       // 模拟在用户实体中使用
       const userEntity = {
         id: userId,
-        username: 'john_doe'
+        username: 'john_doe',
       };
       expect(userEntity.id).toBeInstanceOf(UserId);
       expect(userEntity.id.value).toBe(userId.value);
@@ -307,7 +310,7 @@ describe('UserId', () => {
       const orderEntity = {
         id: 'order-123',
         createdBy: userId,
-        assignedTo: userId
+        assignedTo: userId,
       };
       expect(orderEntity.createdBy).toBeInstanceOf(UserId);
       expect(orderEntity.assignedTo).toBeInstanceOf(UserId);
@@ -319,7 +322,7 @@ describe('UserId', () => {
       const taskEntity = {
         id: 'task-123',
         assigneeId: userId,
-        createdBy: userId
+        createdBy: userId,
       };
       expect(taskEntity.assigneeId).toBeInstanceOf(UserId);
       expect(taskEntity.createdBy).toBeInstanceOf(UserId);
@@ -331,7 +334,7 @@ describe('UserId', () => {
       const notificationEntity = {
         id: 'notification-123',
         recipientId: userId,
-        senderId: userId
+        senderId: userId,
       };
       expect(notificationEntity.recipientId).toBeInstanceOf(UserId);
       expect(notificationEntity.senderId).toBeInstanceOf(UserId);
@@ -343,7 +346,7 @@ describe('UserId', () => {
       const auditLogEntity = {
         id: 'audit-123',
         userId: userId,
-        targetUserId: userId
+        targetUserId: userId,
       };
       expect(auditLogEntity.userId).toBeInstanceOf(UserId);
       expect(auditLogEntity.targetUserId).toBeInstanceOf(UserId);

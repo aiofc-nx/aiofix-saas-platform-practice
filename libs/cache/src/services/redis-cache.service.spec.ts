@@ -49,11 +49,11 @@ describe('RedisCacheService', () => {
       info: jest.fn(),
       quit: jest.fn(),
       on: jest.fn(),
-    } as any;
+    } as unknown;
 
     // 模拟Redis构造函数
     (Redis as jest.MockedClass<typeof Redis>).mockImplementation(
-      () => mockRedis
+      () => mockRedis,
     );
 
     const module: TestingModule = await Test.createTestingModule({
@@ -96,7 +96,7 @@ describe('RedisCacheService', () => {
     mockRedis.keys.mockResolvedValue([]);
     mockRedis.flushdb.mockResolvedValue('OK');
     mockRedis.info.mockResolvedValue(
-      'redis_version:6.0.0\r\nconnected_clients:1\r\nused_memory:1000000\r\n'
+      'redis_version:6.0.0\r\nconnected_clients:1\r\nused_memory:1000000\r\n',
     );
     mockRedis.quit.mockResolvedValue('OK');
     mockRedis.on.mockImplementation((event, callback) => {
@@ -107,8 +107,8 @@ describe('RedisCacheService', () => {
     });
 
     // 手动设置Redis实例，避免连接失败
-    (service as any).redis = mockRedis;
-    (service as any).isConnected = true;
+    (service as unknown).redis = mockRedis;
+    (service as unknown).isConnected = true;
   });
 
   afterEach(() => {
@@ -172,7 +172,7 @@ describe('RedisCacheService', () => {
       expect(mockRedis.get).toHaveBeenCalledWith(keyFactory.toString(key));
       expect(mockRedis.set).toHaveBeenCalledWith(
         keyFactory.toString(key),
-        expect.stringContaining('"accessCount":1')
+        expect.stringContaining('"accessCount":1'),
       );
     });
 
@@ -228,7 +228,7 @@ describe('RedisCacheService', () => {
       expect(mockRedis.setex).toHaveBeenCalledWith(
         keyFactory.toString(key),
         60, // TTL in seconds
-        expect.stringContaining('"data":"test-data"')
+        expect.stringContaining('"data":"test-data"'),
       );
     });
 
@@ -243,7 +243,7 @@ describe('RedisCacheService', () => {
       expect(result).toBe(true);
       expect(mockRedis.set).toHaveBeenCalledWith(
         keyFactory.toString(key),
-        expect.stringContaining('"data":"test-data"')
+        expect.stringContaining('"data":"test-data"'),
       );
     });
 

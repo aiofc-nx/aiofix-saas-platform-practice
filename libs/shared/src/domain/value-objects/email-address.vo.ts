@@ -117,8 +117,17 @@ export class EmailAddress extends BaseValueObject {
    * @returns {this} 邮箱地址值对象
    */
   fromJSON(json: string): this {
-    const data = JSON.parse(json);
-    return new EmailAddress(data.value) as this;
+    try {
+      const data = JSON.parse(json) as { value: string };
+
+      if (typeof data.value !== 'string') {
+        throw new Error('Invalid JSON format: value must be a string');
+      }
+
+      return new EmailAddress(data.value) as this;
+    } catch {
+      throw new Error('Failed to parse Email Address from JSON');
+    }
   }
 
   /**

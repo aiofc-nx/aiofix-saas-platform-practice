@@ -1,6 +1,6 @@
 /**
  * @description 平台配置聚合根
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 

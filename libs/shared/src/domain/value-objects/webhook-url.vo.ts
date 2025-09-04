@@ -192,7 +192,12 @@ export class WebhookUrl extends BaseValueObject {
    * @returns {this} Webhook URL值对象
    */
   fromJSON(json: string): this {
-    const data = JSON.parse(json);
+    const data = JSON.parse(json) as { value: string };
+
+    if (typeof data.value !== 'string') {
+      throw new Error('Invalid JSON format: value must be a string');
+    }
+
     return new WebhookUrl(data.value) as this;
   }
 

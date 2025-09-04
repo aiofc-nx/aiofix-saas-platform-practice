@@ -149,7 +149,7 @@ export class CacheModule {
           useFactory: (
             defaultConfig: CacheConfig,
             memoryService: MemoryCacheService,
-            redisService: RedisCacheService
+            redisService: RedisCacheService,
           ) => ({
             ...defaultConfig.manager,
             ...config.manager,
@@ -188,7 +188,7 @@ export class CacheModule {
         // 缓存预热配置
         {
           provide: 'CACHE_WARMUP_CONFIG',
-          useFactory: (defaultConfig: CacheConfig) => ({
+          useFactory: (_defaultConfig: CacheConfig) => ({
             enabled: warmup,
             startupWarmup: true,
             scheduledWarmup: false,

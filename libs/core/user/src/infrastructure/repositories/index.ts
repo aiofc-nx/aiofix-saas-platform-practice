@@ -1,6 +1,6 @@
 /**
  * @description User基础设施层仓储索引文件
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 

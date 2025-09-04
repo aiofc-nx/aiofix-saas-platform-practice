@@ -1,6 +1,6 @@
 /**
  * @description 测试数据工厂，用于生成测试数据
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 
@@ -79,7 +79,7 @@ export class UserTestFactory {
       dataPrivacyLevel: DataPrivacyLevel.PROTECTED,
       createdAt: new Date(),
       updatedAt: new Date(),
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -104,24 +104,24 @@ export class UserTestFactory {
         notifications: {
           email: true,
           sms: false,
-          push: true
+          push: true,
         },
         privacy: {
           profileVisibility: 'public',
-          contactVisibility: 'private'
+          contactVisibility: 'private',
         },
-        theme: 'light'
+        theme: 'light',
       },
       socialLinks: {
         linkedin: `https://linkedin.com/in/test-${Date.now()}`,
         twitter: `https://twitter.com/test-${Date.now()}`,
         github: `https://github.com/test-${Date.now()}`,
-        facebook: `https://facebook.com/test-${Date.now()}`
+        facebook: `https://facebook.com/test-${Date.now()}`,
       },
       createdAt: new Date(),
       updatedAt: new Date(),
       version: 1,
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -143,9 +143,9 @@ export class UserTestFactory {
         avatar: `https://example.com/avatar-${Date.now()}.jpg`,
         bio: `This is a test user bio ${Date.now()}`,
         location: `Test City ${Date.now()}`,
-        website: `https://example-${Date.now()}.com`
+        website: `https://example-${Date.now()}.com`,
       },
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -158,10 +158,10 @@ export class UserTestFactory {
       options: {
         includeProfile: true,
         includeRelationships: false,
-        includeSensitiveData: false
+        includeSensitiveData: false,
       },
       requestUserId: this.createUserId(),
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -179,7 +179,7 @@ export class UserTestFactory {
       userType: UserType.TENANT_USER,
       dataPrivacyLevel: DataPrivacyLevel.PROTECTED,
       createdAt: new Date(),
-      ...overrides
+      ...overrides,
     };
   }
 }

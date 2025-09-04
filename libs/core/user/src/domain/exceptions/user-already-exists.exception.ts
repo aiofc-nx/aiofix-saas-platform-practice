@@ -40,11 +40,11 @@ export class UserAlreadyExistsException extends Error {
     message: string,
     public readonly conflictField?: string,
     public readonly conflictValue?: string,
-    public readonly tenantId?: string
+    public readonly tenantId?: string,
   ) {
     super(message);
     this.message = message;
-    
+
     // 设置原型链，确保 instanceof 正常工作
     Object.setPrototypeOf(this, UserAlreadyExistsException.prototype);
   }
@@ -56,12 +56,15 @@ export class UserAlreadyExistsException extends Error {
    * @param {string} [tenantId] 租户ID
    * @returns {UserAlreadyExistsException} 用户已存在异常实例
    */
-  static byUsername(username: string, tenantId?: string): UserAlreadyExistsException {
+  static byUsername(
+    username: string,
+    tenantId?: string,
+  ): UserAlreadyExistsException {
     return new UserAlreadyExistsException(
       `用户名 ${username} 已存在${tenantId ? ` (租户: ${tenantId})` : ''}`,
       'username',
       username,
-      tenantId
+      tenantId,
     );
   }
 
@@ -77,7 +80,7 @@ export class UserAlreadyExistsException extends Error {
       `邮箱 ${email} 已存在${tenantId ? ` (租户: ${tenantId})` : ''}`,
       'email',
       email,
-      tenantId
+      tenantId,
     );
   }
 
@@ -93,7 +96,7 @@ export class UserAlreadyExistsException extends Error {
       `手机号 ${phone} 已存在${tenantId ? ` (租户: ${tenantId})` : ''}`,
       'phone',
       phone,
-      tenantId
+      tenantId,
     );
   }
 
@@ -104,12 +107,15 @@ export class UserAlreadyExistsException extends Error {
    * @param {string} [tenantId] 租户ID
    * @returns {UserAlreadyExistsException} 用户已存在异常实例
    */
-  static byUserId(userId: string, tenantId?: string): UserAlreadyExistsException {
+  static byUserId(
+    userId: string,
+    tenantId?: string,
+  ): UserAlreadyExistsException {
     return new UserAlreadyExistsException(
       `用户ID ${userId} 已存在${tenantId ? ` (租户: ${tenantId})` : ''}`,
       'userId',
       userId,
-      tenantId
+      tenantId,
     );
   }
 
@@ -135,7 +141,7 @@ export class UserAlreadyExistsException extends Error {
       conflictField: this.conflictField,
       conflictValue: this.conflictValue,
       tenantId: this.tenantId,
-      stack: this.stack
+      stack: this.stack,
     };
   }
 

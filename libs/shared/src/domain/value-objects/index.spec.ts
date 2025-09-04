@@ -147,7 +147,7 @@ describe('Value Objects Integration', () => {
     it('should create valid device tokens', () => {
       const token = new DeviceToken(
         'device-token-12345678901234567890123456789012',
-        'ios'
+        'ios',
       );
       expect(token.value).toBe('device-token-12345678901234567890123456789012');
     });
@@ -161,7 +161,7 @@ describe('Value Objects Integration', () => {
     it('should create valid auth tokens', () => {
       const token = new AuthToken(
         'auth-token-12345678901234567890123456789012',
-        'access'
+        'access',
       );
       expect(token.value).toBe('auth-token-12345678901234567890123456789012');
     });
@@ -243,7 +243,7 @@ describe('Value Objects Integration', () => {
       const balance = new Money(1000.0, Currency.CNY);
       const registrationDate = new DateRange(
         new Date('2024-01-01'),
-        new Date('2024-01-01')
+        new Date('2024-01-01'),
       );
 
       // 验证所有值对象都有效
@@ -253,7 +253,7 @@ describe('Value Objects Integration', () => {
       expect(PhoneNumber.isValid(phone.value)).toBe(true);
       expect(Money.isValid(balance.getValue())).toBe(true);
       expect(
-        DateRange.isValid(registrationDate.startDate, registrationDate.endDate)
+        DateRange.isValid(registrationDate.startDate, registrationDate.endDate),
       ).toBe(true);
 
       // 验证业务逻辑

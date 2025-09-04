@@ -28,24 +28,24 @@ describe('PhoneNumber', () => {
 
   describe('constructor', () => {
     it('should create valid phone number value objects', () => {
-      validPhoneNumbers.forEach((phone) => {
+      validPhoneNumbers.forEach(phone => {
         const phoneVo = new PhoneNumber(phone);
         expect(phoneVo.value).toBe(phoneVo.value); // 值可能被标准化处理
       });
     });
 
     it('should throw error for invalid phone numbers', () => {
-      invalidPhoneNumbers.forEach((phone) => {
+      invalidPhoneNumbers.forEach(phone => {
         expect(() => new PhoneNumber(phone)).toThrow(InvalidPhoneNumberError);
       });
     });
 
     it('should throw error for null or undefined', () => {
-      expect(() => new PhoneNumber(null as any)).toThrow(
-        InvalidPhoneNumberError
+      expect(() => new PhoneNumber(null as unknown)).toThrow(
+        InvalidPhoneNumberError,
       );
-      expect(() => new PhoneNumber(undefined as any)).toThrow(
-        InvalidPhoneNumberError
+      expect(() => new PhoneNumber(undefined as unknown)).toThrow(
+        InvalidPhoneNumberError,
       );
     });
   });
@@ -167,7 +167,7 @@ describe('PhoneNumber', () => {
         // 如果静态方法不存在，跳过测试
         if (typeof PhoneNumber.fromString === 'function') {
           expect(() => PhoneNumber.fromString('invalid')).toThrow(
-            InvalidPhoneNumberError
+            InvalidPhoneNumberError,
           );
         }
       });
@@ -175,13 +175,13 @@ describe('PhoneNumber', () => {
 
     describe('isValid', () => {
       it('should return true for valid phone numbers', () => {
-        validPhoneNumbers.forEach((phone) => {
+        validPhoneNumbers.forEach(phone => {
           expect(PhoneNumber.isValid(phone)).toBe(true);
         });
       });
 
       it('should return false for invalid phone numbers', () => {
-        invalidPhoneNumbers.forEach((phone) => {
+        invalidPhoneNumbers.forEach(phone => {
           expect(PhoneNumber.isValid(phone)).toBe(false);
         });
       });

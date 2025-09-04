@@ -29,7 +29,7 @@ class TestEntity extends DataIsolationAwareEntity {
     departmentIds: Uuid[] = [],
     dataIsolationLevel: DataIsolationLevel = DataIsolationLevel.TENANT,
     dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
-    userId?: Uuid
+    userId?: Uuid,
   ) {
     super(
       tenantId,
@@ -38,7 +38,7 @@ class TestEntity extends DataIsolationAwareEntity {
       id,
       organizationId,
       departmentIds,
-      userId
+      userId,
     );
   }
 
@@ -74,7 +74,7 @@ describe('DataAccessControlService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -83,7 +83,7 @@ describe('DataAccessControlService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -115,7 +115,7 @@ describe('DataAccessControlService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -124,7 +124,7 @@ describe('DataAccessControlService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -155,7 +155,7 @@ describe('DataAccessControlService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.SHARED
+        DataPrivacyLevel.SHARED,
       );
 
       const request = {
@@ -186,7 +186,7 @@ describe('DataAccessControlService', () => {
         organizationId,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -195,7 +195,7 @@ describe('DataAccessControlService', () => {
         organizationId,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -225,7 +225,7 @@ describe('DataAccessControlService', () => {
         Uuid.generate(),
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -234,7 +234,7 @@ describe('DataAccessControlService', () => {
         Uuid.generate(),
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -267,7 +267,7 @@ describe('DataAccessControlService', () => {
         organizationId,
         [departmentId],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -298,7 +298,7 @@ describe('DataAccessControlService', () => {
         organizationId,
         [Uuid.generate()],
         DataIsolationLevel.DEPARTMENT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -307,7 +307,7 @@ describe('DataAccessControlService', () => {
         organizationId,
         [Uuid.generate()],
         DataIsolationLevel.DEPARTMENT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -339,7 +339,7 @@ describe('DataAccessControlService', () => {
         [],
         DataIsolationLevel.USER,
         DataPrivacyLevel.PROTECTED,
-        userId
+        userId,
       );
 
       const request = {
@@ -369,7 +369,7 @@ describe('DataAccessControlService', () => {
         [],
         DataIsolationLevel.USER,
         DataPrivacyLevel.PROTECTED,
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const request = {
@@ -390,8 +390,6 @@ describe('DataAccessControlService', () => {
     });
   });
 
-
-
   describe('audit logging', () => {
     it('should create audit log with correct information', () => {
       const userId = Uuid.generate();
@@ -402,7 +400,7 @@ describe('DataAccessControlService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -444,7 +442,7 @@ describe('DataAccessControlService', () => {
           undefined,
           [],
           DataIsolationLevel.TENANT,
-          DataPrivacyLevel.PROTECTED
+          DataPrivacyLevel.PROTECTED,
         ),
         operation: 'read' as const,
         reason: undefined,
@@ -469,7 +467,7 @@ describe('DataAccessControlService', () => {
           undefined,
           [],
           DataIsolationLevel.DEPARTMENT,
-          DataPrivacyLevel.PROTECTED
+          DataPrivacyLevel.PROTECTED,
         ),
         operation: 'read' as const,
         reason: 'Test empty departments',

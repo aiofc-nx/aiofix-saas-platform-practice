@@ -32,7 +32,6 @@ import { UserProfileRepository } from '../repositories/user-profile.repository';
 import { UserProfileEntity } from '../entities/user-profile.entity';
 import { UserId, TenantId } from '@aiofix/shared';
 import { DataPrivacyLevel } from '@aiofix/shared';
-import { UserProfileUpdatedEvent } from '../domain-events';
 
 /**
  * 档案更新数据接口
@@ -52,9 +51,7 @@ export interface ProfileUpdateData {
  */
 @Injectable()
 export class UserProfileService {
-  constructor(
-    private readonly userProfileRepository: UserProfileRepository
-  ) {}
+  constructor(private readonly userProfileRepository: UserProfileRepository) {}
 
   /**
    * 创建用户档案
@@ -65,7 +62,6 @@ export class UserProfileService {
    * @param {string} userId 用户ID
    * @param {string} [organizationId] 组织ID
    * @param {string[]} [departmentIds] 部门ID列表
-   * @param {DataPrivacyLevel} [dataPrivacyLevel] 数据隐私级别
    * @returns {Promise<UserProfileEntity>} 创建的用户档案实体
    */
   async createProfile(
@@ -75,7 +71,6 @@ export class UserProfileService {
     userId: string,
     organizationId?: string,
     departmentIds: string[] = [],
-    dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED
   ): Promise<UserProfileEntity> {
     const profile = UserProfileEntity.createPrivateProfile(
       id,
@@ -83,7 +78,7 @@ export class UserProfileService {
       tenantId,
       userId,
       organizationId,
-      departmentIds
+      departmentIds,
     );
 
     const savedProfile = await this.userProfileRepository.save(profile);
@@ -97,7 +92,10 @@ export class UserProfileService {
    * @param {ProfileUpdateData} profileData 档案更新数据
    * @returns {Promise<UserProfileEntity>} 更新后的用户档案实体
    */
-  async updateProfile(userId: UserId, profileData: ProfileUpdateData): Promise<UserProfileEntity> {
+  async updateProfile(
+    userId: UserId,
+    profileData: ProfileUpdateData,
+  ): Promise<UserProfileEntity> {
     const profile = await this.userProfileRepository.findByUserId(userId);
     if (!profile) {
       throw new Error('用户档案不存在');
@@ -169,7 +167,11 @@ export class UserProfileService {
    * @param {unknown} value 偏好值
    * @returns {Promise<boolean>} 是否设置成功
    */
-  async setPreference(userId: UserId, key: string, value: unknown): Promise<boolean> {
+  async setPreference(
+    userId: UserId,
+    key: string,
+    value: unknown,
+  ): Promise<boolean> {
     const profile = await this.userProfileRepository.findByUserId(userId);
     if (!profile) {
       throw new Error('用户档案不存在');
@@ -192,14 +194,17 @@ export class UserProfileService {
    * @param {Record<string, unknown>} preferences 偏好设置
    * @returns {Promise<boolean>} 是否设置成功
    */
-  async setPreferences(userId: UserId, preferences: Record<string, unknown>): Promise<boolean> {
+  async setPreferences(
+    userId: UserId,
+    preferences: Record<string, unknown>,
+  ): Promise<boolean> {
     const profile = await this.userProfileRepository.findByUserId(userId);
     if (!profile) {
       throw new Error('用户档案不存在');
     }
 
-    Object.entries(preferences).forEach(([key, value]) => {
-      profile.setPreference(key, value);
+    Object.entries(preferences).forEach(([prefKey, value]) => {
+      profile.setPreference(prefKey, value);
     });
 
     await this.userProfileRepository.save(profile);
@@ -249,7 +254,7 @@ export class UserProfileService {
    * @param {string} key 偏好键
    * @returns {Promise<boolean>} 是否删除成功
    */
-  async removePreference(userId: UserId, key: string): Promise<boolean> {
+  async removePreference(userId: UserId, _key: string): Promise<boolean> {
     const profile = await this.userProfileRepository.findByUserId(userId);
     if (!profile) {
       throw new Error('用户档案不存在');
@@ -293,9 +298,13 @@ export class UserProfileService {
   async getProfilesByTenant(
     tenantId: TenantId,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<UserProfileEntity[]> {
-    return await this.userProfileRepository.findByTenantId(tenantId, limit, offset);
+    return await this.userProfileRepository.findByTenantId(
+      tenantId,
+      limit,
+      offset,
+    );
   }
 
   /**
@@ -311,8 +320,30 @@ export class UserProfileService {
     organizationId: string,
     tenantId: TenantId,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<UserProfileEntity[]> {
-    return await this.userProfileRepository.findByOrganizationId(organizationId, tenantId, limit, offset);
+    return await this.userProfileRepository.findByOrganizationId(
+      organizationId,
+      tenantId,
+      limit,
+      offset,
+    );
+  }
+
+  private async validateProfileData(
+    _profileData: any,
+    _key: string,
+  ): Promise<void> {
+    // TODO: 实现档案数据验证逻辑
+  }
+
+  /**
+   * 获取用户档案配置
+   * @param _key 配置键
+   * @returns 配置值
+   */
+  private getProfileConfig(_key: string): any {
+    // TODO: 实现配置获取逻辑
+    return {};
   }
 }

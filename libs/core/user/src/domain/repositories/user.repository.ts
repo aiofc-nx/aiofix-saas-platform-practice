@@ -69,7 +69,10 @@ export interface UserRepository {
    * @param {TenantId} tenantId 租户ID
    * @returns {Promise<UserEntity | null>} 用户实体或null
    */
-  findByUsername(username: Username, tenantId: TenantId): Promise<UserEntity | null>;
+  findByUsername(
+    username: Username,
+    tenantId: TenantId,
+  ): Promise<UserEntity | null>;
 
   /**
    * 根据邮箱查找用户
@@ -96,7 +99,11 @@ export interface UserRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserEntity[]>} 用户实体列表
    */
-  findByTenantId(tenantId: TenantId, limit?: number, offset?: number): Promise<UserEntity[]>;
+  findByTenantId(
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserEntity[]>;
 
   /**
    * 根据组织ID查找用户列表
@@ -107,7 +114,12 @@ export interface UserRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserEntity[]>} 用户实体列表
    */
-  findByOrganizationId(organizationId: string, tenantId: TenantId, limit?: number, offset?: number): Promise<UserEntity[]>;
+  findByOrganizationId(
+    organizationId: string,
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserEntity[]>;
 
   /**
    * 根据部门ID查找用户列表
@@ -118,7 +130,12 @@ export interface UserRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserEntity[]>} 用户实体列表
    */
-  findByDepartmentId(departmentId: string, tenantId: TenantId, limit?: number, offset?: number): Promise<UserEntity[]>;
+  findByDepartmentId(
+    departmentId: string,
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserEntity[]>;
 
   /**
    * 保存用户
@@ -152,7 +169,11 @@ export interface UserRepository {
    * @param {UserId} [excludeUserId] 排除的用户ID
    * @returns {Promise<boolean>} 是否存在
    */
-  existsByUsername(username: Username, tenantId: TenantId, excludeUserId?: UserId): Promise<boolean>;
+  existsByUsername(
+    username: Username,
+    tenantId: TenantId,
+    excludeUserId?: UserId,
+  ): Promise<boolean>;
 
   /**
    * 检查邮箱是否存在
@@ -162,7 +183,11 @@ export interface UserRepository {
    * @param {UserId} [excludeUserId] 排除的用户ID
    * @returns {Promise<boolean>} 是否存在
    */
-  existsByEmail(email: Email, tenantId: TenantId, excludeUserId?: UserId): Promise<boolean>;
+  existsByEmail(
+    email: Email,
+    tenantId: TenantId,
+    excludeUserId?: UserId,
+  ): Promise<boolean>;
 
   /**
    * 统计用户数量

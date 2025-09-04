@@ -58,7 +58,7 @@ export class UserStatusChangedEvent extends DomainEvent {
     public readonly newStatus: UserStatus,
     public readonly reason?: string,
     public readonly tenantId: string = '',
-    public readonly changedAt: Date = new Date()
+    public readonly changedAt: Date = new Date(),
   ) {
     super('UserStatusChanged', {
       userId,
@@ -66,7 +66,7 @@ export class UserStatusChangedEvent extends DomainEvent {
       newStatus,
       reason,
       tenantId,
-      changedAt
+      changedAt,
     });
   }
 
@@ -82,7 +82,7 @@ export class UserStatusChangedEvent extends DomainEvent {
       newStatus: this.newStatus,
       reason: this.reason,
       tenantId: this.tenantId,
-      changedAt: this.changedAt
+      changedAt: this.changedAt,
     };
   }
 
@@ -128,7 +128,10 @@ export class UserStatusChangedEvent extends DomainEvent {
    * @returns {boolean} 是否为停用状态变更
    */
   public isDeactivationChange(): boolean {
-    return this.newStatus === UserStatus.INACTIVE || this.newStatus === UserStatus.SUSPENDED;
+    return (
+      this.newStatus === UserStatus.INACTIVE ||
+      this.newStatus === UserStatus.SUSPENDED
+    );
   }
 
   /**

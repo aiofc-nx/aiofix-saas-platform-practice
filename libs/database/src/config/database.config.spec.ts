@@ -69,7 +69,9 @@ describe('DatabaseConfig', () => {
 
     it('应该创建默认配置', () => {
       expect(config.debug).toBe(false);
-      expect(config.migrations.path).toBe('src/migrations/*.migration{.ts,.js}');
+      expect(config.migrations.path).toBe(
+        'src/migrations/*.migration{.ts,.js}',
+      );
       expect(config.migrations.tableName).toBe('mikro_orm_migrations');
       expect(config.entities).toEqual(['src/**/*.entity{.ts,.js}']);
     });
@@ -146,10 +148,10 @@ describe('DatabaseConfig', () => {
 
     it('应该验证必需字段', async () => {
       const invalidConfig = plainToClass(DatabaseConfig, {
-        host: null as any,
-        port: 'invalid' as any,
-        username: null as any,
-        database: null as any,
+        host: null as unknown,
+        port: 'invalid' as unknown,
+        username: null as unknown,
+        database: null as unknown,
       });
 
       const errors = await validate(invalidConfig);

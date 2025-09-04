@@ -76,7 +76,7 @@ export class SmsNotification
     data: Record<string, unknown>,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ) {
     super(tenantId, DataIsolationLevel.TENANT, DataPrivacyLevel.PROTECTED, id);
     this._templateId = templateId;
@@ -409,7 +409,7 @@ export class SmsNotification
     data: Record<string, unknown>,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): SmsNotification {
     const id = Uuid.generate();
     return new SmsNotification(
@@ -420,7 +420,7 @@ export class SmsNotification
       data,
       priority,
       scheduledAt,
-      metadata
+      metadata,
     );
   }
 
@@ -443,7 +443,7 @@ export class SmsNotification
     data: Record<string, unknown>,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): SmsNotification {
     const phones = Array.isArray(recipientPhones)
       ? recipientPhones
@@ -457,7 +457,7 @@ export class SmsNotification
       data,
       priority,
       scheduledAt,
-      metadata
+      metadata,
     );
   }
 }

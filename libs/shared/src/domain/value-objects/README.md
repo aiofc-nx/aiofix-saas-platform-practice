@@ -64,14 +64,14 @@ BaseValueObject (抽象基类)
 ### 基础值对象
 
 ```typescript
-import { Uuid, Email, Password } from '@hl8-aio-saas-practice/shared';
+import { Uuid, Email, Password } from "@hl8-aio-saas-practice/shared";
 
 // UUID
 const id = Uuid.generate();
-const idFromString = Uuid.fromString('550e8400-e29b-41d4-a716-446655440000');
+const idFromString = Uuid.fromString("550e8400-e29b-41d4-a716-446655440000");
 
 // Email
-const email = new Email('user@example.com');
+const email = new Email("user@example.com");
 const isCorporate = email.isCorporate();
 const domain = email.getDomain();
 
@@ -84,7 +84,7 @@ const isStrong = password.isStrong();
 ### 业务值对象
 
 ```typescript
-import { Money, Currency, DateRange } from '@hl8-aio-saas-practice/shared';
+import { Money, Currency, DateRange } from "@hl8-aio-saas-practice/shared";
 
 // Money
 const price = new Money(99.99, Currency.CNY);
@@ -101,7 +101,7 @@ const workingDays = range.getWorkingDays();
 
 ```typescript
 // 序列化
-const email = new Email('user@example.com');
+const email = new Email("user@example.com");
 const json = email.toJSON();
 const obj = email.toObject();
 
@@ -112,7 +112,7 @@ const emailFromJson = Email.fromJSON(json);
 ### 缓存优化
 
 ```typescript
-import { GlobalCachedValidation } from '@hl8-aio-saas-practice/shared';
+import { GlobalCachedValidation } from "@hl8-aio-saas-practice/shared";
 
 class MyValueObject extends BaseValueObject {
   @GlobalCachedValidation({ ttl: 300000 }) // 5分钟缓存
@@ -131,14 +131,14 @@ class MyValueObject extends BaseValueObject {
 import {
   InvalidEmailError,
   InvalidPasswordError,
-} from '@hl8-aio-saas-practice/shared';
+} from "@hl8-aio-saas-practice/shared";
 
 try {
-  const email = new Email('invalid-email');
+  const email = new Email("invalid-email");
 } catch (error) {
   if (error instanceof InvalidEmailError) {
-    console.log('邮箱格式错误:', error.message);
-    console.log('输入值:', error.value);
+    console.log("邮箱格式错误:", error.message);
+    console.log("输入值:", error.value);
   }
 }
 ```
@@ -163,7 +163,7 @@ try {
 import {
   ClearValidationCache,
   GetValidationCacheSize,
-} from '@hl8-aio-saas-practice/shared';
+} from "@hl8-aio-saas-practice/shared";
 
 // 清空缓存
 ClearValidationCache();
@@ -182,12 +182,12 @@ const size = GetValidationCacheSize();
 4. 定义错误类型
 
 ```typescript
-import { BaseValueObject, InvalidValueObjectError } from './base.value-object';
+import { BaseValueObject, InvalidValueObjectError } from "./base.value-object";
 
 export class InvalidMyValueError extends InvalidValueObjectError {
   constructor(message: string, value?: unknown) {
-    super(message, 'MyValue', value);
-    this.name = 'InvalidMyValueError';
+    super(message, "MyValue", value);
+    this.name = "InvalidMyValueError";
   }
 }
 

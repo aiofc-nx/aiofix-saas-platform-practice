@@ -51,7 +51,7 @@ export interface PushNotificationRepository {
   findByTenant(
     tenantId: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -62,7 +62,7 @@ export interface PushNotificationRepository {
     status: NotificationStatus,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -73,7 +73,7 @@ export interface PushNotificationRepository {
     priority: NotificationPriority,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -84,7 +84,7 @@ export interface PushNotificationRepository {
     templateId: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -95,7 +95,7 @@ export interface PushNotificationRepository {
     recipient: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -106,7 +106,7 @@ export interface PushNotificationRepository {
     platform: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -116,7 +116,7 @@ export interface PushNotificationRepository {
   findPendingNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -128,7 +128,7 @@ export interface PushNotificationRepository {
     toDate: Date,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -138,7 +138,7 @@ export interface PushNotificationRepository {
   findFailedNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<PushNotification[]>;
 
   /**
@@ -170,7 +170,7 @@ export interface PushNotificationRepository {
    * @description 按优先级统计推送通知数量
    */
   countByPriority(
-    tenantId?: string
+    tenantId?: string,
   ): Promise<Record<NotificationPriority, number>>;
 
   /**
@@ -186,7 +186,7 @@ export interface PushNotificationRepository {
   getStatistics(
     tenantId?: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;

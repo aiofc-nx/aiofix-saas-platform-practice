@@ -26,7 +26,7 @@ import { IamConfig } from './config.service';
  */
 function deepMerge(
   target: Record<string, unknown>,
-  source: Record<string, unknown>
+  source: Record<string, unknown>,
 ): Record<string, unknown> {
   const result = { ...target };
 
@@ -38,7 +38,7 @@ function deepMerge(
     ) {
       result[key] = deepMerge(
         (result[key] as Record<string, unknown>) || {},
-        source[key] as Record<string, unknown>
+        source[key] as Record<string, unknown>,
       );
     } else {
       result[key] = source[key];
@@ -73,11 +73,11 @@ let currentAppConfig: Partial<IamConfig> = { ...defaultConfiguration };
  * @throws {Error} 当提供的配置无效时抛出错误
  */
 export async function defineConfig(
-  providedConfig: Partial<IamConfig>
+  providedConfig: Partial<IamConfig>,
 ): Promise<void> {
   if (!providedConfig || typeof providedConfig !== 'object') {
     throw new Error(
-      'Invalid configuration provided. Expected a non-empty object.'
+      'Invalid configuration provided. Expected a non-empty object.',
     );
   }
 

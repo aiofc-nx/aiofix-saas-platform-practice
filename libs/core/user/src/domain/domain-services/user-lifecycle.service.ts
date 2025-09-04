@@ -39,7 +39,6 @@ import { UserId, Username, Email, PhoneNumber, TenantId } from '@aiofix/shared';
 import { UserType } from '../enums/user-type.enum';
 import { UserStatus } from '../enums/user-status.enum';
 import { DataPrivacyLevel } from '@aiofix/shared';
-import { UserCreatedEvent, UserStatusChangedEvent } from '../domain-events';
 
 /**
  * 用户创建数据接口
@@ -64,7 +63,7 @@ export class UserLifecycleService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userProfileRepository: UserProfileRepository,
-    private readonly userRelationshipRepository: UserRelationshipRepository
+    private readonly userRelationshipRepository: UserRelationshipRepository,
   ) {}
 
   /**
@@ -75,7 +74,11 @@ export class UserLifecycleService {
    */
   async createUser(userData: UserCreationData): Promise<UserEntity> {
     // 1. 验证用户名和邮箱唯一性
-    await this.validateUserUniqueness(userData.username, userData.email, userData.tenantId);
+    await this.validateUserUniqueness(
+      userData.username,
+      userData.email,
+      userData.tenantId,
+    );
 
     // 2. 创建用户实体
     const userId = UserId.generate();
@@ -84,10 +87,14 @@ export class UserLifecycleService {
       userData.username,
       userData.email,
       userData.tenantId,
-      userData.organizationId ? TenantId.create(userData.organizationId) : undefined,
-      userData.departmentIds ? userData.departmentIds.map(id => TenantId.create(id)) : [],
+      userData.organizationId
+        ? TenantId.create(userData.organizationId)
+        : undefined,
+      userData.departmentIds
+        ? userData.departmentIds.map(id => TenantId.create(id))
+        : [],
       userData.userType || UserType.TENANT_USER,
-      userData.dataPrivacyLevel || DataPrivacyLevel.PROTECTED
+      userData.dataPrivacyLevel || DataPrivacyLevel.PROTECTED,
     );
 
     // 3. 创建用户档案
@@ -97,7 +104,7 @@ export class UserLifecycleService {
       userData.tenantId.toString(),
       userId.toString(),
       userData.organizationId,
-      userData.departmentIds
+      userData.departmentIds,
     );
 
     // 4. 保存用户和档案
@@ -123,7 +130,6 @@ export class UserLifecycleService {
       throw new Error('用户不存在');
     }
 
-    const oldStatus = user.status;
     user.activate();
     const updatedUser = await this.userRepository.save(user);
 
@@ -138,16 +144,15 @@ export class UserLifecycleService {
    * 停用用户
    * @description 将用户状态设置为停用状态
    * @param {UserId} userId 用户ID
-   * @param {string} reason 停用原因
+   * @param {string} _reason 停用原因
    * @returns {Promise<UserEntity>} 更新后的用户实体
    */
-  async deactivateUser(userId: UserId, reason?: string): Promise<UserEntity> {
+  async deactivateUser(userId: UserId, _reason?: string): Promise<UserEntity> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new Error('用户不存在');
     }
 
-    const oldStatus = user.status;
     user.deactivate();
     const updatedUser = await this.userRepository.save(user);
 
@@ -162,16 +167,15 @@ export class UserLifecycleService {
    * 暂停用户
    * @description 将用户状态设置为暂停状态
    * @param {UserId} userId 用户ID
-   * @param {string} reason 暂停原因
+   * @param {string} _reason 暂停原因
    * @returns {Promise<UserEntity>} 更新后的用户实体
    */
-  async suspendUser(userId: UserId, reason?: string): Promise<UserEntity> {
+  async suspendUser(userId: UserId, _reason?: string): Promise<UserEntity> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new Error('用户不存在');
     }
 
-    const oldStatus = user.status;
     user.suspend();
     const updatedUser = await this.userRepository.save(user);
 
@@ -186,17 +190,16 @@ export class UserLifecycleService {
    * 删除用户
    * @description 将用户状态设置为删除状态，并清理相关数据
    * @param {UserId} userId 用户ID
-   * @param {string} reason 删除原因
+   * @param {string} _reason 删除原因
    * @returns {Promise<boolean>} 是否删除成功
    */
-  async deleteUser(userId: UserId, reason?: string): Promise<boolean> {
+  async deleteUser(userId: UserId, _reason?: string): Promise<boolean> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new Error('用户不存在');
     }
 
     // 1. 更新用户状态为删除
-    const oldStatus = user.status;
     user.delete();
     await this.userRepository.save(user);
 
@@ -224,14 +227,20 @@ export class UserLifecycleService {
   private async validateUserUniqueness(
     username: Username,
     email: Email,
-    tenantId: TenantId
+    tenantId: TenantId,
   ): Promise<void> {
-    const usernameExists = await this.userRepository.existsByUsername(username, tenantId);
+    const usernameExists = await this.userRepository.existsByUsername(
+      username,
+      tenantId,
+    );
     if (usernameExists) {
       throw new Error('用户名已存在');
     }
 
-    const emailExists = await this.userRepository.existsByEmail(email, tenantId);
+    const emailExists = await this.userRepository.existsByEmail(
+      email,
+      tenantId,
+    );
     if (emailExists) {
       throw new Error('邮箱已存在');
     }
@@ -251,7 +260,7 @@ export class UserLifecycleService {
     const [user, profile, relationships] = await Promise.all([
       this.userRepository.findById(userId),
       this.userProfileRepository.findByUserId(userId),
-      this.userRelationshipRepository.findByUserId(userId)
+      this.userRelationshipRepository.findByUserId(userId),
     ]);
 
     if (!user) {
@@ -261,7 +270,7 @@ export class UserLifecycleService {
     return {
       user,
       profile,
-      relationships
+      relationships,
     };
   }
 
@@ -270,24 +279,22 @@ export class UserLifecycleService {
    * @description 批量更新多个用户的状态
    * @param {UserId[]} userIds 用户ID列表
    * @param {UserStatus} newStatus 新状态
-   * @param {string} reason 状态变更原因
+   * @param {string} _reason 状态变更原因
    * @returns {Promise<UserEntity[]>} 更新后的用户实体列表
    */
   async batchUpdateUserStatus(
     userIds: UserId[],
     newStatus: UserStatus,
-    reason?: string
+    _reason?: string,
   ): Promise<UserEntity[]> {
     const users = await Promise.all(
-      userIds.map(id => this.userRepository.findById(id))
+      userIds.map(id => this.userRepository.findById(id)),
     );
 
-    const validUsers = users.filter(user => user !== null) as UserEntity[];
+    const validUsers = users.filter(user => user !== null);
     const updatedUsers: UserEntity[] = [];
 
     for (const user of validUsers) {
-      const oldStatus = user.status;
-      
       switch (newStatus) {
         case UserStatus.ACTIVE:
           user.activate();

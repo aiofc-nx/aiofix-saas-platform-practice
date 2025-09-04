@@ -4,13 +4,13 @@ import { ModuleRef } from '@nestjs/core';
 /**
  * @interface DomainEvent
  * @description 领域事件接口，所有领域事件都必须实现此接口
- * 
+ *
  * 原理与机制：
  * 1. 领域事件是 DDD 中的核心概念，表示领域中的某个重要事情发生了
  * 2. 事件是不可变的，一旦创建就不能修改
  * 3. 事件包含事件发生时的所有相关数据
  * 4. 事件通过事件总线分发给所有订阅者
- * 
+ *
  * 功能与职责：
  * 1. 定义领域事件的基本结构
  * 2. 确保事件的不可变性
@@ -28,13 +28,13 @@ export interface DomainEvent {
 /**
  * @interface EventHandler
  * @description 事件处理器接口，所有事件处理器都必须实现此接口
- * 
+ *
  * 原理与机制：
  * 1. 事件处理器负责处理特定的领域事件
  * 2. 一个事件可以有多个处理器
  * 3. 处理器执行事件处理逻辑
  * 4. 处理器可以产生新的领域事件
- * 
+ *
  * 功能与职责：
  * 1. 处理特定的领域事件
  * 2. 执行业务逻辑
@@ -48,25 +48,25 @@ export interface EventHandler<TEvent extends DomainEvent = DomainEvent> {
 /**
  * @class EventBus
  * @description 事件总线，负责分发领域事件到所有订阅者
- * 
+ *
  * 原理与机制：
  * 1. 事件总线是 CQRS 模式中的核心组件，负责事件的分发
  * 2. 使用依赖注入容器来获取事件处理器实例
  * 3. 支持事件的异步处理
  * 4. 提供事件处理的错误处理机制
- * 
+ *
  * 功能与职责：
  * 1. 注册事件处理器
  * 2. 分发事件到所有订阅者
  * 3. 处理事件执行异常
  * 4. 提供事件处理的监控和日志
- * 
+ *
  * @example
  * ```typescript
  * // 注册事件处理器
  * eventBus.register(UserCreatedEvent, UserCreatedHandler);
  * eventBus.register(UserCreatedEvent, UserNotificationHandler);
- * 
+ *
  * // 发布事件
  * await eventBus.publish(new UserCreatedEvent({
  *   userId: 'user-123',
@@ -93,7 +93,7 @@ export class EventBus {
    */
   register<TEvent extends DomainEvent>(
     eventType: Type<TEvent>,
-    handlerType: Type<EventHandler<TEvent>>
+    handlerType: Type<EventHandler<TEvent>>,
   ): void {
     const eventName = eventType.name;
     if (!this.handlers.has(eventName)) {
@@ -125,14 +125,14 @@ export class EventBus {
       return;
     }
 
-    const promises = handlerTypes.map(async (handlerType) => {
+    const promises = handlerTypes.map(async handlerType => {
       try {
         const handler = this.moduleRef.get(handlerType, { strict: false });
         await handler.handle(event);
       } catch (error) {
         throw new EventHandlerExecutionException(
           `Failed to handle event: ${eventName} with handler: ${handlerType.name}`,
-          error as Error
+          error as Error,
         );
       }
     });
@@ -142,7 +142,7 @@ export class EventBus {
     } catch (error) {
       throw new EventPublishException(
         `Failed to publish event: ${eventName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -161,7 +161,9 @@ export class EventBus {
    * ]);
    * ```
    */
-  async publishAll<TEvent extends DomainEvent>(events: TEvent[]): Promise<void> {
+  async publishAll<TEvent extends DomainEvent>(
+    events: TEvent[],
+  ): Promise<void> {
     for (const event of events) {
       await this.publish(event);
     }
@@ -226,19 +228,22 @@ export class EventBus {
 /**
  * @class EventPublishException
  * @description 事件发布异常
- * 
+ *
  * 原理与机制：
  * 1. 当事件发布过程中发生错误时抛出此异常
  * 2. 包含原始错误信息
  * 3. 提供事件发布的上下文信息
- * 
+ *
  * 功能与职责：
  * 1. 标识事件发布失败的错误
  * 2. 保留原始错误信息
  * 3. 提供错误上下文
  */
 export class EventPublishException extends Error {
-  constructor(message: string, public readonly originalError?: Error) {
+  constructor(
+    message: string,
+    public readonly originalError?: Error,
+  ) {
     super(message);
     this.name = 'EventPublishException';
   }
@@ -247,19 +252,22 @@ export class EventPublishException extends Error {
 /**
  * @class EventHandlerExecutionException
  * @description 事件处理器执行异常
- * 
+ *
  * 原理与机制：
  * 1. 当事件处理器执行过程中发生错误时抛出此异常
  * 2. 包含原始错误信息
  * 3. 提供事件处理器执行的上下文信息
- * 
+ *
  * 功能与职责：
  * 1. 标识事件处理器执行失败的错误
  * 2. 保留原始错误信息
  * 3. 提供错误上下文
  */
 export class EventHandlerExecutionException extends Error {
-  constructor(message: string, public readonly originalError?: Error) {
+  constructor(
+    message: string,
+    public readonly originalError?: Error,
+  ) {
     super(message);
     this.name = 'EventHandlerExecutionException';
   }

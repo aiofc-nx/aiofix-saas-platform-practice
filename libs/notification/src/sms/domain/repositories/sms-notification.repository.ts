@@ -51,7 +51,7 @@ export interface SmsNotificationRepository {
   findByTenant(
     tenantId: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -62,7 +62,7 @@ export interface SmsNotificationRepository {
     status: NotificationStatus,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -73,7 +73,7 @@ export interface SmsNotificationRepository {
     priority: NotificationPriority,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -84,7 +84,7 @@ export interface SmsNotificationRepository {
     templateId: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -95,7 +95,7 @@ export interface SmsNotificationRepository {
     recipient: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -105,7 +105,7 @@ export interface SmsNotificationRepository {
   findPendingNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -117,7 +117,7 @@ export interface SmsNotificationRepository {
     toDate: Date,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -127,7 +127,7 @@ export interface SmsNotificationRepository {
   findFailedNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<SmsNotification[]>;
 
   /**
@@ -159,7 +159,7 @@ export interface SmsNotificationRepository {
    * @description 按优先级统计短信通知数量
    */
   countByPriority(
-    tenantId?: string
+    tenantId?: string,
   ): Promise<Record<NotificationPriority, number>>;
 
   /**
@@ -169,7 +169,7 @@ export interface SmsNotificationRepository {
   getStatistics(
     tenantId?: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;

@@ -143,7 +143,7 @@ export class CreateUserCommand {
       departmentIds: this.departmentIds,
       userType: this.userType,
       dataPrivacyLevel: this.dataPrivacyLevel,
-      profile: this.profile
+      profile: this.profile,
     };
   }
 
@@ -171,7 +171,7 @@ export class CreateUserCommand {
       departmentIds: [...this.departmentIds],
       userType: this.userType,
       dataPrivacyLevel: this.dataPrivacyLevel,
-      profile: this.profile ? { ...this.profile } : undefined
+      profile: this.profile ? { ...this.profile } : undefined,
     });
   }
 }

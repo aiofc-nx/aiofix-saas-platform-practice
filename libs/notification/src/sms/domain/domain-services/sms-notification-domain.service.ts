@@ -52,7 +52,7 @@ export interface SmsRoutingResult {
 @Injectable()
 export class SmsNotificationDomainService {
   constructor(
-    private readonly smsNotificationRepository: SmsNotificationRepository
+    private readonly smsNotificationRepository: SmsNotificationRepository,
   ) {}
 
   /**
@@ -119,7 +119,7 @@ export class SmsNotificationDomainService {
    */
   determineSmsRouting(
     notification: SmsNotification,
-    tenantSettings?: Record<string, unknown>
+    tenantSettings?: Record<string, unknown>,
   ): SmsRoutingResult {
     // 1. 检查是否应该立即发送
     if (notification.scheduledAt) {
@@ -185,7 +185,7 @@ export class SmsNotificationDomainService {
    */
   calculateRetryStrategy(
     notification: SmsNotification,
-    errorCode: string
+    errorCode: string,
   ): {
     shouldRetry: boolean;
     retryDelay: number;
@@ -237,7 +237,7 @@ export class SmsNotificationDomainService {
    */
   async optimizeBatchSending(
     notifications: SmsNotification[],
-    batchSize: number = 50
+    batchSize: number = 50,
   ): Promise<SmsNotification[][]> {
     // 1. 按优先级分组
     const highPriority: SmsNotification[] = [];
@@ -319,7 +319,7 @@ export class SmsNotificationDomainService {
   async getSmsStatistics(
     tenantId: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;
@@ -333,15 +333,13 @@ export class SmsNotificationDomainService {
     const statistics = await this.smsNotificationRepository.getStatistics(
       tenantId,
       fromDate,
-      toDate
+      toDate,
     );
 
-    const byPriority = await this.smsNotificationRepository.countByPriority(
-      tenantId
-    );
-    const byStatus = await this.smsNotificationRepository.countByStatus(
-      tenantId
-    );
+    const byPriority =
+      await this.smsNotificationRepository.countByPriority(tenantId);
+    const byStatus =
+      await this.smsNotificationRepository.countByStatus(tenantId);
 
     return {
       ...statistics,
@@ -358,7 +356,7 @@ export class SmsNotificationDomainService {
   private isInQuietHours(
     quietStart: string,
     quietEnd: string,
-    _timezone: string
+    _timezone: string,
   ): boolean {
     // 简化实现，实际应该使用moment.js或day.js处理时区
     const now = new Date();

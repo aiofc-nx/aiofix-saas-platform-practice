@@ -36,14 +36,22 @@ describe('EmailSubject', () => {
     });
 
     it('应该拒绝非字符串类型', () => {
-      expect(() => EmailSubject.create(null as any)).toThrow('邮件主题必须是字符串类型');
-      expect(() => EmailSubject.create(undefined as any)).toThrow('邮件主题必须是字符串类型');
-      expect(() => EmailSubject.create(123 as any)).toThrow('邮件主题必须是字符串类型');
+      expect(() => EmailSubject.create(null as unknown)).toThrow(
+        '邮件主题必须是字符串类型',
+      );
+      expect(() => EmailSubject.create(undefined as unknown)).toThrow(
+        '邮件主题必须是字符串类型',
+      );
+      expect(() => EmailSubject.create(123 as unknown)).toThrow(
+        '邮件主题必须是字符串类型',
+      );
     });
 
     it('应该拒绝超过998字符的主题', () => {
       const longSubject = 'a'.repeat(999);
-      expect(() => EmailSubject.create(longSubject)).toThrow('邮件主题长度不能超过998字符');
+      expect(() => EmailSubject.create(longSubject)).toThrow(
+        '邮件主题长度不能超过998字符',
+      );
     });
 
     it('应该接受998字符的主题', () => {
@@ -55,7 +63,9 @@ describe('EmailSubject', () => {
     it('应该拒绝包含危险字符的主题', () => {
       const dangerousChars = ['<', '>', '"', "'", '&'];
       dangerousChars.forEach(char => {
-        expect(() => EmailSubject.create(`测试${char}主题`)).toThrow('邮件主题包含不允许的字符');
+        expect(() => EmailSubject.create(`测试${char}主题`)).toThrow(
+          '邮件主题包含不允许的字符',
+        );
       });
     });
 
@@ -63,7 +73,9 @@ describe('EmailSubject', () => {
       const controlChars = [0x00, 0x08, 0x0b, 0x0c, 0x0e, 0x1f, 0x7f];
       controlChars.forEach(charCode => {
         const controlChar = String.fromCharCode(charCode);
-        expect(() => EmailSubject.create(`测试${controlChar}主题`)).toThrow('邮件主题包含控制字符');
+        expect(() => EmailSubject.create(`测试${controlChar}主题`)).toThrow(
+          '邮件主题包含控制字符',
+        );
       });
     });
   });

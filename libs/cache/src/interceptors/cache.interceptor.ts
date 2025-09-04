@@ -66,7 +66,7 @@ export class CacheInterceptor implements NestInterceptor {
     private readonly reflector: Reflector,
     logger: PinoLoggerService,
     @Inject('CACHE_INTERCEPTOR_OPTIONS')
-    private readonly options: CacheInterceptorOptions = {}
+    private readonly options: CacheInterceptorOptions = {},
   ) {
     this.logger = logger;
   }
@@ -80,7 +80,7 @@ export class CacheInterceptor implements NestInterceptor {
    */
   async intercept(
     context: ExecutionContext,
-    next: CallHandler
+    next: CallHandler,
   ): Promise<Observable<any>> {
     const handler = context.getHandler();
 
@@ -92,19 +92,19 @@ export class CacheInterceptor implements NestInterceptor {
     // 获取缓存元数据
     const cacheKey = this.reflector.get<string | ((args: unknown[]) => string)>(
       CACHE_KEY_METADATA,
-      handler
+      handler,
     );
     const cacheTtl = this.reflector.get<number>(CACHE_TTL_METADATA, handler);
     const cacheOptions = this.reflector.get<Partial<CacheOptions>>(
       CACHE_OPTIONS_METADATA,
-      handler
+      handler,
     );
     const cacheEvict = this.reflector.get<
       string | string[] | ((args: unknown[]) => string | string[])
     >(CACHE_EVICT_METADATA, handler);
     const cacheEvictAll = this.reflector.get<string>(
       CACHE_EVICT_ALL_METADATA,
-      handler
+      handler,
     );
 
     // 如果没有缓存配置，直接执行
@@ -126,7 +126,7 @@ export class CacheInterceptor implements NestInterceptor {
         args,
         cacheKey,
         cacheTtl,
-        cacheOptions
+        cacheOptions,
       );
     }
 
@@ -159,7 +159,7 @@ export class CacheInterceptor implements NestInterceptor {
    */
   private generateCacheKey(
     cacheKey: string | ((args: unknown[]) => string),
-    args: unknown[]
+    args: unknown[],
   ): CacheKey {
     const keyString =
       typeof cacheKey === 'function' ? cacheKey(args) : cacheKey;
@@ -182,7 +182,7 @@ export class CacheInterceptor implements NestInterceptor {
     args: unknown[],
     cacheKey: string | ((args: unknown[]) => string),
     cacheTtl?: number,
-    cacheOptions?: Partial<CacheOptions>
+    cacheOptions?: Partial<CacheOptions>,
   ): Promise<Observable<any>> {
     const key = this.generateCacheKey(cacheKey, args);
     const ttl = cacheTtl || this.options.defaultTtl;
@@ -203,7 +203,7 @@ export class CacheInterceptor implements NestInterceptor {
 
       // 执行原始方法并缓存结果
       return next.handle().pipe(
-        tap(async (data) => {
+        tap(async data => {
           if (data !== null && data !== undefined) {
             try {
               await this.cacheService.set(key, data, {
@@ -218,18 +218,18 @@ export class CacheInterceptor implements NestInterceptor {
                 `Failed to set cache: ${key.key}`,
                 LogContext.CACHE,
                 undefined,
-                error as Error
+                error as Error,
               );
             }
           }
-        })
+        }),
       );
     } catch (error) {
       this.logger.error(
         `Cache operation failed: ${key.key}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return next.handle();
     }
@@ -249,10 +249,10 @@ export class CacheInterceptor implements NestInterceptor {
     next: CallHandler,
     args: unknown[],
     cacheEvict?: string | string[] | ((args: unknown[]) => string | string[]),
-    cacheEvictAll?: string
+    cacheEvictAll?: string,
   ): Promise<Observable<any>> {
     return next.handle().pipe(
-      tap(async (data) => {
+      tap(async _data => {
         try {
           // 处理全部失效
           if (cacheEvictAll) {
@@ -260,7 +260,7 @@ export class CacheInterceptor implements NestInterceptor {
             if (this.options.logCacheOperations) {
               this.logger.debug(
                 `Cache cleared: namespace ${cacheEvictAll}`,
-                LogContext.CACHE
+                LogContext.CACHE,
               );
             }
           }
@@ -280,7 +280,7 @@ export class CacheInterceptor implements NestInterceptor {
               if (this.options.logCacheOperations) {
                 this.logger.debug(
                   `Cache evicted: ${keyString}`,
-                  LogContext.CACHE
+                  LogContext.CACHE,
                 );
               }
             }
@@ -290,10 +290,10 @@ export class CacheInterceptor implements NestInterceptor {
             'Cache eviction failed',
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
-      })
+      }),
     );
   }
 }
@@ -305,7 +305,7 @@ export class CacheInterceptor implements NestInterceptor {
  * @returns 拦截器类
  */
 export function createCacheInterceptor(
-  options: CacheInterceptorOptions = {}
+  options: CacheInterceptorOptions = {},
 ): Type<NestInterceptor> {
   @Injectable()
   class CacheInterceptorMixin extends CacheInterceptor {
@@ -313,7 +313,7 @@ export function createCacheInterceptor(
       cacheService: ICacheService,
       keyFactory: ICacheKeyFactory,
       reflector: Reflector,
-      logger: PinoLoggerService
+      logger: PinoLoggerService,
     ) {
       super(cacheService, keyFactory, reflector, logger, options);
     }
@@ -332,17 +332,17 @@ export class CacheGetInterceptor implements NestInterceptor {
     @Inject('ICacheService') private readonly cacheService: ICacheService,
     @Inject('ICacheKeyFactory') private readonly keyFactory: ICacheKeyFactory,
     private readonly reflector: Reflector,
-    private readonly logger: PinoLoggerService
+    private readonly logger: PinoLoggerService,
   ) {}
 
   async intercept(
     context: ExecutionContext,
-    next: CallHandler
+    next: CallHandler,
   ): Promise<Observable<any>> {
     const handler = context.getHandler();
     const cacheKey = this.reflector.get<string | ((args: unknown[]) => string)>(
       CACHE_KEY_METADATA,
-      handler
+      handler,
     );
 
     if (!cacheKey) {
@@ -366,7 +366,7 @@ export class CacheGetInterceptor implements NestInterceptor {
         `Cache get failed: ${key.key}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return next.handle();
     }
@@ -383,7 +383,7 @@ export class CacheGetInterceptor implements NestInterceptor {
 
   private generateCacheKey(
     cacheKey: string | ((args: unknown[]) => string),
-    args: unknown[]
+    args: unknown[],
   ): CacheKey {
     const keyString =
       typeof cacheKey === 'function' ? cacheKey(args) : cacheKey;
@@ -401,22 +401,22 @@ export class CacheSetInterceptor implements NestInterceptor {
     @Inject('ICacheService') private readonly cacheService: ICacheService,
     @Inject('ICacheKeyFactory') private readonly keyFactory: ICacheKeyFactory,
     private readonly reflector: Reflector,
-    private readonly logger: PinoLoggerService
+    private readonly logger: PinoLoggerService,
   ) {}
 
   async intercept(
     context: ExecutionContext,
-    next: CallHandler
+    next: CallHandler,
   ): Promise<Observable<any>> {
     const handler = context.getHandler();
     const cacheKey = this.reflector.get<string | ((args: unknown[]) => string)>(
       CACHE_KEY_METADATA,
-      handler
+      handler,
     );
     const cacheTtl = this.reflector.get<number>(CACHE_TTL_METADATA, handler);
     const cacheOptions = this.reflector.get<Partial<CacheOptions>>(
       CACHE_OPTIONS_METADATA,
-      handler
+      handler,
     );
 
     if (!cacheKey) {
@@ -428,7 +428,7 @@ export class CacheSetInterceptor implements NestInterceptor {
     const ttl = cacheTtl || 3600000; // 默认1小时
 
     return next.handle().pipe(
-      tap(async (data) => {
+      tap(async data => {
         if (data !== null && data !== undefined) {
           try {
             await this.cacheService.set(key, data, { ttl, ...cacheOptions });
@@ -438,11 +438,11 @@ export class CacheSetInterceptor implements NestInterceptor {
               `Cache set failed: ${key.key}`,
               LogContext.CACHE,
               undefined,
-              error as Error
+              error as Error,
             );
           }
         }
-      })
+      }),
     );
   }
 
@@ -457,7 +457,7 @@ export class CacheSetInterceptor implements NestInterceptor {
 
   private generateCacheKey(
     cacheKey: string | ((args: unknown[]) => string),
-    args: unknown[]
+    args: unknown[],
   ): CacheKey {
     const keyString =
       typeof cacheKey === 'function' ? cacheKey(args) : cacheKey;

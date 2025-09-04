@@ -105,7 +105,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
     @Inject('MEMORY_CACHE_CONFIG')
     @Inject('ICacheKeyFactory')
     private readonly keyFactory: ICacheKeyFactory,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.logger = logger;
     // 设置默认配置
@@ -123,9 +123,9 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
 
     this.logger.info(
       `MemoryCacheService initialized with config: ${JSON.stringify(
-        this.config
+        this.config,
       )}`,
-      LogContext.CACHE
+      LogContext.CACHE,
     );
   }
 
@@ -186,7 +186,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
         `Error getting cache value: ${(error as Error).message}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.updateStats(false);
       return null;
@@ -204,7 +204,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
   async set<T = any>(
     key: CacheKey,
     value: T,
-    options?: Partial<CacheOptions>
+    options?: Partial<CacheOptions>,
   ): Promise<boolean> {
     try {
       const keyString = this.keyFactory.toString(key);
@@ -261,9 +261,10 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
 
       // 更新统计
       this.stats.totalSize += valueSize;
-      this.stats.averageSize = this.stats.totalEntries > 0 
-        ? this.stats.totalSize / this.stats.totalEntries 
-        : 0;
+      this.stats.averageSize =
+        this.stats.totalEntries > 0
+          ? this.stats.totalSize / this.stats.totalEntries
+          : 0;
 
       return true;
     } catch (error) {
@@ -271,7 +272,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
         `Error setting cache value: ${(error as Error).message}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -311,7 +312,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
         `Error deleting cache value: ${(error as Error).message}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -347,7 +348,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
         `Error checking cache key existence: ${(error as Error).message}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -376,16 +377,19 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
             continue;
           }
         }
-        
+
         // 如果通过解析没有找到键，尝试直接匹配（因为键格式可能包含版本号）
         if (keysToDelete.length === 0) {
           for (const [keyString] of this.cache.entries()) {
-            if (keyString.includes(`:${namespace}:`) || keyString.startsWith(`${namespace}:`)) {
+            if (
+              keyString.includes(`:${namespace}:`) ||
+              keyString.startsWith(`${namespace}:`)
+            ) {
               keysToDelete.push(keyString);
             }
           }
         }
-        
+
         // 如果还是没有找到，尝试更宽松的匹配
         if (keysToDelete.length === 0) {
           for (const [keyString] of this.cache.entries()) {
@@ -394,7 +398,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
             }
           }
         }
-        
+
         // 如果还是没有找到，尝试最宽松的匹配（包含命名空间的任何键）
         if (keysToDelete.length === 0) {
           for (const [keyString] of this.cache.entries()) {
@@ -404,14 +408,6 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
             }
           }
         }
-        
-
-        
-
-        
-
-        
-
 
         for (const keyString of keysToDelete) {
           const entry = this.cache.get(keyString);
@@ -444,7 +440,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
         `Error clearing cache: ${(error as Error).message}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -486,7 +482,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
     } catch (error) {
       this.logger.error(
         `Health check failed: ${(error as Error).message}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       return {
         healthy: false,
@@ -564,7 +560,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
     if (keysToDelete.length > 0) {
       this.logger.debug(
         `Cleaned up ${keysToDelete.length} expired entries`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
     }
   }
@@ -587,9 +583,9 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
    * @param {any} value 值
    * @returns {number} 大小（字节）
    */
-  private calculateSize(value: any): number {
+  private calculateSize(_value: unknown): number {
     try {
-      return Buffer.byteLength(JSON.stringify(value), 'utf8');
+      return Buffer.byteLength(JSON.stringify(_value), 'utf8');
     } catch {
       return 0;
     }
@@ -732,7 +728,7 @@ export class MemoryCacheService implements ICacheService, OnModuleDestroy {
         }
       }
     }
-    
+
     // 确保驱逐后访问顺序和频率映射的一致性
     if (keyToEvict) {
       this.removeFromAccessOrder(keyToEvict);

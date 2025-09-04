@@ -89,7 +89,7 @@ export abstract class BaseEvent {
    */
   public static fromJSON<T extends BaseEvent>(
     this: new () => T,
-    json: string
+    json: string,
   ): T {
     const data = JSON.parse(json);
     const event = new this();

@@ -60,7 +60,7 @@ export class EmailNotificationSentEvent extends BaseEvent {
     retryCount: number,
     providerMessageId?: string,
     metadata: Record<string, unknown> = {},
-    operatorId?: string
+    _operatorId?: string,
   ) {
     super();
 
@@ -122,7 +122,7 @@ export class EmailNotificationSentEvent extends BaseEvent {
     retryCount: number,
     providerMessageId?: string,
     metadata: Record<string, unknown> = {},
-    operatorId?: string
+    operatorId?: string,
   ): EmailNotificationSentEvent {
     return new EmailNotificationSentEvent(
       notificationId,
@@ -134,7 +134,7 @@ export class EmailNotificationSentEvent extends BaseEvent {
       retryCount,
       providerMessageId,
       metadata,
-      operatorId
+      operatorId,
     );
   }
 }

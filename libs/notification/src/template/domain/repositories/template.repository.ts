@@ -57,7 +57,7 @@ export interface TemplateRepository {
   findByTenant(
     tenantId: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -68,7 +68,7 @@ export interface TemplateRepository {
     type: NotificationType,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -79,7 +79,7 @@ export interface TemplateRepository {
     status: TemplateStatus,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -90,7 +90,7 @@ export interface TemplateRepository {
     category: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -101,7 +101,7 @@ export interface TemplateRepository {
     language: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -112,7 +112,7 @@ export interface TemplateRepository {
     tags: string[],
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -123,7 +123,7 @@ export interface TemplateRepository {
     reviewStatus: ReviewStatus,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -133,7 +133,7 @@ export interface TemplateRepository {
   findActiveTemplates(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -143,7 +143,7 @@ export interface TemplateRepository {
   findTemplatesForReview(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -162,7 +162,7 @@ export interface TemplateRepository {
       reviewStatus?: ReviewStatus;
     },
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<Template[]>;
 
   /**
@@ -214,7 +214,7 @@ export interface TemplateRepository {
   getStatistics(
     tenantId?: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     active: number;
@@ -229,7 +229,7 @@ export interface TemplateRepository {
    */
   getMostUsedTemplates(
     tenantId?: string,
-    limit?: number
+    limit?: number,
   ): Promise<
     Array<{
       templateId: string;

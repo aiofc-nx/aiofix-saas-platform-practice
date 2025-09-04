@@ -1,6 +1,13 @@
 /// <reference types="jest" />
 /* eslint-env jest */
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  jest,
+  beforeEach,
+  afterEach,
+} from '@jest/globals';
 /**
  * @file postgresql.adapter.spec.ts
  * @description PostgreSQL适配器单元测试
@@ -60,7 +67,7 @@ describe('PostgreSQLAdapter', () => {
       prependListener: jest.fn(),
       prependOnceListener: jest.fn(),
       eventNames: jest.fn(),
-    } as any;
+    } as unknown;
 
     mockLogger = {
       info: jest.fn(),
@@ -70,7 +77,7 @@ describe('PostgreSQLAdapter', () => {
       trace: jest.fn(),
       fatal: jest.fn(),
       child: jest.fn(),
-    } as any;
+    } as unknown;
 
     mockConfig = {
       type: 'postgresql',
@@ -131,7 +138,7 @@ describe('PostgreSQLAdapter', () => {
     });
 
     it('应该初始化统计信息', () => {
-      const stats = (adapter as any).stats;
+      const stats = (adapter as unknown).stats;
       expect(stats.totalQueries).toBe(0);
       expect(stats.successfulQueries).toBe(0);
       expect(stats.failedQueries).toBe(0);
@@ -145,12 +152,14 @@ describe('PostgreSQLAdapter', () => {
 
   describe('连接管理', () => {
     it('应该能够连接到数据库', async () => {
-      const mockPool = (adapter as any).pool as any;
+      const mockPool = (adapter as unknown).pool as unknown;
       const mockClient = {
-        query: (jest.fn() as any).mockResolvedValue({ rows: [{ result: 1 }] }) as any,
-        release: jest.fn() as any,
+        query: (jest.fn() as unknown).mockResolvedValue({
+          rows: [{ result: 1 }],
+        }) as unknown,
+        release: jest.fn() as unknown,
       };
-      mockPool.connect.mockResolvedValue(mockClient as any);
+      mockPool.connect.mockResolvedValue(mockClient as unknown);
 
       await adapter.connect();
 
@@ -160,13 +169,13 @@ describe('PostgreSQLAdapter', () => {
         'database.connected',
         expect.objectContaining({
           adapter: 'test-postgresql',
-          timestamp: expect.any(Date),
-        })
+          timestamp: expect.unknown(Date),
+        }),
       );
     });
 
     it('应该能够断开数据库连接', async () => {
-      const mockPool = (adapter as any).pool as any;
+      const mockPool = (adapter as unknown).pool as unknown;
       mockPool.end.mockResolvedValue(undefined);
 
       await adapter.disconnect();
@@ -177,13 +186,13 @@ describe('PostgreSQLAdapter', () => {
         'database.disconnected',
         expect.objectContaining({
           adapter: 'test-postgresql',
-          timestamp: expect.any(Date),
-        })
+          timestamp: expect.unknown(Date),
+        }),
       );
     });
 
     it('应该处理连接错误', async () => {
-      const mockPool = (adapter as any).pool as any;
+      const mockPool = (adapter as unknown).pool as unknown;
       const error = new Error('Connection failed');
       mockPool.connect.mockRejectedValue(error);
 
@@ -192,7 +201,9 @@ describe('PostgreSQLAdapter', () => {
       // 检查最后一次错误日志调用
       const errorCalls = mockLogger.error.mock.calls;
       const lastErrorCall = errorCalls[errorCalls.length - 1];
-      expect(lastErrorCall[0]).toContain('Failed to connect to PostgreSQL database');
+      expect(lastErrorCall[0]).toContain(
+        'Failed to connect to PostgreSQL database',
+      );
       expect(lastErrorCall[1]).toBe(LogContext.DATABASE);
       expect(lastErrorCall[2]).toMatchObject({
         adapter: 'test-postgresql',
@@ -202,31 +213,35 @@ describe('PostgreSQLAdapter', () => {
 
   describe('查询执行', () => {
     beforeEach(async () => {
-      const mockPool = (adapter as any).pool as any;
+      const mockPool = (adapter as unknown).pool as unknown;
       const mockClient = {
-        query: (jest.fn() as any).mockResolvedValue({ rows: [{ result: 1 }] }) as any,
-        release: jest.fn() as any,
+        query: (jest.fn() as unknown).mockResolvedValue({
+          rows: [{ result: 1 }],
+        }) as unknown,
+        release: jest.fn() as unknown,
       };
       mockPool.connect.mockResolvedValue(mockClient);
       await adapter.connect();
     });
 
     it('应该能够执行查询', async () => {
-      const mockPool = (adapter as any).pool as any;
+      const mockPool = (adapter as unknown).pool as unknown;
       const mockResult = {
         rows: [{ id: 1, name: 'test' }],
         rowCount: 1,
         command: 'SELECT',
       };
-      (mockPool.query as any).mockResolvedValue(mockResult);
+      (mockPool.query as unknown).mockResolvedValue(mockResult);
 
-      const result = await adapter.query('SELECT * FROM users WHERE id = $1', [1]);
+      const result = await adapter.query('SELECT * FROM users WHERE id = $1', [
+        1,
+      ]);
 
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.objectContaining({
           text: 'SELECT * FROM users WHERE id = $1',
           values: [1],
-        })
+        }),
       );
       expect(result).toEqual(mockResult);
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(
@@ -235,36 +250,41 @@ describe('PostgreSQLAdapter', () => {
           adapter: 'test-postgresql',
           sql: 'SELECT * FROM users WHERE id = $1',
           params: [1],
-          responseTime: expect.any(Number),
-        })
+          responseTime: expect.unknown(Number),
+        }),
       );
     });
 
     it('应该能够执行命令', async () => {
-      const mockPool = (adapter as any).pool as any;
+      const mockPool = (adapter as unknown).pool as unknown;
       const mockResult = {
         rowCount: 1,
         command: 'INSERT',
       };
-      (mockPool.query as any).mockResolvedValue(mockResult);
+      (mockPool.query as unknown).mockResolvedValue(mockResult);
 
-      const result = await adapter.execute('INSERT INTO users (name) VALUES ($1)', ['test']);
+      const result = await adapter.execute(
+        'INSERT INTO users (name) VALUES ($1)',
+        ['test'],
+      );
 
       expect(mockPool.query).toHaveBeenCalledWith(
         expect.objectContaining({
           text: 'INSERT INTO users (name) VALUES ($1)',
           values: ['test'],
-        })
+        }),
       );
       expect(result).toEqual(mockResult);
     });
 
     it('应该处理查询错误', async () => {
-      const mockPool = (adapter as any).pool;
+      const mockPool = (adapter as unknown).pool;
       const error = new Error('Query failed');
-      (mockPool.query as any).mockRejectedValue(error);
+      (mockPool.query as unknown).mockRejectedValue(error);
 
-      await expect(adapter.query('SELECT * FROM invalid_table')).rejects.toThrow('Query failed');
+      await expect(
+        adapter.query('SELECT * FROM invalid_table'),
+      ).rejects.toThrow('Query failed');
 
       // 检查最后一次错误日志调用
       const errorCalls = mockLogger.error.mock.calls;
@@ -277,9 +297,9 @@ describe('PostgreSQLAdapter', () => {
     });
 
     it('应该更新统计信息', async () => {
-      const mockPool = (adapter as any).pool;
+      const mockPool = (adapter as unknown).pool;
       const mockResult = { rows: [], rowCount: 0, command: 'SELECT' };
-      (mockPool.query as any).mockResolvedValue(mockResult);
+      (mockPool.query as unknown).mockResolvedValue(mockResult);
 
       await adapter.query('SELECT 1');
 
@@ -293,23 +313,25 @@ describe('PostgreSQLAdapter', () => {
 
   describe('事务管理', () => {
     beforeEach(async () => {
-      const mockPool = (adapter as any).pool;
+      const mockPool = (adapter as unknown).pool;
       const mockClient = {
-        query: (jest.fn() as any).mockResolvedValue({ rows: [{ result: 1 }] }) as any,
-        release: jest.fn() as any,
+        query: (jest.fn() as unknown).mockResolvedValue({
+          rows: [{ result: 1 }],
+        }) as unknown,
+        release: jest.fn() as unknown,
       };
       mockPool.connect.mockResolvedValue(mockClient);
       await adapter.connect();
     });
 
     it('应该能够执行事务', async () => {
-      const mockKnex = (adapter as any).knexInstance;
-      mockKnex.transaction.mockImplementation(async (callback: any) => {
+      const mockKnex = (adapter as unknown).knexInstance;
+      mockKnex.transaction.mockImplementation(async (callback: unknown) => {
         return await callback({});
       });
 
-      const transactionCallback: any = jest.fn();
-      (transactionCallback as any).mockResolvedValue('success');
+      const transactionCallback: unknown = jest.fn();
+      (transactionCallback as unknown).mockResolvedValue('success');
       const result = await adapter.transaction(transactionCallback);
 
       expect(mockKnex.transaction).toHaveBeenCalled();
@@ -318,30 +340,36 @@ describe('PostgreSQLAdapter', () => {
     });
 
     it('应该在事务失败时回滚', async () => {
-      const mockKnex = (adapter as any).knexInstance;
-      mockKnex.transaction.mockImplementation(async (callback: any) => {
+      const mockKnex = (adapter as unknown).knexInstance;
+      mockKnex.transaction.mockImplementation(async (callback: unknown) => {
         return await callback({});
       });
 
-      const transactionCallback: any = jest.fn();
-      (transactionCallback as any).mockRejectedValue(new Error('Transaction failed'));
+      const transactionCallback: unknown = jest.fn();
+      (transactionCallback as unknown).mockRejectedValue(
+        new Error('Transaction failed'),
+      );
 
-      await expect(adapter.transaction(transactionCallback)).rejects.toThrow('Transaction failed');
+      await expect(adapter.transaction(transactionCallback)).rejects.toThrow(
+        'Transaction failed',
+      );
     });
   });
 
   describe('健康检查', () => {
     it('应该返回健康状态', async () => {
-      const mockPool = (adapter as any).pool;
+      const mockPool = (adapter as unknown).pool;
       mockPool.totalCount = 10;
       mockPool.idleCount = 8;
       mockPool.waitingCount = 0;
-      
+
       // 确保连接状态为 true
-      (adapter as any).isConnectedFlag = true;
-      
+      (adapter as unknown).isConnectedFlag = true;
+
       // Mock 查询成功
-      (mockPool.query as any).mockResolvedValue({ rows: [{ health_check: 1 }] });
+      (mockPool.query as unknown).mockResolvedValue({
+        rows: [{ health_check: 1 }],
+      });
 
       const health = await adapter.getHealth();
 
@@ -358,7 +386,7 @@ describe('PostgreSQLAdapter', () => {
     });
 
     it('应该处理连接池错误', async () => {
-      const mockPool = (adapter as any).pool;
+      const mockPool = (adapter as unknown).pool;
       mockPool.totalCount = 0;
       mockPool.idleCount = 0;
       mockPool.waitingCount = 0;
@@ -400,8 +428,8 @@ describe('PostgreSQLAdapter', () => {
 
   describe('连接测试', () => {
     it('应该能够ping数据库', async () => {
-      const mockPool = (adapter as any).pool;
-      (mockPool.query as any).mockResolvedValue({ rows: [{ result: 1 }] });
+      const mockPool = (adapter as unknown).pool;
+      (mockPool.query as unknown).mockResolvedValue({ rows: [{ result: 1 }] });
 
       const result = await adapter.ping();
 
@@ -410,13 +438,13 @@ describe('PostgreSQLAdapter', () => {
         expect.objectContaining({
           text: 'SELECT 1',
           values: [],
-        })
+        }),
       );
     });
 
     it('应该在ping失败时返回false', async () => {
-      const mockPool = (adapter as any).pool;
-      (mockPool.query as any).mockRejectedValue(new Error('Ping failed'));
+      const mockPool = (adapter as unknown).pool;
+      (mockPool.query as unknown).mockRejectedValue(new Error('Ping failed'));
 
       const result = await adapter.ping();
 
@@ -426,16 +454,18 @@ describe('PostgreSQLAdapter', () => {
 
   describe('事件通知', () => {
     it('应该在查询执行时发出事件', async () => {
-      const mockPool = (adapter as any).pool;
+      const mockPool = (adapter as unknown).pool;
       const mockClient = {
-        query: (jest.fn() as any).mockResolvedValue({ rows: [{ result: 1 }] }) as any,
-        release: jest.fn() as any,
+        query: (jest.fn() as unknown).mockResolvedValue({
+          rows: [{ result: 1 }],
+        }) as unknown,
+        release: jest.fn() as unknown,
       };
-      mockPool.connect.mockResolvedValue(mockClient as any);
+      mockPool.connect.mockResolvedValue(mockClient as unknown);
       await adapter.connect();
 
       const mockResult = { rows: [], rowCount: 0, command: 'SELECT' };
-      (mockPool.query as any).mockResolvedValue(mockResult);
+      (mockPool.query as unknown).mockResolvedValue(mockResult);
 
       await adapter.query('SELECT 1');
 
@@ -444,16 +474,18 @@ describe('PostgreSQLAdapter', () => {
         expect.objectContaining({
           adapter: 'test-postgresql',
           sql: 'SELECT 1',
-          responseTime: expect.any(Number),
-        })
+          responseTime: expect.unknown(Number),
+        }),
       );
     });
 
     it('应该在连接状态变化时发出事件', async () => {
-      const mockPool = (adapter as any).pool;
+      const mockPool = (adapter as unknown).pool;
       const mockClient = {
-        query: (jest.fn() as any).mockResolvedValue({ rows: [{ result: 1 }] }) as any,
-        release: jest.fn() as any,
+        query: (jest.fn() as unknown).mockResolvedValue({
+          rows: [{ result: 1 }],
+        }) as unknown,
+        release: jest.fn() as unknown,
       };
       mockPool.connect.mockResolvedValue(mockClient);
 
@@ -463,8 +495,8 @@ describe('PostgreSQLAdapter', () => {
         'database.connected',
         expect.objectContaining({
           adapter: 'test-postgresql',
-          timestamp: expect.any(Date),
-        })
+          timestamp: expect.unknown(Date),
+        }),
       );
     });
   });

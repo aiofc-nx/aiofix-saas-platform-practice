@@ -10,7 +10,10 @@
  * - 边界情况处理
  */
 
-import { EmailNotificationSentEvent, EmailSendResult } from './email-notification-sent.event';
+import {
+  EmailNotificationSentEvent,
+  EmailSendResult,
+} from './email-notification-sent.event';
 import { NotificationType } from '@aiofix/shared';
 
 describe('EmailNotificationSentEvent', () => {
@@ -37,7 +40,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         mockMetadata,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -64,7 +67,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         undefined,
         mockMetadata,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.providerMessageId).toBeUndefined();
@@ -81,7 +84,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         undefined,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.eventMetadata).toEqual({});
@@ -97,7 +100,7 @@ describe('EmailNotificationSentEvent', () => {
         mockProvider,
         mockRetryCount,
         mockProviderMessageId,
-        mockMetadata
+        mockMetadata,
       );
 
       // operatorId 在 BaseEvent 中处理，这里不直接暴露
@@ -111,7 +114,7 @@ describe('EmailNotificationSentEvent', () => {
         mockMessageId,
         mockDeliveryStatus,
         mockProvider,
-        mockRetryCount
+        mockRetryCount,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -142,7 +145,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         mockMetadata,
-        mockOperatorId
+        mockOperatorId,
       );
     });
 
@@ -194,7 +197,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         mockMetadata,
-        mockOperatorId
+        mockOperatorId,
       );
     });
 
@@ -221,7 +224,7 @@ describe('EmailNotificationSentEvent', () => {
         mockMessageId,
         mockDeliveryStatus,
         mockProvider,
-        mockRetryCount
+        mockRetryCount,
       );
 
       const eventData = eventWithoutOptional.getEventData();
@@ -245,7 +248,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         mockMetadata,
-        mockOperatorId
+        mockOperatorId,
       );
     });
 
@@ -263,7 +266,7 @@ describe('EmailNotificationSentEvent', () => {
         mockMessageId,
         mockDeliveryStatus,
         mockProvider,
-        mockRetryCount
+        mockRetryCount,
       );
       const event2 = new EmailNotificationSentEvent(
         mockNotificationId,
@@ -272,7 +275,7 @@ describe('EmailNotificationSentEvent', () => {
         mockMessageId,
         mockDeliveryStatus,
         mockProvider,
-        mockRetryCount
+        mockRetryCount,
       );
 
       expect(event1.eventId).not.toBe(event2.eventId);
@@ -288,7 +291,7 @@ describe('EmailNotificationSentEvent', () => {
       const sendResult: EmailSendResult = {
         messageId: mockMessageId,
         sentAt: mockSentAt,
-        deliveryStatus: mockDeliveryStatus as any,
+        deliveryStatus: mockDeliveryStatus as unknown,
         provider: mockProvider,
         providerMessageId: mockProviderMessageId,
         retryCount: mockRetryCount,
@@ -305,7 +308,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         mockMetadata,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -324,7 +327,7 @@ describe('EmailNotificationSentEvent', () => {
       const sendResult: EmailSendResult = {
         messageId: mockMessageId,
         sentAt: mockSentAt,
-        deliveryStatus: mockDeliveryStatus as any,
+        deliveryStatus: mockDeliveryStatus as unknown,
         provider: mockProvider,
         retryCount: mockRetryCount,
         metadata: {},
@@ -337,7 +340,7 @@ describe('EmailNotificationSentEvent', () => {
         mockMessageId,
         mockDeliveryStatus,
         mockProvider,
-        mockRetryCount
+        mockRetryCount,
       );
 
       expect(event.notificationId).toBe(mockNotificationId);
@@ -360,7 +363,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         {},
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.eventMetadata).toEqual({});
@@ -369,10 +372,10 @@ describe('EmailNotificationSentEvent', () => {
     it('应该处理特殊字符在元数据中', () => {
       const specialMetadata = {
         'special-key': 'special-value',
-        'unicode': '测试数据',
-        'number': 123,
-        'boolean': true,
-        'null': null,
+        unicode: '测试数据',
+        number: 123,
+        boolean: true,
+        null: null,
       };
 
       const event = new EmailNotificationSentEvent(
@@ -385,7 +388,7 @@ describe('EmailNotificationSentEvent', () => {
         mockRetryCount,
         mockProviderMessageId,
         specialMetadata,
-        mockOperatorId
+        mockOperatorId,
       );
 
       expect(event.eventMetadata).toEqual(specialMetadata);
@@ -393,7 +396,7 @@ describe('EmailNotificationSentEvent', () => {
 
     it('应该处理不同的发送状态', () => {
       const statuses = ['delivered', 'pending', 'bounced', 'failed'];
-      
+
       statuses.forEach(status => {
         const event = new EmailNotificationSentEvent(
           mockNotificationId,
@@ -405,7 +408,7 @@ describe('EmailNotificationSentEvent', () => {
           mockRetryCount,
           mockProviderMessageId,
           mockMetadata,
-          mockOperatorId
+          mockOperatorId,
         );
 
         expect(event.deliveryStatus).toBe(status);
@@ -414,7 +417,7 @@ describe('EmailNotificationSentEvent', () => {
 
     it('应该处理不同的重试次数', () => {
       const retryCounts = [0, 1, 3, 5];
-      
+
       retryCounts.forEach(count => {
         const event = new EmailNotificationSentEvent(
           mockNotificationId,
@@ -426,7 +429,7 @@ describe('EmailNotificationSentEvent', () => {
           count,
           mockProviderMessageId,
           mockMetadata,
-          mockOperatorId
+          mockOperatorId,
         );
 
         expect(event.retryCount).toBe(count);

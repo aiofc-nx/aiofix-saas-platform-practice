@@ -65,7 +65,7 @@ describe('PinoLoggerService', () => {
     service = module.get<PinoLoggerService>(PinoLoggerService);
     eventEmitter = module.get<EventEmitter2>(EventEmitter2);
     configService = module.get<PinoLoggerConfigService>(
-      PinoLoggerConfigService
+      PinoLoggerConfigService,
     );
     loggerFactory = module.get<PinoLoggerFactory>(PinoLoggerFactory);
     clsService = module.get<ClsService>(ClsService);
@@ -79,7 +79,7 @@ describe('PinoLoggerService', () => {
     beforeEach(() => {
       jest.spyOn(configService, 'getConfig').mockReturnValue({
         level: 'info',
-        format: 'json' as any,
+        format: 'json' as unknown,
         colorize: true,
         timestamp: true,
         requestId: true,
@@ -94,87 +94,87 @@ describe('PinoLoggerService', () => {
     });
 
     it('should log debug messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.debug('Debug message', LogContext.SYSTEM, { test: 'data' });
       expect(spy).toHaveBeenCalledWith(
         'debug',
         'Debug message',
         LogContext.SYSTEM,
         { test: 'data' },
-        undefined
+        undefined,
       );
     });
 
     it('should log info messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.info('Info message', LogContext.BUSINESS, { operation: 'test' });
       expect(spy).toHaveBeenCalledWith(
         'info',
         'Info message',
         LogContext.BUSINESS,
         { operation: 'test' },
-        undefined
+        undefined,
       );
     });
 
     it('should log warn messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.warn('Warning message', LogContext.AUTH, { userId: '123' });
       expect(spy).toHaveBeenCalledWith(
         'warn',
         'Warning message',
         LogContext.AUTH,
         { userId: '123' },
-        undefined
+        undefined,
       );
     });
 
     it('should log error messages', () => {
       const error = new Error('Test error');
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.error(
         'Error message',
         LogContext.DATABASE,
         { query: 'SELECT *' },
-        error
+        error,
       );
       expect(spy).toHaveBeenCalledWith(
         'error',
         'Error message',
         LogContext.DATABASE,
         { query: 'SELECT *' },
-        error
+        error,
       );
     });
 
     it('should log fatal messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.fatal('Fatal message', LogContext.SYSTEM, { critical: true });
       expect(spy).toHaveBeenCalledWith(
         'fatal',
         'Fatal message',
         LogContext.SYSTEM,
         { critical: true },
-        undefined
+        undefined,
       );
     });
 
     it('should log trace messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.trace('Trace message', LogContext.PERFORMANCE, { duration: 100 });
       expect(spy).toHaveBeenCalledWith(
         'trace',
         'Trace message',
         LogContext.PERFORMANCE,
         { duration: 100 },
-        undefined
+        undefined,
       );
     });
   });
 
   describe('specialized logging', () => {
     it('should log performance messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.performance('database_query', 150, LogContext.DATABASE, {
         table: 'users',
       });
@@ -187,12 +187,12 @@ describe('PinoLoggerService', () => {
           operation: 'database_query',
           duration: 150,
           type: 'performance',
-        }
+        },
       );
     });
 
     it('should log business messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.business('User registered', {
         userId: '123',
         email: 'test@example.com',
@@ -204,12 +204,12 @@ describe('PinoLoggerService', () => {
         {
           userId: '123',
           email: 'test@example.com',
-        }
+        },
       );
     });
 
     it('should log security messages', () => {
-      const spy = jest.spyOn(service as any, 'log');
+      const spy = jest.spyOn(service as unknown, 'log');
       service.security('Failed login attempt', {
         ip: '192.168.1.1',
         username: 'test',
@@ -221,7 +221,7 @@ describe('PinoLoggerService', () => {
         {
           ip: '192.168.1.1',
           username: 'test',
-        }
+        },
       );
     });
   });
@@ -241,7 +241,7 @@ describe('PinoLoggerService', () => {
     it('should get and update config', () => {
       const mockConfig = {
         level: 'warn' as LogLevel,
-        format: 'json' as any,
+        format: 'json' as unknown,
         colorize: true,
         timestamp: true,
         requestId: true,
@@ -281,7 +281,7 @@ describe('PinoLoggerService', () => {
       };
       jest
         .spyOn(loggerFactory, 'createChildLogger')
-        .mockReturnValue(mockChildLogger as any);
+        .mockReturnValue(mockChildLogger as unknown);
 
       const childLogger = service.child(LogContext.DATABASE, {
         tenantId: '123',
@@ -291,7 +291,7 @@ describe('PinoLoggerService', () => {
       expect(childLogger).toBeInstanceOf(PinoLoggerService);
       expect(loggerFactory.createChildLogger).toHaveBeenCalledWith(
         expect.anything(),
-        { context: LogContext.DATABASE, tenantId: '123' }
+        { context: LogContext.DATABASE, tenantId: '123' },
       );
     });
   });
@@ -313,11 +313,11 @@ describe('PinoLoggerService', () => {
       expect(stats.logsByLevel.warn).toBeGreaterThanOrEqual(1);
       expect(stats.logsByLevel.error).toBeGreaterThanOrEqual(1);
       expect(stats.logsByContext[LogContext.BUSINESS]).toBeGreaterThanOrEqual(
-        1
+        1,
       );
       expect(stats.logsByContext[LogContext.AUTH]).toBeGreaterThanOrEqual(1);
       expect(stats.logsByContext[LogContext.DATABASE]).toBeGreaterThanOrEqual(
-        1
+        1,
       );
       expect(stats.averageLogSize).toBeGreaterThan(0);
       expect(stats.lastLogTime).toBeDefined();
@@ -347,7 +347,7 @@ describe('PinoLoggerService', () => {
           message: 'Test message',
           context: LogContext.BUSINESS,
           metadata: { test: 'data' },
-        })
+        }),
       );
     });
   });

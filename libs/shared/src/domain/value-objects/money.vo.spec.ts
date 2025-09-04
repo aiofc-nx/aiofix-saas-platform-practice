@@ -36,9 +36,9 @@ describe('Money', () => {
     });
 
     it('should throw error for non-number amount', () => {
-      expect(() => new Money('100' as any)).toThrow(InvalidMoneyError);
-      expect(() => new Money(null as any)).toThrow(InvalidMoneyError);
-      expect(() => new Money(undefined as any)).toThrow(InvalidMoneyError);
+      expect(() => new Money('100' as unknown)).toThrow(InvalidMoneyError);
+      expect(() => new Money(null as unknown)).toThrow(InvalidMoneyError);
+      expect(() => new Money(undefined as unknown)).toThrow(InvalidMoneyError);
     });
 
     it('should throw error for infinite amount', () => {
@@ -170,7 +170,7 @@ describe('Money', () => {
 
         expect(() => money1.add(money2)).toThrow(InvalidMoneyError);
         expect(() => money1.add(money2)).toThrow(
-          'Cannot add different currencies'
+          'Cannot add different currencies',
         );
       });
     });
@@ -191,7 +191,7 @@ describe('Money', () => {
 
         expect(() => money1.subtract(money2)).toThrow(InvalidMoneyError);
         expect(() => money1.subtract(money2)).toThrow(
-          'Cannot subtract different currencies'
+          'Cannot subtract different currencies',
         );
       });
     });
@@ -293,7 +293,7 @@ describe('Money', () => {
 
         expect(() => money1.compareTo(money2)).toThrow(InvalidMoneyError);
         expect(() => money1.compareTo(money2)).toThrow(
-          'Cannot compare different currencies'
+          'Cannot compare different currencies',
         );
       });
     });
@@ -364,7 +364,7 @@ describe('Money', () => {
       it('should throw error for unsupported currency', () => {
         expect(() => Money.fromString('XXX 100.50')).toThrow(InvalidMoneyError);
         expect(() => Money.fromString('XXX 100.50')).toThrow(
-          'Unsupported currency'
+          'Unsupported currency',
         );
       });
     });
@@ -432,7 +432,7 @@ describe('Money', () => {
     it('should not throw for valid money', () => {
       const money = new Money(100.5, Currency.CNY);
       expect(() => {
-        (money as any).validateInvariants();
+        (money as unknown).validateInvariants();
       }).not.toThrow();
     });
   });

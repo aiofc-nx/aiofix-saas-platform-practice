@@ -4,13 +4,13 @@ import { ModuleRef } from '@nestjs/core';
 /**
  * @interface Command
  * @description 命令接口，所有命令都必须实现此接口
- * 
+ *
  * 原理与机制：
  * 1. 命令是 CQRS 模式中的写操作封装，代表一个业务意图
  * 2. 命令是不可变的，一旦创建就不能修改
  * 3. 命令包含执行业务操作所需的所有数据
  * 4. 命令通过命令总线发送给对应的命令处理器
- * 
+ *
  * 功能与职责：
  * 1. 定义命令的基本结构
  * 2. 确保命令的不可变性
@@ -24,13 +24,13 @@ export interface Command {
 /**
  * @interface CommandHandler
  * @description 命令处理器接口，所有命令处理器都必须实现此接口
- * 
+ *
  * 原理与机制：
  * 1. 命令处理器负责处理特定的命令类型
  * 2. 每个命令只能有一个处理器
  * 3. 处理器执行命令并返回结果
  * 4. 处理器可以产生领域事件
- * 
+ *
  * 功能与职责：
  * 1. 处理特定的命令类型
  * 2. 执行业务逻辑
@@ -44,24 +44,24 @@ export interface CommandHandler<TCommand extends Command = Command> {
 /**
  * @class CommandBus
  * @description 命令总线，负责分发命令到对应的处理器
- * 
+ *
  * 原理与机制：
  * 1. 命令总线是 CQRS 模式中的核心组件，负责命令的分发
  * 2. 使用依赖注入容器来获取命令处理器实例
  * 3. 支持命令的异步处理
  * 4. 提供命令处理的错误处理机制
- * 
+ *
  * 功能与职责：
  * 1. 注册命令处理器
  * 2. 分发命令到对应的处理器
  * 3. 处理命令执行异常
  * 4. 提供命令处理的监控和日志
- * 
+ *
  * @example
  * ```typescript
  * // 注册命令处理器
  * commandBus.register(CreateUserCommand, CreateUserHandler);
- * 
+ *
  * // 执行命令
  * const result = await commandBus.execute(new CreateUserCommand({
  *   username: 'john',
@@ -88,7 +88,7 @@ export class CommandBus {
    */
   register<TCommand extends Command>(
     commandType: Type<TCommand>,
-    handlerType: Type<CommandHandler<TCommand>>
+    handlerType: Type<CommandHandler<TCommand>>,
   ): void {
     this.handlers.set(commandType.name, handlerType);
   }
@@ -110,10 +110,10 @@ export class CommandBus {
    */
   async execute<TCommand extends Command>(command: TCommand): Promise<any> {
     const handlerType = this.handlers.get(command.constructor.name);
-    
+
     if (!handlerType) {
       throw new CommandHandlerNotFoundException(
-        `No handler found for command: ${command.constructor.name}`
+        `No handler found for command: ${command.constructor.name}`,
       );
     }
 
@@ -123,7 +123,7 @@ export class CommandBus {
     } catch (error) {
       throw new CommandExecutionException(
         `Failed to execute command: ${command.constructor.name}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -159,12 +159,12 @@ export class CommandBus {
 /**
  * @class CommandHandlerNotFoundException
  * @description 命令处理器未找到异常
- * 
+ *
  * 原理与机制：
  * 1. 当命令总线找不到对应的处理器时抛出此异常
  * 2. 通常是因为忘记注册命令处理器
  * 3. 帮助开发者快速定位问题
- * 
+ *
  * 功能与职责：
  * 1. 标识命令处理器未找到的错误
  * 2. 提供详细的错误信息
@@ -180,19 +180,22 @@ export class CommandHandlerNotFoundException extends Error {
 /**
  * @class CommandExecutionException
  * @description 命令执行异常
- * 
+ *
  * 原理与机制：
  * 1. 当命令执行过程中发生错误时抛出此异常
  * 2. 包含原始错误信息
  * 3. 提供命令执行的上下文信息
- * 
+ *
  * 功能与职责：
  * 1. 标识命令执行失败的错误
  * 2. 保留原始错误信息
  * 3. 提供错误上下文
  */
 export class CommandExecutionException extends Error {
-  constructor(message: string, public readonly originalError?: Error) {
+  constructor(
+    message: string,
+    public readonly originalError?: Error,
+  ) {
     super(message);
     this.name = 'CommandExecutionException';
   }

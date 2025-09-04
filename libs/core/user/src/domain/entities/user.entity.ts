@@ -32,7 +32,16 @@
  * @since 1.0.0
  */
 
-import { DataIsolationAwareEntity, UserId, Email, Username, PhoneNumber, DataIsolationLevel, DataPrivacyLevel, TenantId } from '@aiofix/shared';
+import {
+  DataIsolationAwareEntity,
+  UserId,
+  Email,
+  Username,
+  PhoneNumber,
+  DataIsolationLevel,
+  DataPrivacyLevel,
+  TenantId,
+} from '@aiofix/shared';
 import { UserStatus } from '../enums/user-status.enum';
 import { UserType } from '../enums/user-type.enum';
 
@@ -41,13 +50,11 @@ import { UserType } from '../enums/user-type.enum';
  * @description 继承DataIsolationAwareEntity，支持多层级数据隔离
  */
 export class UserEntity extends DataIsolationAwareEntity {
-
-
   /**
    * 用户名
    * @description 用户的唯一登录名，用于登录和用户识别
    */
-  private _username: Username;
+  private readonly _username: Username;
 
   /**
    * 用户邮箱
@@ -96,12 +103,13 @@ export class UserEntity extends DataIsolationAwareEntity {
     departmentIds: TenantId[] = [],
     userType: UserType = UserType.TENANT_USER,
     dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
-    phone?: PhoneNumber
+    phone?: PhoneNumber,
   ) {
     // 确定数据隔离级别
-    const isolationLevel = userType === UserType.PLATFORM_USER 
-      ? DataIsolationLevel.PLATFORM 
-      : DataIsolationLevel.USER;
+    const isolationLevel =
+      userType === UserType.PLATFORM_USER
+        ? DataIsolationLevel.PLATFORM
+        : DataIsolationLevel.USER;
 
     // 调用父类构造函数，设置数据隔离信息
     super(
@@ -111,7 +119,7 @@ export class UserEntity extends DataIsolationAwareEntity {
       id,
       organizationId,
       departmentIds,
-      id // userId 与实体ID相同
+      id, // userId 与实体ID相同
     );
 
     this._username = username;
@@ -132,7 +140,7 @@ export class UserEntity extends DataIsolationAwareEntity {
   static createPlatformUser(
     id: UserId,
     username: Username,
-    email: Email
+    email: Email,
   ): UserEntity {
     return new UserEntity(
       id,
@@ -142,7 +150,7 @@ export class UserEntity extends DataIsolationAwareEntity {
       undefined,
       [],
       UserType.PLATFORM_USER,
-      DataPrivacyLevel.PROTECTED
+      DataPrivacyLevel.PROTECTED,
     );
   }
 
@@ -163,7 +171,7 @@ export class UserEntity extends DataIsolationAwareEntity {
     email: Email,
     tenantId: TenantId,
     organizationId?: TenantId,
-    departmentIds: TenantId[] = []
+    departmentIds: TenantId[] = [],
   ): UserEntity {
     return new UserEntity(
       id,
@@ -173,7 +181,7 @@ export class UserEntity extends DataIsolationAwareEntity {
       organizationId,
       departmentIds,
       UserType.TENANT_USER,
-      DataPrivacyLevel.PROTECTED
+      DataPrivacyLevel.PROTECTED,
     );
   }
 
@@ -336,5 +344,43 @@ export class UserEntity extends DataIsolationAwareEntity {
    */
   public canAccess(target: DataIsolationAwareEntity): boolean {
     return super.canAccess(target);
+  }
+
+  /**
+   * 分配用户到组织
+   * @description 将用户分配到指定的组织和部门
+   * @param {TenantId} organizationId 组织ID
+   * @param {TenantId[]} departmentIds 部门ID列表
+   */
+  public assignToOrganization(
+    organizationId: TenantId,
+    departmentIds: TenantId[],
+  ): void {
+    // 更新组织归属
+    this._organizationId = organizationId;
+
+    // 更新部门归属
+    this._departmentIds = [...departmentIds];
+
+    // 更新数据隔离级别为组织级
+    this._dataIsolationLevel = DataIsolationLevel.ORGANIZATION;
+  }
+
+  /**
+   * 获取组织ID
+   * @description 获取用户所属的组织ID
+   * @returns {TenantId | undefined} 组织ID
+   */
+  public get organizationId(): TenantId | undefined {
+    return this._organizationId;
+  }
+
+  /**
+   * 获取部门ID列表
+   * @description 获取用户所属的部门ID列表
+   * @returns {TenantId[]} 部门ID列表
+   */
+  public get departmentIds(): TenantId[] {
+    return [...this._departmentIds];
   }
 }

@@ -62,7 +62,7 @@ describe('CacheKeyFactory', () => {
     });
 
     it('should throw error for null key', () => {
-      expect(() => factory.create(null as any)).toThrow(
+      expect(() => factory.create(null as unknown)).toThrow(
         'Cache key must be a non-empty string',
       );
     });

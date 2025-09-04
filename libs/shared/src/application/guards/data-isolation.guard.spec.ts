@@ -41,7 +41,7 @@ class TestEntity extends DataIsolationAwareEntity {
     departmentIds: Uuid[] = [],
     dataIsolationLevel: DataIsolationLevel = DataIsolationLevel.TENANT,
     dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
-    userId?: Uuid
+    userId?: Uuid,
   ) {
     super(
       tenantId,
@@ -50,7 +50,7 @@ class TestEntity extends DataIsolationAwareEntity {
       id,
       organizationId,
       departmentIds,
-      userId
+      userId,
     );
   }
 
@@ -62,7 +62,7 @@ class TestEntity extends DataIsolationAwareEntity {
 describe('DataIsolationGuard', () => {
   let guard: DataIsolationGuard;
   let dataIsolationService: jest.Mocked<DataIsolationService>;
-  let tenantContextProvider: jest.Mocked<any>;
+  let tenantContextProvider: jest.Mocked<unknown>;
   let reflector: jest.Mocked<Reflector>;
 
   beforeEach(async () => {
@@ -212,7 +212,7 @@ describe('DataIsolationGuard', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
       const target = new TestEntity(
         Uuid.generate(),
@@ -220,7 +220,7 @@ describe('DataIsolationGuard', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       dataIsolationService.validateDataAccess.mockReturnValue({
@@ -239,7 +239,7 @@ describe('DataIsolationGuard', () => {
         mockContext,
         user,
         target,
-        DataIsolationLevel.TENANT
+        DataIsolationLevel.TENANT,
       );
 
       expect(result).toBe('result');
@@ -255,7 +255,7 @@ describe('DataIsolationGuard', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
       const target = new TestEntity(
         Uuid.generate(),
@@ -263,7 +263,7 @@ describe('DataIsolationGuard', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       dataIsolationService.validateDataAccess.mockReturnValue({
@@ -283,8 +283,8 @@ describe('DataIsolationGuard', () => {
           mockContext,
           user,
           target,
-          DataIsolationLevel.TENANT
-        )
+          DataIsolationLevel.TENANT,
+        ),
       ).rejects.toThrow(ForbiddenException);
 
       expect(dataIsolationService.validateDataAccess).toHaveBeenCalled();
@@ -329,7 +329,7 @@ describe('RequireDataIsolation Decorator', () => {
     const instance = new TestClass();
     const metadata = Reflect.getMetadata(
       'dataIsolationLevel',
-      instance.testMethod
+      instance.testMethod,
     );
 
     expect(metadata).toBe(DataIsolationLevel.ORGANIZATION);
@@ -346,7 +346,7 @@ describe('SkipDataIsolation Decorator', () => {
     const instance = new TestClass();
     const metadata = Reflect.getMetadata(
       'skipDataIsolation',
-      instance.testMethod
+      instance.testMethod,
     );
 
     expect(metadata).toBe(true);

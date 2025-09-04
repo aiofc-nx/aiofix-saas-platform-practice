@@ -53,7 +53,7 @@ describe('LoggingModule', () => {
 
     loggerService = module.get<PinoLoggerService>(PinoLoggerService);
     configService = module.get<PinoLoggerConfigService>(
-      PinoLoggerConfigService
+      PinoLoggerConfigService,
     );
     loggerFactory = module.get<PinoLoggerFactory>(PinoLoggerFactory);
   });
@@ -85,7 +85,7 @@ describe('LoggingModule', () => {
   describe('PinoLoggerService', () => {
     it('should log different levels', () => {
       const spy = jest
-        .spyOn(loggerService as any, 'log')
+        .spyOn(loggerService as unknown, 'log')
         .mockImplementation(() => undefined);
 
       loggerService.debug('Debug message', LogContext.SYSTEM);
@@ -99,28 +99,28 @@ describe('LoggingModule', () => {
         'Debug message',
         LogContext.SYSTEM,
         undefined,
-        undefined
+        undefined,
       );
       expect(spy).toHaveBeenCalledWith(
         'info',
         'Info message',
         LogContext.BUSINESS,
         undefined,
-        undefined
+        undefined,
       );
       expect(spy).toHaveBeenCalledWith(
         'warn',
         'Warning message',
         LogContext.AUTH,
         undefined,
-        undefined
+        undefined,
       );
       expect(spy).toHaveBeenCalledWith(
         'error',
         'Error message',
         LogContext.SYSTEM,
         undefined,
-        undefined
+        undefined,
       );
 
       spy.mockRestore();
@@ -128,7 +128,7 @@ describe('LoggingModule', () => {
 
     it('should log with metadata', () => {
       const spy = jest
-        .spyOn(loggerService as any, 'log')
+        .spyOn(loggerService as unknown, 'log')
         .mockImplementation(() => undefined);
       const metadata = {
         requestId: 'test-request-id',
@@ -144,7 +144,7 @@ describe('LoggingModule', () => {
         'Test message',
         LogContext.BUSINESS,
         metadata,
-        undefined
+        undefined,
       );
 
       spy.mockRestore();
@@ -152,7 +152,7 @@ describe('LoggingModule', () => {
 
     it('should log errors with stack trace', () => {
       const spy = jest
-        .spyOn(loggerService as any, 'log')
+        .spyOn(loggerService as unknown, 'log')
         .mockImplementation(() => undefined);
       const error = new Error('Test error');
 
@@ -160,7 +160,7 @@ describe('LoggingModule', () => {
         'Error occurred',
         LogContext.SYSTEM,
         undefined,
-        error
+        error,
       );
 
       expect(spy).toHaveBeenCalledWith(
@@ -168,7 +168,7 @@ describe('LoggingModule', () => {
         'Error occurred',
         LogContext.SYSTEM,
         undefined,
-        error
+        error,
       );
 
       spy.mockRestore();
@@ -176,7 +176,7 @@ describe('LoggingModule', () => {
 
     it('should log performance metrics', () => {
       const spy = jest
-        .spyOn(loggerService as any, 'log')
+        .spyOn(loggerService as unknown, 'log')
         .mockImplementation(() => undefined);
 
       loggerService.performance('test-operation', 150, LogContext.PERFORMANCE);
@@ -189,7 +189,7 @@ describe('LoggingModule', () => {
           operation: 'test-operation',
           duration: 150,
           type: 'performance',
-        }
+        },
       );
 
       spy.mockRestore();
@@ -277,7 +277,7 @@ describe('LoggingModule', () => {
   describe('Logging Middleware and Interceptor', () => {
     it('should have middleware defined', () => {
       const middleware = module.get<PinoLoggingMiddleware>(
-        PinoLoggingMiddleware
+        PinoLoggingMiddleware,
       );
       expect(middleware).toBeDefined();
       expect(middleware).toHaveProperty('use');
@@ -285,7 +285,7 @@ describe('LoggingModule', () => {
 
     it('should have interceptor defined', () => {
       const interceptor = module.get<PinoLoggingInterceptor>(
-        PinoLoggingInterceptor
+        PinoLoggingInterceptor,
       );
       expect(interceptor).toBeDefined();
       expect(interceptor).toHaveProperty('intercept');

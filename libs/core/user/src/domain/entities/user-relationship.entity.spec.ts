@@ -1,11 +1,15 @@
 /**
  * @description UserRelationshipEntity单元测试
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 
-import { UserRelationshipEntity, RelationshipType, RelationshipStatus } from './user-relationship.entity';
-import { DataIsolationLevel, DataPrivacyLevel } from '@aiofix/shared';
+import {
+  UserRelationshipEntity,
+  RelationshipType,
+  RelationshipStatus,
+} from './user-relationship.entity';
+import { DataPrivacyLevel } from '@aiofix/shared';
 import { UserTestFactory } from '../../test/helpers/test-factory';
 
 describe('UserRelationshipEntity', () => {
@@ -38,7 +42,7 @@ describe('UserRelationshipEntity', () => {
       tenantId,
       organizationId,
       departmentIds,
-      DataPrivacyLevel.PROTECTED
+      DataPrivacyLevel.PROTECTED,
     );
   });
 
@@ -49,13 +53,17 @@ describe('UserRelationshipEntity', () => {
       expect(userRelationshipEntity.userId).toBe(userId);
       expect(userRelationshipEntity.targetId).toBe(targetId);
       expect(userRelationshipEntity.relationshipType).toBe(relationshipType);
-      expect(userRelationshipEntity.relationshipStatus).toBe(relationshipStatus);
+      expect(userRelationshipEntity.relationshipStatus).toBe(
+        relationshipStatus,
+      );
     });
 
     it('应该设置正确的默认值', () => {
       expect(userRelationshipEntity.permissions).toEqual([]);
       expect(userRelationshipEntity.metadata).toEqual({});
-      expect(userRelationshipEntity.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
+      expect(userRelationshipEntity.dataPrivacyLevel).toBe(
+        DataPrivacyLevel.PROTECTED,
+      );
     });
 
     it('应该正确处理可选参数', () => {
@@ -65,12 +73,14 @@ describe('UserRelationshipEntity', () => {
         targetId,
         relationshipType,
         relationshipStatus,
-        tenantId
+        tenantId,
       );
 
       expect(relationshipWithoutOptional.organizationId).toBeUndefined();
       expect(relationshipWithoutOptional.departmentIds).toEqual([]);
-      expect(relationshipWithoutOptional.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
+      expect(relationshipWithoutOptional.dataPrivacyLevel).toBe(
+        DataPrivacyLevel.PROTECTED,
+      );
     });
   });
 
@@ -92,7 +102,9 @@ describe('UserRelationshipEntity', () => {
     });
 
     it('应该正确返回关系状态', () => {
-      expect(userRelationshipEntity.relationshipStatus).toBe(relationshipStatus);
+      expect(userRelationshipEntity.relationshipStatus).toBe(
+        relationshipStatus,
+      );
     });
 
     it('应该正确返回权限列表', () => {
@@ -122,13 +134,17 @@ describe('UserRelationshipEntity', () => {
         userRelationshipEntity.deactivate();
         userRelationshipEntity.activate();
 
-        expect(userRelationshipEntity.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
+        expect(userRelationshipEntity.relationshipStatus).toBe(
+          RelationshipStatus.ACTIVE,
+        );
       });
 
       it('如果关系已经是激活状态，应该不做任何改变', () => {
         userRelationshipEntity.activate();
 
-        expect(userRelationshipEntity.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
+        expect(userRelationshipEntity.relationshipStatus).toBe(
+          RelationshipStatus.ACTIVE,
+        );
       });
     });
 
@@ -136,14 +152,18 @@ describe('UserRelationshipEntity', () => {
       it('应该成功停用关系', () => {
         userRelationshipEntity.deactivate();
 
-        expect(userRelationshipEntity.relationshipStatus).toBe(RelationshipStatus.INACTIVE);
+        expect(userRelationshipEntity.relationshipStatus).toBe(
+          RelationshipStatus.INACTIVE,
+        );
       });
 
       it('如果关系已经是停用状态，应该不做任何改变', () => {
         userRelationshipEntity.deactivate();
         userRelationshipEntity.deactivate();
 
-        expect(userRelationshipEntity.relationshipStatus).toBe(RelationshipStatus.INACTIVE);
+        expect(userRelationshipEntity.relationshipStatus).toBe(
+          RelationshipStatus.INACTIVE,
+        );
       });
     });
 
@@ -157,7 +177,7 @@ describe('UserRelationshipEntity', () => {
 
       it('应该验证关系类型不能为空', () => {
         expect(() => {
-          userRelationshipEntity.changeRelationshipType(null as any);
+          userRelationshipEntity.changeRelationshipType(null as unknown);
         }).toThrow();
       });
     });
@@ -175,7 +195,9 @@ describe('UserRelationshipEntity', () => {
         userRelationshipEntity.grantPermission('READ');
         userRelationshipEntity.grantPermission('READ');
 
-        expect(userRelationshipEntity.permissions.filter(p => p === 'READ')).toHaveLength(1);
+        expect(
+          userRelationshipEntity.permissions.filter(p => p === 'READ'),
+        ).toHaveLength(1);
       });
 
       it('应该验证权限不能为空', () => {
@@ -240,7 +262,7 @@ describe('UserRelationshipEntity', () => {
 
       it('应该验证元数据不能为空', () => {
         expect(() => {
-          userRelationshipEntity.setMetadata(null as any);
+          userRelationshipEntity.setMetadata(null as unknown);
         }).toThrow();
       });
     });
@@ -254,7 +276,10 @@ describe('UserRelationshipEntity', () => {
       });
 
       it('应该返回默认值当元数据不存在时', () => {
-        const value = userRelationshipEntity.getMetadata('nonexistent', 'default');
+        const value = userRelationshipEntity.getMetadata(
+          'nonexistent',
+          'default',
+        );
 
         expect(value).toBe('default');
       });
@@ -273,7 +298,7 @@ describe('UserRelationshipEntity', () => {
 
         expect(userRelationshipEntity.metadata).toEqual({
           key1: 'value1',
-          key2: 'value2'
+          key2: 'value2',
         });
       });
 
@@ -283,7 +308,7 @@ describe('UserRelationshipEntity', () => {
 
         expect(userRelationshipEntity.metadata).toEqual({
           key1: 'updated',
-          key2: 'value2'
+          key2: 'value2',
         });
       });
     });
@@ -311,10 +336,12 @@ describe('UserRelationshipEntity', () => {
           relationshipId,
           userId,
           targetId,
-          tenantId
+          tenantId,
         );
 
-        expect(tenantMember.relationshipType).toBe(RelationshipType.TENANT_MEMBER);
+        expect(tenantMember.relationshipType).toBe(
+          RelationshipType.TENANT_MEMBER,
+        );
         expect(tenantMember.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
         expect(tenantMember.targetId).toBe(targetId);
       });
@@ -327,10 +354,12 @@ describe('UserRelationshipEntity', () => {
           userId,
           targetId,
           tenantId,
-          organizationId
+          organizationId,
         );
 
-        expect(orgMember.relationshipType).toBe(RelationshipType.ORGANIZATION_MEMBER);
+        expect(orgMember.relationshipType).toBe(
+          RelationshipType.ORGANIZATION_MEMBER,
+        );
         expect(orgMember.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
         expect(orgMember.organizationId).toBe(organizationId);
       });
@@ -344,10 +373,12 @@ describe('UserRelationshipEntity', () => {
           targetId,
           tenantId,
           organizationId,
-          departmentIds
+          departmentIds,
         );
 
-        expect(deptMember.relationshipType).toBe(RelationshipType.DEPARTMENT_MEMBER);
+        expect(deptMember.relationshipType).toBe(
+          RelationshipType.DEPARTMENT_MEMBER,
+        );
         expect(deptMember.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
         expect(deptMember.departmentIds).toEqual(departmentIds);
       });
@@ -359,10 +390,12 @@ describe('UserRelationshipEntity', () => {
           relationshipId,
           userId,
           targetId,
-          tenantId
+          tenantId,
         );
 
-        expect(tenantAdmin.relationshipType).toBe(RelationshipType.TENANT_ADMIN);
+        expect(tenantAdmin.relationshipType).toBe(
+          RelationshipType.TENANT_ADMIN,
+        );
         expect(tenantAdmin.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
       });
     });
@@ -374,10 +407,12 @@ describe('UserRelationshipEntity', () => {
           userId,
           targetId,
           tenantId,
-          organizationId
+          organizationId,
         );
 
-        expect(orgAdmin.relationshipType).toBe(RelationshipType.ORGANIZATION_ADMIN);
+        expect(orgAdmin.relationshipType).toBe(
+          RelationshipType.ORGANIZATION_ADMIN,
+        );
         expect(orgAdmin.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
       });
     });
@@ -390,10 +425,12 @@ describe('UserRelationshipEntity', () => {
           targetId,
           tenantId,
           organizationId,
-          departmentIds
+          departmentIds,
         );
 
-        expect(deptAdmin.relationshipType).toBe(RelationshipType.DEPARTMENT_ADMIN);
+        expect(deptAdmin.relationshipType).toBe(
+          RelationshipType.DEPARTMENT_ADMIN,
+        );
         expect(deptAdmin.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
       });
     });
@@ -404,10 +441,12 @@ describe('UserRelationshipEntity', () => {
           relationshipId,
           userId,
           targetId,
-          tenantId
+          tenantId,
         );
 
-        expect(tenantOwner.relationshipType).toBe(RelationshipType.TENANT_OWNER);
+        expect(tenantOwner.relationshipType).toBe(
+          RelationshipType.TENANT_OWNER,
+        );
         expect(tenantOwner.relationshipStatus).toBe(RelationshipStatus.ACTIVE);
       });
     });
@@ -428,7 +467,7 @@ describe('UserRelationshipEntity', () => {
         targetId,
         relationshipType,
         relationshipStatus,
-        tenantId
+        tenantId,
       );
 
       expect(relationshipWithoutDepartments.departmentIds).toEqual([]);
@@ -441,7 +480,7 @@ describe('UserRelationshipEntity', () => {
         targetId,
         relationshipType,
         relationshipStatus,
-        tenantId
+        tenantId,
       );
 
       expect(relationshipWithoutOrganization.organizationId).toBeUndefined();
@@ -459,37 +498,79 @@ describe('UserRelationshipEntity', () => {
   describe('错误处理', () => {
     it('应该验证关系ID不能为空', () => {
       expect(() => {
-        new UserRelationshipEntity('', userId, targetId, relationshipType, relationshipStatus, tenantId);
+        new UserRelationshipEntity(
+          '',
+          userId,
+          targetId,
+          relationshipType,
+          relationshipStatus,
+          tenantId,
+        );
       }).toThrow();
     });
 
     it('应该验证用户ID不能为空', () => {
       expect(() => {
-        new UserRelationshipEntity(relationshipId, '', targetId, relationshipType, relationshipStatus, tenantId);
+        new UserRelationshipEntity(
+          relationshipId,
+          '',
+          targetId,
+          relationshipType,
+          relationshipStatus,
+          tenantId,
+        );
       }).toThrow();
     });
 
     it('应该验证目标ID不能为空', () => {
       expect(() => {
-        new UserRelationshipEntity(relationshipId, userId, '', relationshipType, relationshipStatus, tenantId);
+        new UserRelationshipEntity(
+          relationshipId,
+          userId,
+          '',
+          relationshipType,
+          relationshipStatus,
+          tenantId,
+        );
       }).toThrow();
     });
 
     it('应该验证关系类型不能为空', () => {
       expect(() => {
-        new UserRelationshipEntity(relationshipId, userId, targetId, null as any, relationshipStatus, tenantId);
+        new UserRelationshipEntity(
+          relationshipId,
+          userId,
+          targetId,
+          null as unknown,
+          relationshipStatus,
+          tenantId,
+        );
       }).toThrow();
     });
 
     it('应该验证关系状态不能为空', () => {
       expect(() => {
-        new UserRelationshipEntity(relationshipId, userId, targetId, relationshipType, null as any, tenantId);
+        new UserRelationshipEntity(
+          relationshipId,
+          userId,
+          targetId,
+          relationshipType,
+          null as unknown,
+          tenantId,
+        );
       }).toThrow();
     });
 
     it('应该验证租户ID不能为空', () => {
       expect(() => {
-        new UserRelationshipEntity(relationshipId, userId, targetId, relationshipType, relationshipStatus, '');
+        new UserRelationshipEntity(
+          relationshipId,
+          userId,
+          targetId,
+          relationshipType,
+          relationshipStatus,
+          '',
+        );
       }).toThrow();
     });
   });

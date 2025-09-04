@@ -31,7 +31,7 @@ class TestDataIsolationEntity extends DataIsolationAwareEntity {
     id?: Uuid,
     organizationId?: Uuid,
     departmentIds?: Uuid[],
-    userId?: Uuid
+    userId?: Uuid,
   ) {
     super(
       tenantId,
@@ -40,7 +40,7 @@ class TestDataIsolationEntity extends DataIsolationAwareEntity {
       id,
       organizationId,
       departmentIds,
-      userId
+      userId,
     );
   }
 
@@ -108,7 +108,7 @@ describe('DataIsolationAwareEntity', () => {
       undefined,
       organizationId1,
       [departmentId1],
-      userId1
+      userId1,
     );
 
     entity2 = new TestDataIsolationEntity(
@@ -118,7 +118,7 @@ describe('DataIsolationAwareEntity', () => {
       undefined,
       organizationId1,
       [departmentId1, departmentId2],
-      userId2
+      userId2,
     );
 
     entity3 = new TestDataIsolationEntity(
@@ -128,7 +128,7 @@ describe('DataIsolationAwareEntity', () => {
       undefined,
       organizationId2,
       [departmentId2],
-      userId2
+      userId2,
     );
   });
 
@@ -141,7 +141,7 @@ describe('DataIsolationAwareEntity', () => {
         undefined,
         organizationId1,
         [departmentId1],
-        userId1
+        userId1,
       );
 
       expect(entity.tenantId).toBe(tenantId1);
@@ -169,7 +169,7 @@ describe('DataIsolationAwareEntity', () => {
         DataIsolationLevel.DEPARTMENT,
         undefined,
         undefined,
-        organizationId1
+        organizationId1,
       );
 
       expect(entity.tenantId).toBe(tenantId1);
@@ -233,7 +233,7 @@ describe('DataIsolationAwareEntity', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(TenantAccessDeniedError);
         expect((error as TenantAccessDeniedError).message).toContain(
-          '操作禁止'
+          '操作禁止',
         );
         expect((error as TenantAccessDeniedError).message).toContain('租户');
       }
@@ -253,7 +253,7 @@ describe('DataIsolationAwareEntity', () => {
         DataIsolationLevel.ORGANIZATION,
         DataPrivacyLevel.PROTECTED,
         undefined,
-        organizationId2
+        organizationId2,
       );
 
       expect(() => {
@@ -285,7 +285,7 @@ describe('DataIsolationAwareEntity', () => {
         DataPrivacyLevel.PROTECTED,
         undefined,
         organizationId1,
-        [departmentId2]
+        [departmentId2],
       );
 
       expect(() => {
@@ -300,7 +300,7 @@ describe('DataIsolationAwareEntity', () => {
         DataPrivacyLevel.PROTECTED,
         undefined,
         organizationId1,
-        []
+        [],
       );
 
       expect(() => {
@@ -322,7 +322,7 @@ describe('DataIsolationAwareEntity', () => {
       const sharedEntity = new TestDataIsolationEntity(
         tenantId2,
         DataIsolationLevel.PLATFORM,
-        DataPrivacyLevel.SHARED
+        DataPrivacyLevel.SHARED,
       );
 
       expect(entity1.testCanAccess(sharedEntity)).toBe(true);
@@ -382,7 +382,7 @@ describe('DataIsolationAwareEntity', () => {
         DataPrivacyLevel.PROTECTED,
         undefined,
         organizationId1,
-        [departmentId1, departmentId2]
+        [departmentId1, departmentId2],
       );
 
       expect(multiDeptEntity.departmentIds).toEqual([
@@ -399,7 +399,7 @@ describe('DataIsolationAwareEntity', () => {
         undefined,
         undefined,
         [],
-        undefined
+        undefined,
       );
 
       expect(entity.organizationId).toBeUndefined();

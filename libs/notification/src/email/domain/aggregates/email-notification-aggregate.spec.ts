@@ -3,11 +3,18 @@
  * @description 邮件通知聚合单元测试
  */
 
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  jest,
+  beforeEach,
+  afterEach,
+} from '@jest/globals';
 // Mock EmailAddress
 class MockEmailAddress {
   constructor(public readonly value: string) {}
-  
+
   static create(email: string): MockEmailAddress {
     return new MockEmailAddress(email);
   }
@@ -16,7 +23,7 @@ class MockEmailAddress {
 // Mock EmailSubject
 class MockEmailSubject {
   constructor(public readonly value: string) {}
-  
+
   static create(subject: string): MockEmailSubject {
     return new MockEmailSubject(subject);
   }
@@ -28,7 +35,12 @@ jest.mock('@aiofix/shared', () => ({
   EmailAddress: MockEmailAddress,
 }));
 
-import { EmailNotificationAggregate, CreateEmailNotificationCommand, SendEmailNotificationCommand, FailEmailNotificationCommand } from './email-notification-aggregate';
+import {
+  EmailNotificationAggregate,
+  CreateEmailNotificationCommand,
+  SendEmailNotificationCommand,
+  FailEmailNotificationCommand,
+} from './email-notification-aggregate';
 import { EmailNotification } from '../entities/email-notification.entity';
 import { EmailNotificationRepository } from '../repositories/email-notification.repository';
 import { Uuid } from '@aiofix/shared';
@@ -40,40 +52,40 @@ jest.mock('../entities/email-notification.entity', () => ({
   },
 }));
 
-  describe('EmailNotificationAggregate', () => {
-    let aggregate: EmailNotificationAggregate;
-    let mockRepository: jest.Mocked<EmailNotificationRepository>;
-    let tenantId: Uuid;
-    let templateId: Uuid;
-    let mockNotification: jest.Mocked<EmailNotification>;
+describe('EmailNotificationAggregate', () => {
+  let aggregate: EmailNotificationAggregate;
+  let mockRepository: jest.Mocked<EmailNotificationRepository>;
+  let tenantId: Uuid;
+  let templateId: Uuid;
+  let mockNotification: jest.Mocked<EmailNotification>;
 
-    // Helper functions for creating test commands
-    const createSendCommand = (): SendEmailNotificationCommand => ({
-      notificationId: mockNotification.id.toString(),
-      provider: 'smtp',
-      messageId: 'msg-123',
-      deliveryStatus: 'delivered',
-      providerMessageId: 'provider-msg-123',
-      retryCount: 1
-    });
+  // Helper functions for creating test commands
+  const createSendCommand = (): SendEmailNotificationCommand => ({
+    notificationId: mockNotification.id.toString(),
+    provider: 'smtp',
+    messageId: 'msg-123',
+    deliveryStatus: 'delivered',
+    providerMessageId: 'provider-msg-123',
+    retryCount: 1,
+  });
 
-    const createFailCommand = (): FailEmailNotificationCommand => ({
-      notificationId: mockNotification.id.toString(),
-      errorCode: 'SMTP_ERROR',
-      errorMessage: '连接超时',
-      errorDetails: { timeout: 30000 },
-      provider: 'smtp',
-      retryCount: 1,
-      maxRetries: 3,
-      canRetry: true
-    });
+  const createFailCommand = (): FailEmailNotificationCommand => ({
+    notificationId: mockNotification.id.toString(),
+    errorCode: 'SMTP_ERROR',
+    errorMessage: '连接超时',
+    errorDetails: { timeout: 30000 },
+    provider: 'smtp',
+    retryCount: 1,
+    maxRetries: 3,
+    canRetry: true,
+  });
 
   beforeEach(() => {
     mockRepository = {
       save: jest.fn(),
       findById: jest.fn(),
       delete: jest.fn(),
-    } as any;
+    } as unknown;
 
     aggregate = new EmailNotificationAggregate(mockRepository);
 
@@ -91,7 +103,7 @@ jest.mock('../entities/email-notification.entity', () => ({
       markAsFailed: jest.fn(),
       resetForRetry: jest.fn(),
       markAsCancelled: jest.fn(),
-    } as any;
+    } as unknown;
 
     (EmailNotification.create as jest.Mock).mockReturnValue(mockNotification);
   });
@@ -109,23 +121,23 @@ jest.mock('../entities/email-notification.entity', () => ({
         data: { userName: '张三', company: '测试公司' },
         priority: NotificationPriority.HIGH,
         scheduledAt: new Date('2024-12-25T10:00:00Z'),
-        metadata: { source: 'system', category: 'notification' }
+        metadata: { source: 'system', category: 'notification' },
       };
 
       const result = await aggregate.createEmailNotification(createCommand);
 
       expect(EmailNotification.create).toHaveBeenCalledWith(
-        expect.any(Uuid), // tenantId
-        expect.any(Uuid), // templateId
+        expect.unknown(Uuid), // tenantId
+        expect.unknown(Uuid), // templateId
         expect.arrayContaining([
-          expect.any(MockEmailAddress),
-          expect.any(MockEmailAddress)
+          expect.unknown(MockEmailAddress),
+          expect.unknown(MockEmailAddress),
         ]), // recipients
         createCommand.data,
         createCommand.priority,
         createCommand.scheduledAt,
         undefined, // subject
-        createCommand.metadata
+        createCommand.metadata,
       );
 
       expect(mockRepository.save).toHaveBeenCalledWith(mockNotification);
@@ -140,25 +152,25 @@ jest.mock('../entities/email-notification.entity', () => ({
         data: { userName: '张三', company: '测试公司' },
         priority: NotificationPriority.HIGH,
         scheduledAt: new Date('2024-12-25T10:00:00Z'),
-        metadata: { source: 'system', category: 'notification' }
+        metadata: { source: 'system', category: 'notification' },
       };
 
       const commandWithSubject = {
         ...createCommand,
-        subject: '测试邮件主题'
+        subject: '测试邮件主题',
       };
 
       await aggregate.createEmailNotification(commandWithSubject);
 
       expect(EmailNotification.create).toHaveBeenCalledWith(
-        expect.any(Uuid),
-        expect.any(Uuid),
-        expect.any(Array),
+        expect.unknown(Uuid),
+        expect.unknown(Uuid),
+        expect.unknown(Array),
         commandWithSubject.data,
         commandWithSubject.priority,
         commandWithSubject.scheduledAt,
         expect.objectContaining({ _value: '测试邮件主题' }), // subject
-        commandWithSubject.metadata
+        commandWithSubject.metadata,
       );
     });
 
@@ -170,25 +182,25 @@ jest.mock('../entities/email-notification.entity', () => ({
         data: { userName: '张三', company: '测试公司' },
         priority: NotificationPriority.HIGH,
         scheduledAt: new Date('2024-12-25T10:00:00Z'),
-        metadata: { source: 'system', category: 'notification' }
+        metadata: { source: 'system', category: 'notification' },
       };
 
       const commandWithoutSchedule = {
         ...createCommand,
-        scheduledAt: undefined
+        scheduledAt: undefined,
       };
 
       await aggregate.createEmailNotification(commandWithoutSchedule);
 
       expect(EmailNotification.create).toHaveBeenCalledWith(
-        expect.any(Uuid),
-        expect.any(Uuid),
-        expect.any(Array),
+        expect.unknown(Uuid),
+        expect.unknown(Uuid),
+        expect.unknown(Array),
         commandWithoutSchedule.data,
         commandWithoutSchedule.priority,
         undefined, // scheduledAt
         undefined, // subject
-        commandWithoutSchedule.metadata
+        commandWithoutSchedule.metadata,
       );
     });
 
@@ -200,25 +212,25 @@ jest.mock('../entities/email-notification.entity', () => ({
         data: { userName: '张三', company: '测试公司' },
         priority: NotificationPriority.HIGH,
         scheduledAt: new Date('2024-12-25T10:00:00Z'),
-        metadata: { source: 'system', category: 'notification' }
+        metadata: { source: 'system', category: 'notification' },
       };
 
       const commandWithoutMetadata = {
         ...createCommand,
-        metadata: undefined
+        metadata: undefined,
       };
 
       await aggregate.createEmailNotification(commandWithoutMetadata);
 
       expect(EmailNotification.create).toHaveBeenCalledWith(
-        expect.any(Uuid),
-        expect.any(Uuid),
-        expect.any(Array),
+        expect.unknown(Uuid),
+        expect.unknown(Uuid),
+        expect.unknown(Array),
         commandWithoutMetadata.data,
         commandWithoutMetadata.priority,
         commandWithoutMetadata.scheduledAt,
         undefined, // subject
-        undefined // metadata
+        undefined, // metadata
       );
     });
   });
@@ -249,24 +261,27 @@ jest.mock('../entities/email-notification.entity', () => ({
 
       aggregate['notification'] = null;
 
-      await expect(aggregate.sendEmailNotification(sendCommand))
-        .rejects.toThrow('邮件通知不存在');
+      await expect(
+        aggregate.sendEmailNotification(sendCommand),
+      ).rejects.toThrow('邮件通知不存在');
     });
 
     it('应该拒绝发送非待发送状态的通知', async () => {
       const sendCommand = createSendCommand();
-      (mockNotification as any).status = NotificationStatus.SENT;
+      (mockNotification as unknown).status = NotificationStatus.SENT;
 
-      await expect(aggregate.sendEmailNotification(sendCommand))
-        .rejects.toThrow('无法发送状态为 SENT 的邮件通知');
+      await expect(
+        aggregate.sendEmailNotification(sendCommand),
+      ).rejects.toThrow('无法发送状态为 SENT 的邮件通知');
     });
 
     it('应该拒绝发送非待发送状态的通知（其他状态）', async () => {
       const sendCommand = createSendCommand();
-      (mockNotification as any).status = NotificationStatus.FAILED;
+      (mockNotification as unknown).status = NotificationStatus.FAILED;
 
-      await expect(aggregate.sendEmailNotification(sendCommand))
-        .rejects.toThrow('无法发送状态为 FAILED 的邮件通知');
+      await expect(
+        aggregate.sendEmailNotification(sendCommand),
+      ).rejects.toThrow('无法发送状态为 FAILED 的邮件通知');
     });
   });
 
@@ -297,16 +312,18 @@ jest.mock('../entities/email-notification.entity', () => ({
       const failCommand = createFailCommand();
       aggregate['notification'] = null;
 
-      await expect(aggregate.failEmailNotification(failCommand))
-        .rejects.toThrow('邮件通知不存在');
+      await expect(
+        aggregate.failEmailNotification(failCommand),
+      ).rejects.toThrow('邮件通知不存在');
     });
 
     it('应该拒绝标记非待发送状态的通知为失败', async () => {
       const failCommand = createFailCommand();
-      (mockNotification as any).status = NotificationStatus.SENT;
+      (mockNotification as unknown).status = NotificationStatus.SENT;
 
-      await expect(aggregate.failEmailNotification(failCommand))
-        .rejects.toThrow('无法标记状态为 SENT 的邮件通知为失败');
+      await expect(
+        aggregate.failEmailNotification(failCommand),
+      ).rejects.toThrow('无法标记状态为 SENT 的邮件通知为失败');
     });
   });
 
@@ -325,23 +342,26 @@ jest.mock('../entities/email-notification.entity', () => ({
     it('应该拒绝重试不存在的通知', async () => {
       aggregate['notification'] = null;
 
-      await expect(aggregate.retryEmailNotification())
-        .rejects.toThrow('邮件通知不存在');
+      await expect(aggregate.retryEmailNotification()).rejects.toThrow(
+        '邮件通知不存在',
+      );
     });
 
     it('应该拒绝重试无法重试的通知', async () => {
-      (mockNotification as any).canRetry = false;
+      (mockNotification as unknown).canRetry = false;
 
-      await expect(aggregate.retryEmailNotification())
-        .rejects.toThrow('邮件通知无法重试');
+      await expect(aggregate.retryEmailNotification()).rejects.toThrow(
+        '邮件通知无法重试',
+      );
     });
 
     it('应该拒绝重试超过最大次数的通知', async () => {
-      (mockNotification as any).retryCount = 3;
-      (mockNotification as any).maxRetries = 3;
+      (mockNotification as unknown).retryCount = 3;
+      (mockNotification as unknown).maxRetries = 3;
 
-      await expect(aggregate.retryEmailNotification())
-        .rejects.toThrow('邮件通知已达到最大重试次数');
+      await expect(aggregate.retryEmailNotification()).rejects.toThrow(
+        '邮件通知已达到最大重试次数',
+      );
     });
   });
 
@@ -360,22 +380,25 @@ jest.mock('../entities/email-notification.entity', () => ({
     it('应该拒绝取消不存在的通知', async () => {
       aggregate['notification'] = null;
 
-      await expect(aggregate.cancelEmailNotification())
-        .rejects.toThrow('邮件通知不存在');
+      await expect(aggregate.cancelEmailNotification()).rejects.toThrow(
+        '邮件通知不存在',
+      );
     });
 
     it('应该拒绝取消已发送的通知', async () => {
-      (mockNotification as any).status = NotificationStatus.SENT;
+      (mockNotification as unknown).status = NotificationStatus.SENT;
 
-      await expect(aggregate.cancelEmailNotification())
-        .rejects.toThrow('已发送的邮件通知无法取消');
+      await expect(aggregate.cancelEmailNotification()).rejects.toThrow(
+        '已发送的邮件通知无法取消',
+      );
     });
 
     it('应该拒绝取消已失败的通知', async () => {
-      (mockNotification as any).status = NotificationStatus.FAILED;
+      (mockNotification as unknown).status = NotificationStatus.FAILED;
 
-      await expect(aggregate.cancelEmailNotification())
-        .rejects.toThrow('已失败的邮件通知无法取消');
+      await expect(aggregate.cancelEmailNotification()).rejects.toThrow(
+        '已失败的邮件通知无法取消',
+      );
     });
   });
 
@@ -386,7 +409,9 @@ jest.mock('../entities/email-notification.entity', () => ({
 
       await aggregate.loadEmailNotification(notificationId);
 
-      expect(mockRepository.findById).toHaveBeenCalledWith(expect.any(Uuid));
+      expect(mockRepository.findById).toHaveBeenCalledWith(
+        expect.unknown(Uuid),
+      );
       expect(aggregate['notification']).toBe(mockNotification);
     });
 
@@ -406,8 +431,8 @@ jest.mock('../entities/email-notification.entity', () => ({
     });
 
     it('应该成功删除邮件通知', async () => {
-      (mockNotification as any).status = NotificationStatus.SENT;
-      
+      (mockNotification as unknown).status = NotificationStatus.SENT;
+
       await aggregate.deleteEmailNotification();
 
       expect(mockRepository.delete).toHaveBeenCalledWith(mockNotification.id);
@@ -417,15 +442,17 @@ jest.mock('../entities/email-notification.entity', () => ({
     it('应该拒绝删除不存在的通知', async () => {
       aggregate['notification'] = null;
 
-      await expect(aggregate.deleteEmailNotification())
-        .rejects.toThrow('邮件通知不存在');
+      await expect(aggregate.deleteEmailNotification()).rejects.toThrow(
+        '邮件通知不存在',
+      );
     });
 
     it('应该拒绝删除待发送状态的通知', async () => {
-      (mockNotification as any).status = NotificationStatus.PENDING;
+      (mockNotification as unknown).status = NotificationStatus.PENDING;
 
-      await expect(aggregate.deleteEmailNotification())
-        .rejects.toThrow('待发送的邮件通知无法删除');
+      await expect(aggregate.deleteEmailNotification()).rejects.toThrow(
+        '待发送的邮件通知无法删除',
+      );
     });
   });
 
@@ -458,4 +485,3 @@ jest.mock('../entities/email-notification.entity', () => ({
     });
   });
 });
-

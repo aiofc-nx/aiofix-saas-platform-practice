@@ -102,7 +102,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
     this.logMethodStart(methodLogData);
 
     return next.handle().pipe(
-      tap((result) => {
+      tap(result => {
         // 记录方法成功完成
         const duration = Date.now() - startTime;
         const completedLogData: MethodLogData = {
@@ -112,7 +112,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
         };
         this.logMethodSuccess(completedLogData);
       }),
-      catchError((error) => {
+      catchError(error => {
         // 记录方法异常
         const duration = Date.now() - startTime;
         const errorLogData: MethodLogData = {
@@ -122,7 +122,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
         };
         this.logMethodError(errorLogData);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -163,7 +163,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
    * @returns {unknown[]} 清理后的参数
    */
   private sanitizeParameters(parameters: unknown[]): unknown[] {
-    return parameters.map((param) => this.sanitizeObject(param));
+    return parameters.map(param => this.sanitizeObject(param));
   }
 
   /**
@@ -191,7 +191,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
 
     // 如果是数组，递归处理每个元素
     if (Array.isArray(obj)) {
-      return obj.map((item) => this.sanitizeObject(item));
+      return obj.map(item => this.sanitizeObject(item));
     }
 
     // 如果是对象，递归处理每个属性
@@ -227,7 +227,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
         tenantId: data.tenantId,
         userId: data.userId,
         parameters: data.parameters,
-      }
+      },
     );
   }
 
@@ -250,7 +250,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
         userId: data.userId,
         result: data.result,
         duration: data.duration,
-      }
+      },
     );
 
     // 记录性能日志
@@ -265,7 +265,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
         requestId: data.requestId,
         tenantId: data.tenantId,
         userId: data.userId,
-      }
+      },
     );
   }
 
@@ -289,7 +289,7 @@ export class PinoLoggingInterceptor implements NestInterceptor {
         parameters: data.parameters,
         duration: data.duration,
       },
-      data.error
+      data.error,
     );
   }
 }

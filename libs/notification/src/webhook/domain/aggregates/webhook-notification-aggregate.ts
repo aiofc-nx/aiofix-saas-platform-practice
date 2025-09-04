@@ -94,7 +94,7 @@ export class WebhookNotificationAggregate extends AggregateRoot {
   private notification: WebhookNotification | null = null;
 
   constructor(
-    private readonly webhookNotificationRepository: WebhookNotificationRepository
+    private readonly webhookNotificationRepository: WebhookNotificationRepository,
   ) {
     super();
   }
@@ -104,7 +104,7 @@ export class WebhookNotificationAggregate extends AggregateRoot {
    * @description 创建Webhook通知
    */
   async createWebhookNotification(
-    command: CreateWebhookNotificationCommand
+    command: CreateWebhookNotificationCommand,
   ): Promise<WebhookNotification> {
     // 1. 创建Webhook通知实体
     const tenantId = Uuid.fromString(command.tenantId);
@@ -116,7 +116,7 @@ export class WebhookNotificationAggregate extends AggregateRoot {
       command.data,
       command.priority,
       command.scheduledAt,
-      command.metadata
+      command.metadata,
     );
 
     // 2. 保存到仓储
@@ -130,7 +130,7 @@ export class WebhookNotificationAggregate extends AggregateRoot {
    * @description 发送Webhook通知
    */
   async sendWebhookNotification(
-    command: SendWebhookNotificationCommand
+    command: SendWebhookNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('Webhook通知不存在');
@@ -139,7 +139,7 @@ export class WebhookNotificationAggregate extends AggregateRoot {
     // 1. 验证通知状态
     if (this.notification.status !== NotificationStatus.PENDING) {
       throw new Error(
-        `无法发送状态为 ${this.notification.status} 的Webhook通知`
+        `无法发送状态为 ${this.notification.status} 的Webhook通知`,
       );
     }
 
@@ -161,7 +161,7 @@ export class WebhookNotificationAggregate extends AggregateRoot {
    * @description Webhook通知发送失败
    */
   async failWebhookNotification(
-    command: FailWebhookNotificationCommand
+    command: FailWebhookNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('Webhook通知不存在');
@@ -170,7 +170,7 @@ export class WebhookNotificationAggregate extends AggregateRoot {
     // 1. 验证通知状态
     if (this.notification.status !== NotificationStatus.PENDING) {
       throw new Error(
-        `无法标记状态为 ${this.notification.status} 的Webhook通知为失败`
+        `无法标记状态为 ${this.notification.status} 的Webhook通知为失败`,
       );
     }
 

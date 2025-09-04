@@ -96,7 +96,7 @@ export class RedisCacheService
   constructor(
     @Inject('REDIS_CONFIG') private readonly config: RedisConfig,
     @Inject('ICacheKeyFactory') private readonly keyFactory: ICacheKeyFactory,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.logger = logger;
   }
@@ -166,8 +166,13 @@ export class RedisCacheService
         this.isConnected = true;
       });
 
-      this.redis.on('error', (error) => {
-        this.logger.error('Redis error', LogContext.CACHE, undefined, error as Error);
+      this.redis.on('error', error => {
+        this.logger.error(
+          'Redis error',
+          LogContext.CACHE,
+          undefined,
+          error as Error,
+        );
         this.isConnected = false;
       });
 
@@ -184,14 +189,14 @@ export class RedisCacheService
       await this.redis.ping();
       this.logger.info(
         'Redis connection established successfully',
-        LogContext.CACHE
+        LogContext.CACHE,
       );
     } catch (error) {
       this.logger.error(
         'Failed to connect to Redis',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       throw error;
     }
@@ -251,7 +256,7 @@ export class RedisCacheService
         'Error getting cache value',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.stats.misses++;
       this.updateHitRate();
@@ -270,7 +275,7 @@ export class RedisCacheService
   async set<T = any>(
     key: CacheKey,
     value: T,
-    options?: Partial<CacheOptions>
+    options?: Partial<CacheOptions>,
   ): Promise<boolean> {
     try {
       const keyString = this.keyFactory.toString(key);
@@ -302,7 +307,7 @@ export class RedisCacheService
         await this.redis.setex(
           keyString,
           Math.ceil(options.ttl / 1000),
-          serializedValue
+          serializedValue,
         );
       } else {
         await this.redis.set(keyString, serializedValue);
@@ -319,7 +324,7 @@ export class RedisCacheService
         'Error setting cache value',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -348,7 +353,7 @@ export class RedisCacheService
         'Error deleting cache value',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -370,7 +375,7 @@ export class RedisCacheService
         'Error checking cache key existence',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -407,7 +412,7 @@ export class RedisCacheService
         'Error clearing cache',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -441,7 +446,7 @@ export class RedisCacheService
         'Error getting cache stats',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return { ...this.stats };
     }

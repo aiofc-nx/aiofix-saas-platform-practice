@@ -115,7 +115,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
     tags: string[] = [],
     metadata: Record<string, unknown> = {},
     createdBy: Uuid = Uuid.fromString('system'),
-    updatedBy: Uuid = Uuid.fromString('system')
+    updatedBy: Uuid = Uuid.fromString('system'),
   ) {
     super(tenantId, DataIsolationLevel.TENANT, DataPrivacyLevel.PROTECTED, id);
     this._name = name;
@@ -308,7 +308,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
     content: string,
     variables: string[],
     subject?: string,
-    updatedBy: Uuid = Uuid.fromString('system')
+    updatedBy: Uuid = Uuid.fromString('system'),
   ): void {
     // 保存当前版本到历史记录
     this.saveVersionToHistory();
@@ -410,7 +410,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
     // 检查变量是否在内容中使用
     const usedVariables = this.extractVariablesFromContent();
     const unusedVariables = this._variables.filter(
-      (variable) => !usedVariables.includes(variable)
+      variable => !usedVariables.includes(variable),
     );
 
     if (unusedVariables.length > 0) {
@@ -455,7 +455,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
     let renderedContent = this._content;
 
     // 替换变量
-    this._variables.forEach((variable) => {
+    this._variables.forEach(variable => {
       const value = data[variable];
       const placeholder = `{{${variable}}}`;
       renderedContent = renderedContent.replace(
@@ -464,7 +464,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
           ? typeof value === 'string'
             ? value
             : JSON.stringify(value)
-          : ''
+          : '',
       );
     });
 
@@ -516,7 +516,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
     subject?: string,
     tags: string[] = [],
     metadata: Record<string, unknown> = {},
-    createdBy: Uuid = Uuid.fromString('system')
+    createdBy: Uuid = Uuid.fromString('system'),
   ): Template {
     // 验证必填字段
     if (!name || name.trim() === '') {
@@ -543,7 +543,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
       tags,
       metadata,
       createdBy,
-      createdBy
+      createdBy,
     );
   }
 
@@ -650,7 +650,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
       };
     }
     // 否则从历史记录中查找
-    return this._versionHistory.find((v) => v.version === version);
+    return this._versionHistory.find(v => v.version === version);
   }
 
   /**
@@ -661,7 +661,7 @@ export class Template extends DataIsolationAwareEntity implements ITemplate {
    */
   revertToVersion(
     version: number,
-    updatedBy: Uuid = Uuid.fromString('system')
+    updatedBy: Uuid = Uuid.fromString('system'),
   ): void {
     const targetVersion = this.getVersion(version);
     if (!targetVersion) {

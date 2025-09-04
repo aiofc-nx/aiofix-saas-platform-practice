@@ -104,7 +104,7 @@ export class IamJwtService {
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(NestJwtService) private readonly jwtService: NestJwtService,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.logger = logger;
     this.config = this.configService.get<JwtConfig>('iam.jwt') ?? {
@@ -140,7 +140,7 @@ export class IamJwtService {
       refreshExpiresIn?: string;
       issuer?: string;
       audience?: string;
-    }
+    },
   ): JwtTokenResult {
     const {
       expiresIn = this.config.expiresIn,
@@ -181,7 +181,7 @@ export class IamJwtService {
       this.logger.debug(
         'JWT tokens generated successfully',
         LogContext.BUSINESS,
-        { userId: payload.sub, jti }
+        { userId: payload.sub, jti },
       );
 
       return {
@@ -205,10 +205,10 @@ export class IamJwtService {
             enabled: this.config.enabled,
           },
         },
-        error as Error
+        error as Error,
       );
       throw new Error(
-        `JWT token generation failed: ${(error as Error).message}`
+        `JWT token generation failed: ${(error as Error).message}`,
       );
     }
   }
@@ -226,7 +226,7 @@ export class IamJwtService {
       ignoreExpiration?: boolean;
       issuer?: string;
       audience?: string;
-    }
+    },
   ): JwtVerifyResult {
     const {
       ignoreExpiration = false,
@@ -258,7 +258,7 @@ export class IamJwtService {
       this.logger.debug(
         'JWT token verified successfully',
         LogContext.BUSINESS,
-        { userId: payload.sub, isExpired, isExpiringSoon }
+        { userId: payload.sub, isExpired, isExpiringSoon },
       );
 
       return {
@@ -293,7 +293,7 @@ export class IamJwtService {
    */
   refreshToken(
     refreshToken: string,
-    newPayload?: Partial<JwtPayload>
+    newPayload?: Partial<JwtPayload>,
   ): JwtTokenResult {
     const verifyResult = this.verifyToken(refreshToken);
 
@@ -342,7 +342,7 @@ export class IamJwtService {
         'Failed to revoke JWT token',
         LogContext.BUSINESS,
         { error: (error as Error).message },
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -360,7 +360,7 @@ export class IamJwtService {
     this.logger.warn(
       'Revoking all tokens for user (simplified implementation)',
       LogContext.BUSINESS,
-      { userId }
+      { userId },
     );
     return 0;
   }
@@ -379,7 +379,7 @@ export class IamJwtService {
         'Failed to decode JWT token',
         LogContext.BUSINESS,
         { error: (error as Error).message },
-        error as Error
+        error as Error,
       );
       return null;
     }

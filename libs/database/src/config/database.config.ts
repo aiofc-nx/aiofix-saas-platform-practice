@@ -201,7 +201,7 @@ export const databaseConfig = registerAs('database', (): DatabaseConfig => {
   config.postgresql.host = process.env.DB_HOST || config.postgresql.host;
   config.postgresql.port = parseInt(
     process.env.DB_PORT || config.postgresql.port.toString(),
-    10
+    10,
   );
   config.postgresql.username =
     process.env.DB_USERNAME || config.postgresql.username;
@@ -223,41 +223,41 @@ export const databaseConfig = registerAs('database', (): DatabaseConfig => {
   // 连接池配置
   config.pool.min = parseInt(
     process.env.DB_POOL_MIN || config.pool.min.toString(),
-    10
+    10,
   );
   config.pool.max = parseInt(
     process.env.DB_POOL_MAX || config.pool.max.toString(),
-    10
+    10,
   );
   config.pool.acquireTimeoutMillis = parseInt(
     process.env.DB_POOL_ACQUIRE_TIMEOUT ||
       config.pool.acquireTimeoutMillis.toString(),
-    10
+    10,
   );
   config.pool.createTimeoutMillis = parseInt(
     process.env.DB_POOL_CREATE_TIMEOUT ||
       config.pool.createTimeoutMillis.toString(),
-    10
+    10,
   );
   config.pool.destroyTimeoutMillis = parseInt(
     process.env.DB_POOL_DESTROY_TIMEOUT ||
       config.pool.destroyTimeoutMillis.toString(),
-    10
+    10,
   );
   config.pool.idleTimeoutMillis = parseInt(
     process.env.DB_POOL_IDLE_TIMEOUT ||
       config.pool.idleTimeoutMillis.toString(),
-    10
+    10,
   );
   config.pool.reapIntervalMillis = parseInt(
     process.env.DB_POOL_REAP_INTERVAL ||
       config.pool.reapIntervalMillis.toString(),
-    10
+    10,
   );
   config.pool.createRetryIntervalMillis = parseInt(
     process.env.DB_POOL_CREATE_RETRY_INTERVAL ||
       config.pool.createRetryIntervalMillis.toString(),
-    10
+    10,
   );
 
   // MikroORM配置
@@ -278,7 +278,7 @@ export const databaseConfig = registerAs('database', (): DatabaseConfig => {
   config.logging.slowQueryThreshold = parseInt(
     process.env.DB_SLOW_QUERY_THRESHOLD ||
       config.logging.slowQueryThreshold.toString(),
-    10
+    10,
   );
 
   return config;

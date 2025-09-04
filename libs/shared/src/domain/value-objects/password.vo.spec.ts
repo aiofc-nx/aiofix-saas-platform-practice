@@ -32,7 +32,7 @@ describe('Password', () => {
 
   describe('constructor', () => {
     it('should create valid password value objects', () => {
-      validPasswords.forEach((password) => {
+      validPasswords.forEach(password => {
         const passwordVo = new Password(password);
         expect(passwordVo.value).toBe(password);
       });
@@ -44,15 +44,15 @@ describe('Password', () => {
     });
 
     it('should throw error for null or undefined', () => {
-      expect(() => new Password(null as any)).toThrow(InvalidPasswordError);
-      expect(() => new Password(undefined as any)).toThrow(
-        InvalidPasswordError
+      expect(() => new Password(null as unknown)).toThrow(InvalidPasswordError);
+      expect(() => new Password(undefined as unknown)).toThrow(
+        InvalidPasswordError,
       );
     });
 
     it('should throw error for non-string values', () => {
-      expect(() => new Password(123 as any)).toThrow(InvalidPasswordError);
-      expect(() => new Password({} as any)).toThrow(InvalidPasswordError);
+      expect(() => new Password(123 as unknown)).toThrow(InvalidPasswordError);
+      expect(() => new Password({} as unknown)).toThrow(InvalidPasswordError);
     });
   });
 
@@ -109,7 +109,7 @@ describe('Password', () => {
     it('should throw error for password deserialization', () => {
       const password = new Password('Password123!');
       expect(() => password.fromJSON('{"value":"hash"}')).toThrow(
-        InvalidPasswordError
+        InvalidPasswordError,
       );
     });
   });
@@ -210,7 +210,7 @@ describe('Password', () => {
         // 如果静态方法不存在，跳过测试
         if (typeof Password.fromString === 'function') {
           expect(() => Password.fromString('short')).toThrow(
-            InvalidPasswordError
+            InvalidPasswordError,
           );
         }
       });
@@ -218,7 +218,7 @@ describe('Password', () => {
 
     describe('isValid', () => {
       it('should return true for valid passwords', () => {
-        validPasswords.forEach((password) => {
+        validPasswords.forEach(password => {
           expect(Password.isValid(password)).toBe(true);
         });
       });
@@ -262,7 +262,7 @@ describe('Password', () => {
     it('should not throw for valid password', () => {
       const password = new Password('Password123!');
       expect(() => {
-        (password as any).validateInvariants();
+        (password as unknown).validateInvariants();
       }).not.toThrow();
     });
   });

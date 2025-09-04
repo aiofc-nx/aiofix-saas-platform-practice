@@ -4,7 +4,7 @@
  *
  * 该值对象封装用户名的业务规则和验证逻辑。
  * 遵循DDD原则，确保用户名的不可变性和值相等性。
- * 
+ *
  * 通用性说明：
  * 1. 跨领域使用：用户、认证、权限、审计、通知等所有领域都需要
  * 2. 标准化规则：用户名格式、长度、字符限制等规则相对统一
@@ -91,19 +91,19 @@ export class Username extends BaseValueObject {
 
     if (trimmedValue.length < Username.MIN_LENGTH) {
       throw new InvalidUsernameException(
-        `用户名长度不能少于${Username.MIN_LENGTH}个字符`
+        `用户名长度不能少于${Username.MIN_LENGTH}个字符`,
       );
     }
 
     if (trimmedValue.length > Username.MAX_LENGTH) {
       throw new InvalidUsernameException(
-        `用户名长度不能超过${Username.MAX_LENGTH}个字符`
+        `用户名长度不能超过${Username.MAX_LENGTH}个字符`,
       );
     }
 
     if (!Username.PATTERN.test(trimmedValue)) {
       throw new InvalidUsernameException(
-        '用户名只能包含字母、数字、下划线和连字符'
+        '用户名只能包含字母、数字、下划线和连字符',
       );
     }
 
@@ -189,10 +189,18 @@ export class Username extends BaseValueObject {
    */
   fromJSON(json: string): this {
     try {
-      const data = JSON.parse(json);
+      const data = JSON.parse(json) as { value: string };
+
+      if (typeof data.value !== 'string') {
+        throw new Error('Invalid JSON format: value must be a string');
+      }
+
       return new Username(data.value) as this;
     } catch {
-      throw new InvalidUsernameException('Invalid JSON format for Username', json);
+      throw new InvalidUsernameException(
+        'Invalid JSON format for Username',
+        json,
+      );
     }
   }
 

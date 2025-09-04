@@ -34,7 +34,7 @@ describe('Email', () => {
 
   describe('constructor', () => {
     it('should create valid email value objects', () => {
-      validEmails.forEach((email) => {
+      validEmails.forEach(email => {
         const emailVo = new Email(email);
         expect(emailVo.value).toBe(email);
       });
@@ -46,13 +46,13 @@ describe('Email', () => {
     });
 
     it('should throw error for null or undefined', () => {
-      expect(() => new Email(null as any)).toThrow(InvalidEmailError);
-      expect(() => new Email(undefined as any)).toThrow(InvalidEmailError);
+      expect(() => new Email(null as unknown)).toThrow(InvalidEmailError);
+      expect(() => new Email(undefined as unknown)).toThrow(InvalidEmailError);
     });
 
     it('should throw error for non-string values', () => {
-      expect(() => new Email(123 as any)).toThrow(InvalidEmailError);
-      expect(() => new Email({} as any)).toThrow(InvalidEmailError);
+      expect(() => new Email(123 as unknown)).toThrow(InvalidEmailError);
+      expect(() => new Email({} as unknown)).toThrow(InvalidEmailError);
     });
   });
 
@@ -133,7 +133,7 @@ describe('Email', () => {
           'temp@mailinator.com',
         ];
 
-        disposableEmails.forEach((email) => {
+        disposableEmails.forEach(email => {
           const emailVo = new Email(email);
           expect(emailVo.isDisposable()).toBe(true);
         });
@@ -146,7 +146,7 @@ describe('Email', () => {
           'support@example.org',
         ];
 
-        nonDisposableEmails.forEach((email) => {
+        nonDisposableEmails.forEach(email => {
           const emailVo = new Email(email);
           expect(emailVo.isDisposable()).toBe(false);
         });
@@ -161,7 +161,7 @@ describe('Email', () => {
           'support@business.net',
         ];
 
-        corporateEmails.forEach((email) => {
+        corporateEmails.forEach(email => {
           const emailVo = new Email(email);
           expect(emailVo.isCorporate()).toBe(true);
         });
@@ -174,7 +174,7 @@ describe('Email', () => {
           'temp@hotmail.com',
         ];
 
-        nonCorporateEmails.forEach((email) => {
+        nonCorporateEmails.forEach(email => {
           const emailVo = new Email(email);
           expect(emailVo.isCorporate()).toBe(false);
         });
@@ -191,14 +191,14 @@ describe('Email', () => {
 
       it('should throw error for invalid string', () => {
         expect(() => Email.fromString('invalid-email')).toThrow(
-          InvalidEmailError
+          InvalidEmailError,
         );
       });
     });
 
     describe('isValid', () => {
       it('should return true for valid emails', () => {
-        validEmails.forEach((email) => {
+        validEmails.forEach(email => {
           expect(Email.isValid(email)).toBe(true);
         });
       });
@@ -225,7 +225,7 @@ describe('Email', () => {
     it('should not throw for valid email', () => {
       const email = new Email('test@example.com');
       expect(() => {
-        (email as any).validateInvariants();
+        (email as unknown).validateInvariants();
       }).not.toThrow();
     });
   });

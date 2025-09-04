@@ -5,12 +5,16 @@
 
 import { WebhookNotification } from './webhook-notification.entity';
 import { Uuid } from '@aiofix/shared';
-import { NotificationType, NotificationStatus, NotificationPriority } from '@aiofix/shared';
+import {
+  NotificationType,
+  NotificationStatus,
+  NotificationPriority,
+} from '@aiofix/shared';
 
 // Mock WebhookUrl
 class MockWebhookUrl {
   constructor(public readonly value: string) {}
-  
+
   static create(url: string): MockWebhookUrl {
     return new MockWebhookUrl(url);
   }
@@ -44,7 +48,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.type).toBe(NotificationType.WEBHOOK);
@@ -65,7 +69,7 @@ describe('WebhookNotification', () => {
         recipients,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
 
       expect(notification.scheduledAt).toEqual(scheduledAt);
@@ -80,7 +84,7 @@ describe('WebhookNotification', () => {
         data,
         priority,
         undefined,
-        metadata
+        metadata,
       );
 
       expect(notification.metadata).toEqual(metadata);
@@ -89,14 +93,14 @@ describe('WebhookNotification', () => {
     it('应该通过 createFromStrings 创建Webhook通知', () => {
       const recipientUrls = [
         'https://api.example.com/webhook1',
-        'https://api.example.com/webhook2'
+        'https://api.example.com/webhook2',
       ];
       const notification = WebhookNotification.createFromStrings(
         tenantId,
         templateId,
         recipientUrls,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipientUrls).toEqual(recipientUrls);
@@ -104,13 +108,15 @@ describe('WebhookNotification', () => {
     });
 
     it('应该拒绝创建没有收件人的Webhook通知', () => {
-      expect(() => WebhookNotification.createFromStrings(
-        tenantId,
-        templateId,
-        [],
-        data,
-        priority
-      )).toThrow('Webhook通知必须包含至少一个收件人');
+      expect(() =>
+        WebhookNotification.createFromStrings(
+          tenantId,
+          templateId,
+          [],
+          data,
+          priority,
+        ),
+      ).toThrow('Webhook通知必须包含至少一个收件人');
     });
   });
 
@@ -123,7 +129,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -140,7 +146,7 @@ describe('WebhookNotification', () => {
         providerMessageId: 'provider-msg-123',
         retryCount: 0,
         responseStatus: 200,
-        responseBody: '{"success": true}'
+        responseBody: '{"success": true}',
       };
 
       notification.markAsSent(sendParams);
@@ -164,7 +170,7 @@ describe('WebhookNotification', () => {
         provider: 'http-client',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       };
 
       notification.markAsFailed(failParams);
@@ -186,7 +192,7 @@ describe('WebhookNotification', () => {
         provider: 'http-client',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.retry();
@@ -204,7 +210,7 @@ describe('WebhookNotification', () => {
         provider: 'http-client',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.resetForRetry();
@@ -237,38 +243,44 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
     it('应该拒绝从非待发送状态标记为发送中', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSending()).toThrow('只有待发送状态的通知才能标记为发送中');
+
+      expect(() => notification.markAsSending()).toThrow(
+        '只有待发送状态的通知才能标记为发送中',
+      );
     });
 
     it('应该拒绝从非待发送状态标记为已发送', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSent({
-        messageId: 'msg-123',
-        deliveryStatus: 'delivered',
-        provider: 'http-client',
-        retryCount: 0
-      })).toThrow('只有待发送状态的通知才能标记为已发送');
+
+      expect(() =>
+        notification.markAsSent({
+          messageId: 'msg-123',
+          deliveryStatus: 'delivered',
+          provider: 'http-client',
+          retryCount: 0,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为已发送');
     });
 
     it('应该拒绝从非待发送状态标记为失败', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsFailed({
-        errorCode: 'HTTP_ERROR',
-        errorMessage: '连接超时',
-        provider: 'http-client',
-        retryCount: 0,
-        maxRetries: 3,
-        canRetry: true
-      })).toThrow('只有待发送状态的通知才能标记为失败');
+
+      expect(() =>
+        notification.markAsFailed({
+          errorCode: 'HTTP_ERROR',
+          errorMessage: '连接超时',
+          provider: 'http-client',
+          retryCount: 0,
+          maxRetries: 3,
+          canRetry: true,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为失败');
     });
 
     it('应该拒绝从非失败状态重试', () => {
@@ -276,7 +288,9 @@ describe('WebhookNotification', () => {
     });
 
     it('应该拒绝从非失败状态重置重试', () => {
-      expect(() => notification.resetForRetry()).toThrow('只有失败状态的通知才能重试');
+      expect(() => notification.resetForRetry()).toThrow(
+        '只有失败状态的通知才能重试',
+      );
     });
 
     it('应该拒绝重试超过最大次数', () => {
@@ -287,7 +301,7 @@ describe('WebhookNotification', () => {
         provider: 'http-client',
         retryCount: 2,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       // 重试3次，达到最大次数
@@ -298,7 +312,7 @@ describe('WebhookNotification', () => {
         provider: 'http-client',
         retryCount: 3,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.retry()).toThrow('已达到最大重试次数');
@@ -309,7 +323,7 @@ describe('WebhookNotification', () => {
         messageId: 'msg-123',
         deliveryStatus: 'delivered',
         provider: 'http-client',
-        retryCount: 0
+        retryCount: 0,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -322,7 +336,7 @@ describe('WebhookNotification', () => {
         provider: 'http-client',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -336,7 +350,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
       expect(notification1.isScheduled()).toBe(false);
 
@@ -347,7 +361,7 @@ describe('WebhookNotification', () => {
         recipients,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
       expect(notification2.isScheduled()).toBe(true);
     });
@@ -358,7 +372,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
       expect(notification1.shouldSendNow()).toBe(true);
 
@@ -370,7 +384,7 @@ describe('WebhookNotification', () => {
         recipients,
         data,
         priority,
-        futureTime
+        futureTime,
       );
       expect(notification2.shouldSendNow()).toBe(false);
 
@@ -382,7 +396,7 @@ describe('WebhookNotification', () => {
         recipients,
         data,
         priority,
-        pastTime
+        pastTime,
       );
       expect(notification3.shouldSendNow()).toBe(true);
     });
@@ -395,7 +409,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.validateRecipient()).toBe(true);
@@ -405,7 +419,7 @@ describe('WebhookNotification', () => {
       const multipleRecipients = [
         MockWebhookUrl.create('https://api.example.com/webhook1'),
         MockWebhookUrl.create('https://api.example.com/webhook2'),
-        MockWebhookUrl.create('https://api.example.com/webhook3')
+        MockWebhookUrl.create('https://api.example.com/webhook3'),
       ];
 
       const notification = WebhookNotification.create(
@@ -413,23 +427,25 @@ describe('WebhookNotification', () => {
         templateId,
         multipleRecipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(multipleRecipients);
       expect(notification.recipientUrls).toEqual([
         'https://api.example.com/webhook1',
         'https://api.example.com/webhook2',
-        'https://api.example.com/webhook3'
+        'https://api.example.com/webhook3',
       ]);
-      expect(notification.recipient).toBe('https://api.example.com/webhook1,https://api.example.com/webhook2,https://api.example.com/webhook3');
+      expect(notification.recipient).toBe(
+        'https://api.example.com/webhook1,https://api.example.com/webhook2,https://api.example.com/webhook3',
+      );
     });
 
     it('应该处理不同协议的Webhook URL', () => {
       const differentProtocolUrls = [
         MockWebhookUrl.create('https://api.example.com/webhook'),
         MockWebhookUrl.create('http://internal.example.com/webhook'),
-        MockWebhookUrl.create('https://webhook.site/abc123')
+        MockWebhookUrl.create('https://webhook.site/abc123'),
       ];
 
       const notification = WebhookNotification.create(
@@ -437,14 +453,14 @@ describe('WebhookNotification', () => {
         templateId,
         differentProtocolUrls,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(differentProtocolUrls);
       expect(notification.recipientUrls).toEqual([
         'https://api.example.com/webhook',
         'http://internal.example.com/webhook',
-        'https://webhook.site/abc123'
+        'https://webhook.site/abc123',
       ]);
     });
   });
@@ -458,7 +474,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -497,7 +513,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -513,7 +529,7 @@ describe('WebhookNotification', () => {
         'INVALID_URL',
         'RATE_LIMIT_EXCEEDED',
         'AUTHENTICATION_FAILED',
-        'INVALID_RESPONSE'
+        'INVALID_RESPONSE',
       ];
 
       webhookErrorCodes.forEach(errorCode => {
@@ -523,11 +539,11 @@ describe('WebhookNotification', () => {
           provider: 'http-client',
           retryCount: 0,
           maxRetries: 3,
-          canRetry: true
+          canRetry: true,
         });
 
         expect(notification.errorCode).toBe(errorCode);
-        
+
         // 重置状态以便下次测试
         notification.resetForRetry();
       });
@@ -540,7 +556,7 @@ describe('WebhookNotification', () => {
         'fetch',
         'got',
         'superagent',
-        'request'
+        'request',
       ];
 
       webhookProviders.forEach(provider => {
@@ -548,45 +564,50 @@ describe('WebhookNotification', () => {
           messageId: 'msg-123',
           deliveryStatus: 'delivered',
           provider,
-          retryCount: 0
+          retryCount: 0,
         });
 
         expect(notification.provider).toBe(provider);
-        
+
         // 重置状态以便下次测试
         notification = WebhookNotification.create(
           tenantId,
           templateId,
           recipients,
           data,
-          priority
+          priority,
         );
       });
     });
 
     it('应该正确处理HTTP响应状态码', () => {
-      const responseStatuses = [200, 201, 204, 400, 401, 403, 404, 500, 502, 503];
+      const responseStatuses = [
+        200, 201, 204, 400, 401, 403, 404, 500, 502, 503,
+      ];
 
       responseStatuses.forEach(status => {
         notification.markAsSent({
           messageId: 'msg-123',
-          deliveryStatus: status >= 200 && status < 300 ? 'delivered' : 'failed',
+          deliveryStatus:
+            status >= 200 && status < 300 ? 'delivered' : 'failed',
           provider: 'http-client',
           retryCount: 0,
           responseStatus: status,
-          responseBody: `Response with status ${status}`
+          responseBody: `Response with status ${status}`,
         });
 
         expect(notification.responseStatus).toBe(status);
-        expect(notification.responseBody).toBe(`Response with status ${status}`);
-        
+        expect(notification.responseBody).toBe(
+          `Response with status ${status}`,
+        );
+
         // 重置状态以便下次测试
         notification = WebhookNotification.create(
           tenantId,
           templateId,
           recipients,
           data,
-          priority
+          priority,
         );
       });
     });
@@ -594,8 +615,8 @@ describe('WebhookNotification', () => {
     it('应该正确处理Webhook请求头', () => {
       const headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer token123',
-        'X-Custom-Header': 'custom-value'
+        Authorization: 'Bearer token123',
+        'X-Custom-Header': 'custom-value',
       };
 
       const notificationWithHeaders = WebhookNotification.create(
@@ -603,7 +624,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         { ...data, headers },
-        priority
+        priority,
       );
 
       expect(notificationWithHeaders.data.headers).toEqual(headers);
@@ -618,7 +639,7 @@ describe('WebhookNotification', () => {
           templateId,
           recipients,
           { ...data, method },
-          priority
+          priority,
         );
 
         expect(notificationWithMethod.data.method).toBe(method);
@@ -628,13 +649,9 @@ describe('WebhookNotification', () => {
 
   describe('边界情况', () => {
     it('应该处理空收件人列表', () => {
-      expect(() => WebhookNotification.create(
-        tenantId,
-        templateId,
-        [],
-        data,
-        priority
-      )).toThrow('Webhook通知必须包含至少一个收件人');
+      expect(() =>
+        WebhookNotification.create(tenantId, templateId, [], data, priority),
+      ).toThrow('Webhook通知必须包含至少一个收件人');
     });
 
     it('应该处理空数据对象', () => {
@@ -643,7 +660,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         {},
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual({});
@@ -657,7 +674,7 @@ describe('WebhookNotification', () => {
         data,
         priority,
         undefined,
-        {}
+        {},
       );
 
       expect(notification.metadata).toEqual({});
@@ -667,7 +684,7 @@ describe('WebhookNotification', () => {
       const specialData = {
         userName: '张三🎉',
         company: '测试公司🚀',
-        message: '包含特殊字符: !@#$%^&*()'
+        message: '包含特殊字符: !@#$%^&*()',
       };
 
       const notification = WebhookNotification.create(
@@ -675,7 +692,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         specialData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(specialData);
@@ -690,7 +707,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         longData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(longData);
@@ -711,10 +728,10 @@ describe('WebhookNotification', () => {
               notifications: {
                 email: true,
                 sms: false,
-                push: true
-              }
-            }
-          }
+                push: true,
+              },
+            },
+          },
         },
         event: {
           type: 'user_registration',
@@ -722,9 +739,9 @@ describe('WebhookNotification', () => {
           metadata: {
             source: 'web',
             ip: '192.168.1.1',
-            userAgent: 'Mozilla/5.0...'
-          }
-        }
+            userAgent: 'Mozilla/5.0...',
+          },
+        },
       };
 
       const notification = WebhookNotification.create(
@@ -732,7 +749,7 @@ describe('WebhookNotification', () => {
         templateId,
         recipients,
         complexData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(complexData);
@@ -742,8 +759,12 @@ describe('WebhookNotification', () => {
       const differentFormatUrls = [
         MockWebhookUrl.create('https://api.example.com/webhook'),
         MockWebhookUrl.create('https://webhook.site/abc123'),
-        MockWebhookUrl.create('https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX'),
-        MockWebhookUrl.create('https://discord.com/api/webhooks/123456789/abcdefghijklmnopqrstuvwxyz')
+        MockWebhookUrl.create(
+          'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX',
+        ),
+        MockWebhookUrl.create(
+          'https://discord.com/api/webhooks/123456789/abcdefghijklmnopqrstuvwxyz',
+        ),
       ];
 
       const notification = WebhookNotification.create(
@@ -751,7 +772,7 @@ describe('WebhookNotification', () => {
         templateId,
         differentFormatUrls,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(differentFormatUrls);
@@ -759,9 +780,8 @@ describe('WebhookNotification', () => {
         'https://api.example.com/webhook',
         'https://webhook.site/abc123',
         'https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX',
-        'https://discord.com/api/webhooks/123456789/abcdefghijklmnopqrstuvwxyz'
+        'https://discord.com/api/webhooks/123456789/abcdefghijklmnopqrstuvwxyz',
       ]);
     });
   });
 });
-

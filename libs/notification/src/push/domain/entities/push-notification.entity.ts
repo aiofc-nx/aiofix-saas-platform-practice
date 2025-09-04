@@ -75,7 +75,7 @@ export class PushNotification
     data: Record<string, unknown>,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ) {
     super(tenantId, DataIsolationLevel.TENANT, DataPrivacyLevel.PROTECTED, id);
     this._templateId = templateId;
@@ -373,7 +373,7 @@ export class PushNotification
    * @returns {boolean} 收件人格式是否有效
    */
   validateRecipient(): boolean {
-    return this._recipients.every((token) => this.isValidDeviceToken(token));
+    return this._recipients.every(token => this.isValidDeviceToken(token));
   }
 
   /**
@@ -424,7 +424,7 @@ export class PushNotification
     data: Record<string, unknown>,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): PushNotification {
     const id = Uuid.generate();
     return new PushNotification(
@@ -435,7 +435,7 @@ export class PushNotification
       data,
       priority,
       scheduledAt,
-      metadata
+      metadata,
     );
   }
 }

@@ -64,7 +64,7 @@ export class CacheKeyFactory implements ICacheKeyFactory {
   createNamespace(
     namespace: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, {
       ...options,
@@ -83,7 +83,7 @@ export class CacheKeyFactory implements ICacheKeyFactory {
   createTenant(
     tenantId: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, {
       ...options,
@@ -102,7 +102,7 @@ export class CacheKeyFactory implements ICacheKeyFactory {
   createUser(
     userId: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, {
       ...options,
@@ -121,7 +121,7 @@ export class CacheKeyFactory implements ICacheKeyFactory {
   createTagged(
     key: string,
     tags: string[],
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, {
       ...options,
@@ -224,7 +224,7 @@ export class CacheKeyFactory implements ICacheKeyFactory {
       currentIndex++; // 跳过 'tags'
       if (currentIndex < parts.length) {
         const tagsString = parts[currentIndex];
-        cacheKey.tags = tagsString.split(',').filter((tag) => tag.length > 0);
+        cacheKey.tags = tagsString.split(',').filter(tag => tag.length > 0);
         currentIndex++;
       }
     }
@@ -421,10 +421,10 @@ export class CacheKeyFactory implements ICacheKeyFactory {
     }
 
     return tags
-      .filter((tag) => tag && typeof tag === 'string')
-      .map((tag) => tag.trim())
-      .filter((tag) => tag.length > 0)
-      .map((tag) => tag.replace(/[^a-zA-Z0-9\-_]/g, '_'))
+      .filter(tag => tag && typeof tag === 'string')
+      .map(tag => tag.trim())
+      .filter(tag => tag.length > 0)
+      .map(tag => tag.replace(/[^a-zA-Z0-9\-_]/g, '_'))
       .filter((tag, index, array) => array.indexOf(tag) === index); // 去重
   }
 }

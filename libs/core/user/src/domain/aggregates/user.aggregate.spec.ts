@@ -1,6 +1,6 @@
 /**
  * @description UserAggregate单元测试
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 
@@ -16,7 +16,6 @@ describe('UserAggregate', () => {
   let userId: UserId;
   let username: Username;
   let email: Email;
-  let phone: PhoneNumber;
   let tenantId: TenantId;
   let organizationId: TenantId;
   let departmentIds: TenantId[];
@@ -25,7 +24,6 @@ describe('UserAggregate', () => {
     userId = UserId.create(UserTestFactory.createUserId());
     username = Username.create(UserTestFactory.createValidUsername());
     email = new Email(UserTestFactory.createValidEmail());
-    phone = PhoneNumber.create(UserTestFactory.createValidPhone());
     tenantId = TenantId.create(UserTestFactory.createTenantId());
     organizationId = TenantId.create(UserTestFactory.createOrganizationId());
     departmentIds = [TenantId.create(UserTestFactory.createDepartmentId())];
@@ -38,7 +36,7 @@ describe('UserAggregate', () => {
       organizationId,
       departmentIds,
       UserType.TENANT_USER,
-      DataPrivacyLevel.PROTECTED
+      DataPrivacyLevel.PROTECTED,
     );
   });
 
@@ -76,13 +74,15 @@ describe('UserAggregate', () => {
           userId,
           username,
           email,
-          tenantId
+          tenantId,
         );
 
         expect(simpleAggregate.user.organizationId).toBeUndefined();
         expect(simpleAggregate.user.departmentIds).toEqual([]);
         expect(simpleAggregate.user.userType).toBe(UserType.TENANT_USER);
-        expect(simpleAggregate.user.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
+        expect(simpleAggregate.user.dataPrivacyLevel).toBe(
+          DataPrivacyLevel.PROTECTED,
+        );
       });
     });
 
@@ -91,7 +91,7 @@ describe('UserAggregate', () => {
         const platformAggregate = UserAggregate.createPlatformUser(
           userId,
           username,
-          email
+          email,
         );
 
         expect(platformAggregate.user.userType).toBe(UserType.PLATFORM_USER);
@@ -109,7 +109,7 @@ describe('UserAggregate', () => {
           email,
           tenantId,
           organizationId,
-          departmentIds
+          departmentIds,
         );
 
         expect(tenantAggregate.user.userType).toBe(UserType.TENANT_USER);
@@ -222,7 +222,7 @@ describe('UserAggregate', () => {
         const profileData = {
           displayName: 'Updated Name',
           bio: 'Updated bio',
-          location: 'Updated location'
+          location: 'Updated location',
         };
 
         userAggregate.updateProfile(profileData);
@@ -237,7 +237,7 @@ describe('UserAggregate', () => {
         const originalLocation = userAggregate.profile!.location;
 
         userAggregate.updateProfile({
-          displayName: 'New Name'
+          displayName: 'New Name',
         });
 
         expect(userAggregate.profile!.displayName).toBe('New Name');
@@ -251,7 +251,7 @@ describe('UserAggregate', () => {
         const relationship = userAggregate.createRelationship(
           'target-123',
           'TENANT_MEMBER',
-          'ACTIVE'
+          'ACTIVE',
         );
 
         userAggregate.addRelationship(relationship);
@@ -264,7 +264,7 @@ describe('UserAggregate', () => {
         const relationship = userAggregate.createRelationship(
           'target-123',
           'TENANT_MEMBER',
-          'ACTIVE'
+          'ACTIVE',
         );
 
         userAggregate.addRelationship(relationship);
@@ -279,7 +279,7 @@ describe('UserAggregate', () => {
         const relationship = userAggregate.createRelationship(
           'target-123',
           'TENANT_MEMBER',
-          'ACTIVE'
+          'ACTIVE',
         );
 
         userAggregate.addRelationship(relationship);
@@ -300,7 +300,7 @@ describe('UserAggregate', () => {
         const relationship = userAggregate.createRelationship(
           'target-123',
           'TENANT_MEMBER',
-          'ACTIVE'
+          'ACTIVE',
         );
 
         expect(relationship).toBeDefined();
@@ -316,7 +316,7 @@ describe('UserAggregate', () => {
         const relationship = userAggregate.createRelationship(
           'target-123',
           'TENANT_MEMBER',
-          'ACTIVE'
+          'ACTIVE',
         );
 
         userAggregate.addRelationship(relationship);
@@ -347,7 +347,7 @@ describe('UserAggregate', () => {
       const platformAggregate = UserAggregate.createPlatformUser(
         userId,
         username,
-        email
+        email,
       );
       expect(platformAggregate.isPlatformUser()).toBe(true);
     });
@@ -358,7 +358,7 @@ describe('UserAggregate', () => {
       const platformAggregate = UserAggregate.createPlatformUser(
         userId,
         username,
-        email
+        email,
       );
       expect(platformAggregate.isTenantUser()).toBe(false);
     });
@@ -366,14 +366,20 @@ describe('UserAggregate', () => {
 
   describe('事件管理', () => {
     it('应该正确添加未提交事件', () => {
-      const event = { type: 'UserCreated', data: { userId: userId.toString() } };
+      const event = {
+        type: 'UserCreated',
+        data: { userId: userId.toString() },
+      };
       userAggregate.addUncommittedEvent(event);
 
       expect(userAggregate.uncommittedEvents).toContain(event);
     });
 
     it('应该正确标记事件为已提交', () => {
-      const event = { type: 'UserCreated', data: { userId: userId.toString() } };
+      const event = {
+        type: 'UserCreated',
+        data: { userId: userId.toString() },
+      };
       userAggregate.addUncommittedEvent(event);
 
       expect(userAggregate.uncommittedEvents).toHaveLength(1);
@@ -396,7 +402,7 @@ describe('UserAggregate', () => {
         userId,
         username,
         email,
-        tenantId
+        tenantId,
       );
 
       expect(aggregateWithoutDepartments.user.departmentIds).toEqual([]);
@@ -407,7 +413,7 @@ describe('UserAggregate', () => {
         userId,
         username,
         email,
-        tenantId
+        tenantId,
       );
 
       expect(aggregateWithoutOrganization.user.organizationId).toBeUndefined();
@@ -425,45 +431,25 @@ describe('UserAggregate', () => {
   describe('错误处理', () => {
     it('应该验证用户ID不能为空', () => {
       expect(() => {
-        UserAggregate.create(
-          null as any,
-          username,
-          email,
-          tenantId
-        );
+        UserAggregate.create(null as unknown, username, email, tenantId);
       }).toThrow();
     });
 
     it('应该验证用户名不能为空', () => {
       expect(() => {
-        UserAggregate.create(
-          userId,
-          null as any,
-          email,
-          tenantId
-        );
+        UserAggregate.create(userId, null as unknown, email, tenantId);
       }).toThrow();
     });
 
     it('应该验证邮箱不能为空', () => {
       expect(() => {
-        UserAggregate.create(
-          userId,
-          username,
-          null as any,
-          tenantId
-        );
+        UserAggregate.create(userId, username, null as unknown, tenantId);
       }).toThrow();
     });
 
     it('应该验证租户ID不能为空', () => {
       expect(() => {
-        UserAggregate.create(
-          userId,
-          username,
-          email,
-          null as any
-        );
+        UserAggregate.create(userId, username, email, null as unknown);
       }).toThrow();
     });
   });

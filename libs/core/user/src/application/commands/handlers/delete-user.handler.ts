@@ -24,22 +24,29 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { CommandHandler } from '@aiofix/shared';
+import { ICommandHandler } from '@nestjs/cqrs';
 import { DeleteUserCommand } from '../delete-user.command';
-import { UserLifecycleService } from '../../../domain/domain-services/user-lifecycle.service';
-import { EventBus } from '@aiofix/shared';
-import { UserDeletedEvent } from '../../../domain/domain-events';
+import { UserManagementService } from '../../services/user-management.service';
+import { EventBus } from '@nestjs/cqrs';
+import { UserDeletedEvent } from '../../../domain/domain-events/user-deleted.event';
+import { PinoLoggerService } from '@aiofix/logging';
+import { LogContext } from '@aiofix/logging';
 
 /**
  * 删除用户命令处理器
  * @description 处理用户删除命令
  */
 @Injectable()
-export class DeleteUserHandler implements CommandHandler<DeleteUserCommand> {
+export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
+  private readonly logger: PinoLoggerService;
+
   constructor(
-    private readonly userLifecycleService: UserLifecycleService,
-    private readonly eventBus: EventBus
-  ) {}
+    private readonly userManagementService: UserManagementService,
+    private readonly eventBus: EventBus,
+    logger: PinoLoggerService,
+  ) {
+    this.logger = logger;
+  }
 
   /**
    * 执行删除用户命令
@@ -56,7 +63,7 @@ export class DeleteUserHandler implements CommandHandler<DeleteUserCommand> {
 
       // 2. 执行用户删除逻辑
       let success = false;
-      
+
       if (command.isSoftDelete()) {
         // 软删除：标记用户为已删除状态
         success = await this.softDeleteUser(command);
@@ -76,17 +83,29 @@ export class DeleteUserHandler implements CommandHandler<DeleteUserCommand> {
           command.softDelete,
           command.reason,
           command.deletedBy,
-          command.cascadeDelete
-        )
+          command.cascadeDelete,
+        ),
       );
 
       // 4. 返回删除结果
       return success;
-
     } catch (error) {
       // 5. 处理错误情况
-      console.error('处理删除用户命令失败:', error);
-      
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      const errorName = error instanceof Error ? error.name : 'UnknownError';
+
+      this.logger.error('处理删除用户命令失败', LogContext.BUSINESS, {
+        commandId: command.commandId,
+        userId: command.userId.toString(),
+        error: {
+          message: errorMessage,
+          stack: errorStack,
+          name: errorName,
+        },
+      });
+
       // 发布用户删除失败事件
       await this.eventBus.publish(
         new UserDeletedEvent(
@@ -96,8 +115,8 @@ export class DeleteUserHandler implements CommandHandler<DeleteUserCommand> {
           command.deletedBy,
           command.cascadeDelete,
           false, // 删除失败
-          error instanceof Error ? error.message : '未知错误'
-        )
+          error instanceof Error ? error.message : '未知错误',
+        ),
       );
 
       throw error;
@@ -116,11 +135,19 @@ export class DeleteUserHandler implements CommandHandler<DeleteUserCommand> {
       // 1. 更新用户状态为已删除
       // 2. 记录删除时间和原因
       // 3. 保留用户数据用于审计
-      
-      console.log(`软删除用户: ${command.userId.toString()}, 原因: ${command.reason}`);
+
+      this.logger.info('软删除用户', LogContext.BUSINESS, {
+        userId: command.userId.toString(),
+        reason: command.reason,
+      });
       return true;
     } catch (error) {
-      console.error('软删除用户失败:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error('软删除用户失败', LogContext.BUSINESS, {
+        userId: command.userId.toString(),
+        error: errorMessage,
+      });
       return false;
     }
   }
@@ -138,17 +165,27 @@ export class DeleteUserHandler implements CommandHandler<DeleteUserCommand> {
       // 2. 删除用户档案
       // 3. 删除用户关系
       // 4. 如果启用级联删除，删除相关数据
-      
-      console.log(`硬删除用户: ${command.userId.toString()}, 原因: ${command.reason}`);
-      
+
+      this.logger.info('硬删除用户', LogContext.BUSINESS, {
+        userId: command.userId.toString(),
+        reason: command.reason,
+      });
+
       if (command.isCascadeDelete()) {
-        console.log('启用级联删除，删除相关数据');
+        this.logger.info('启用级联删除，删除相关数据', LogContext.BUSINESS, {
+          userId: command.userId.toString(),
+        });
         // TODO: 实现级联删除逻辑
       }
-      
+
       return true;
     } catch (error) {
-      console.error('硬删除用户失败:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error('硬删除用户失败', LogContext.BUSINESS, {
+        userId: command.userId.toString(),
+        error: errorMessage,
+      });
       return false;
     }
   }
@@ -160,11 +197,13 @@ export class DeleteUserHandler implements CommandHandler<DeleteUserCommand> {
    * @returns {boolean} 命令是否有效
    */
   validate(command: DeleteUserCommand): boolean {
-    return !!(command && 
-           command.userId && 
-           command.commandId &&
-           command.timestamp &&
-           command.occurredOn);
+    return !!(
+      command &&
+      command.userId &&
+      command.commandId &&
+      command.timestamp &&
+      command.occurredOn
+    );
   }
 
   /**

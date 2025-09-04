@@ -38,7 +38,7 @@ describe('UserProfile', () => {
       DataPrivacyLevel.PROTECTED,
       undefined,
       organizationId,
-      [departmentId]
+      [departmentId],
     );
   });
 
@@ -51,7 +51,7 @@ describe('UserProfile', () => {
         DataPrivacyLevel.SHARED,
         undefined,
         organizationId,
-        [departmentId]
+        [departmentId],
       );
 
       expect(profile.tenantId).toBe(tenantId);
@@ -82,7 +82,7 @@ describe('UserProfile', () => {
         'Partial User',
         DataPrivacyLevel.SHARED,
         undefined,
-        organizationId
+        organizationId,
       );
 
       expect(profile.displayName).toBe('Partial User');
@@ -144,7 +144,7 @@ describe('UserProfile', () => {
       setTimeout(() => {
         userProfile.updateDisplayName('New Name');
         expect(userProfile.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -170,7 +170,7 @@ describe('UserProfile', () => {
       setTimeout(() => {
         userProfile.updateAvatar('https://example.com/new-avatar.jpg');
         expect(userProfile.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -189,7 +189,7 @@ describe('UserProfile', () => {
       setTimeout(() => {
         userProfile.updateBio('New bio');
         expect(userProfile.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -208,7 +208,7 @@ describe('UserProfile', () => {
       setTimeout(() => {
         userProfile.updateLocation('New York, NY');
         expect(userProfile.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -227,7 +227,7 @@ describe('UserProfile', () => {
       setTimeout(() => {
         userProfile.updateWebsite('https://newwebsite.com');
         expect(userProfile.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -279,7 +279,7 @@ describe('UserProfile', () => {
       setTimeout(() => {
         userProfile.addSocialLink('twitter', 'https://twitter.com/johndoe');
         expect(userProfile.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -340,7 +340,7 @@ describe('UserProfile', () => {
       setTimeout(() => {
         userProfile.setPreference('theme', 'dark');
         expect(userProfile.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -394,7 +394,7 @@ describe('UserProfile', () => {
           userId,
           'Public User',
           organizationId,
-          [departmentId]
+          [departmentId],
         );
 
         expect(publicProfile.displayName).toBe('Public User');
@@ -409,7 +409,7 @@ describe('UserProfile', () => {
         const publicProfile = UserProfile.createPublicProfile(
           tenantId,
           userId,
-          'Public User'
+          'Public User',
         );
 
         expect(publicProfile.displayName).toBe('Public User');
@@ -426,12 +426,12 @@ describe('UserProfile', () => {
           userId,
           'Private User',
           organizationId,
-          [departmentId]
+          [departmentId],
         );
 
         expect(privateProfile.displayName).toBe('Private User');
         expect(privateProfile.dataPrivacyLevel).toBe(
-          DataPrivacyLevel.PROTECTED
+          DataPrivacyLevel.PROTECTED,
         );
         expect(privateProfile.tenantId).toBe(tenantId);
         expect(privateProfile.userId).toBe(userId);
@@ -443,12 +443,12 @@ describe('UserProfile', () => {
         const privateProfile = UserProfile.createPrivateProfile(
           tenantId,
           userId,
-          'Private User'
+          'Private User',
         );
 
         expect(privateProfile.displayName).toBe('Private User');
         expect(privateProfile.dataPrivacyLevel).toBe(
-          DataPrivacyLevel.PROTECTED
+          DataPrivacyLevel.PROTECTED,
         );
         expect(privateProfile.organizationId).toBeUndefined();
         expect(privateProfile.departmentIds).toEqual([]);
@@ -488,7 +488,7 @@ describe('UserProfile', () => {
       const sharedProfile = UserProfile.createPublicProfile(
         tenantId,
         userId,
-        'Shared User'
+        'Shared User',
       );
       expect(sharedProfile.isSharedData()).toBe(true);
       expect(sharedProfile.isProtectedData()).toBe(false);

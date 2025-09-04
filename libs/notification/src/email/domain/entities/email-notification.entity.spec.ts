@@ -15,7 +15,7 @@ class MockEmailAddress {
     this.localPart = parts[0];
     this.domain = parts[1] || '';
   }
-  
+
   static create(email: string): MockEmailAddress {
     return new MockEmailAddress(email);
   }
@@ -40,7 +40,11 @@ import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { EmailNotification } from './email-notification.entity';
 import { EmailSubject } from '../value-objects/email-subject.vo';
 import { Uuid } from '@aiofix/shared';
-import { NotificationType, NotificationStatus, NotificationPriority } from '@aiofix/shared';
+import {
+  NotificationType,
+  NotificationStatus,
+  NotificationPriority,
+} from '@aiofix/shared';
 
 describe('EmailNotification', () => {
   let tenantId: Uuid;
@@ -62,9 +66,9 @@ describe('EmailNotification', () => {
       const notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
-        priority
+        priority,
       );
 
       expect(notification.type).toBe(NotificationType.EMAIL);
@@ -82,11 +86,11 @@ describe('EmailNotification', () => {
       const notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
         priority,
         undefined,
-        subject
+        subject,
       );
 
       expect(notification.subject).toBe(subject);
@@ -97,10 +101,10 @@ describe('EmailNotification', () => {
       const notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
 
       expect(notification.scheduledAt).toEqual(scheduledAt);
@@ -111,12 +115,12 @@ describe('EmailNotification', () => {
       const notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
         priority,
         undefined,
         undefined,
-        metadata
+        metadata,
       );
 
       expect(notification.metadata).toEqual(metadata);
@@ -129,7 +133,7 @@ describe('EmailNotification', () => {
         templateId,
         recipientEmails,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipientEmails).toEqual(recipientEmails);
@@ -137,13 +141,15 @@ describe('EmailNotification', () => {
     });
 
     it('应该拒绝创建没有收件人的邮件通知', () => {
-      expect(() => EmailNotification.createFromStrings(
-        tenantId,
-        templateId,
-        [],
-        data,
-        priority
-      )).toThrow('邮件通知必须包含至少一个收件人');
+      expect(() =>
+        EmailNotification.createFromStrings(
+          tenantId,
+          templateId,
+          [],
+          data,
+          priority,
+        ),
+      ).toThrow('邮件通知必须包含至少一个收件人');
     });
   });
 
@@ -154,9 +160,9 @@ describe('EmailNotification', () => {
       notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
-        priority
+        priority,
       );
     });
 
@@ -171,7 +177,7 @@ describe('EmailNotification', () => {
         deliveryStatus: 'delivered',
         provider: 'smtp',
         providerMessageId: 'provider-msg-123',
-        retryCount: 0
+        retryCount: 0,
       };
 
       notification.markAsSent(sendParams);
@@ -193,7 +199,7 @@ describe('EmailNotification', () => {
         provider: 'smtp',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       };
 
       notification.markAsFailed(failParams);
@@ -215,7 +221,7 @@ describe('EmailNotification', () => {
         provider: 'smtp',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.retry();
@@ -233,7 +239,7 @@ describe('EmailNotification', () => {
         provider: 'smtp',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.resetForRetry();
@@ -264,40 +270,46 @@ describe('EmailNotification', () => {
       notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
-        priority
+        priority,
       );
     });
 
     it('应该拒绝从非待发送状态标记为发送中', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSending()).toThrow('只有待发送状态的通知才能标记为发送中');
+
+      expect(() => notification.markAsSending()).toThrow(
+        '只有待发送状态的通知才能标记为发送中',
+      );
     });
 
     it('应该拒绝从非待发送状态标记为已发送', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSent({
-        messageId: 'msg-123',
-        deliveryStatus: 'delivered',
-        provider: 'smtp',
-        retryCount: 0
-      })).toThrow('只有待发送状态的通知才能标记为已发送');
+
+      expect(() =>
+        notification.markAsSent({
+          messageId: 'msg-123',
+          deliveryStatus: 'delivered',
+          provider: 'smtp',
+          retryCount: 0,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为已发送');
     });
 
     it('应该拒绝从非待发送状态标记为失败', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsFailed({
-        errorCode: 'SMTP_ERROR',
-        errorMessage: '连接超时',
-        provider: 'smtp',
-        retryCount: 0,
-        maxRetries: 3,
-        canRetry: true
-      })).toThrow('只有待发送状态的通知才能标记为失败');
+
+      expect(() =>
+        notification.markAsFailed({
+          errorCode: 'SMTP_ERROR',
+          errorMessage: '连接超时',
+          provider: 'smtp',
+          retryCount: 0,
+          maxRetries: 3,
+          canRetry: true,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为失败');
     });
 
     it('应该拒绝从非失败状态重试', () => {
@@ -305,7 +317,9 @@ describe('EmailNotification', () => {
     });
 
     it('应该拒绝从非失败状态重置重试', () => {
-      expect(() => notification.resetForRetry()).toThrow('只有失败状态的通知才能重试');
+      expect(() => notification.resetForRetry()).toThrow(
+        '只有失败状态的通知才能重试',
+      );
     });
 
     it('应该拒绝重试超过最大次数', () => {
@@ -316,7 +330,7 @@ describe('EmailNotification', () => {
         provider: 'smtp',
         retryCount: 2,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       // 重试3次，达到最大次数
@@ -327,7 +341,7 @@ describe('EmailNotification', () => {
         provider: 'smtp',
         retryCount: 3,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.retry()).toThrow('已达到最大重试次数');
@@ -338,7 +352,7 @@ describe('EmailNotification', () => {
         messageId: 'msg-123',
         deliveryStatus: 'delivered',
         provider: 'smtp',
-        retryCount: 0
+        retryCount: 0,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -351,7 +365,7 @@ describe('EmailNotification', () => {
         provider: 'smtp',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -363,9 +377,9 @@ describe('EmailNotification', () => {
       const notification1 = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
-        priority
+        priority,
       );
       expect(notification1.isScheduled()).toBe(false);
 
@@ -373,10 +387,10 @@ describe('EmailNotification', () => {
       const notification2 = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
       expect(notification2.isScheduled()).toBe(true);
     });
@@ -385,9 +399,9 @@ describe('EmailNotification', () => {
       const notification1 = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
-        priority
+        priority,
       );
       expect(notification1.shouldSendNow()).toBe(true);
 
@@ -396,10 +410,10 @@ describe('EmailNotification', () => {
       const notification2 = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
         priority,
-        futureTime
+        futureTime,
       );
       expect(notification2.shouldSendNow()).toBe(false);
 
@@ -408,10 +422,10 @@ describe('EmailNotification', () => {
       const notification3 = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
         priority,
-        pastTime
+        pastTime,
       );
       expect(notification3.shouldSendNow()).toBe(true);
     });
@@ -422,9 +436,9 @@ describe('EmailNotification', () => {
       const notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
-        priority
+        priority,
       );
 
       expect(notification.validateRecipient()).toBe(true);
@@ -434,24 +448,26 @@ describe('EmailNotification', () => {
       const multipleRecipients = [
         MockEmailAddress.create('user1@example.com'),
         MockEmailAddress.create('user2@example.com'),
-        MockEmailAddress.create('user3@example.com')
+        MockEmailAddress.create('user3@example.com'),
       ];
 
       const notification = EmailNotification.create(
         tenantId,
         templateId,
-        multipleRecipients as any,
+        multipleRecipients as unknown,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(multipleRecipients);
       expect(notification.recipientEmails).toEqual([
         'user1@example.com',
         'user2@example.com',
-        'user3@example.com'
+        'user3@example.com',
       ]);
-      expect(notification.recipient).toBe('user1@example.com,user2@example.com,user3@example.com');
+      expect(notification.recipient).toBe(
+        'user1@example.com,user2@example.com,user3@example.com',
+      );
     });
   });
 
@@ -462,9 +478,9 @@ describe('EmailNotification', () => {
       notification = EmailNotification.create(
         tenantId,
         templateId,
-        recipients as any,
+        recipients as unknown,
         data,
-        priority
+        priority,
       );
     });
 
@@ -492,4 +508,3 @@ describe('EmailNotification', () => {
     });
   });
 });
-

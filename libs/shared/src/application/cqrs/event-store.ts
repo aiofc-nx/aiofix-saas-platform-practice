@@ -4,13 +4,13 @@ import { DomainEvent } from './event-bus';
 /**
  * @interface StoredEvent
  * @description 存储的事件接口，表示持久化到事件存储中的事件
- * 
+ *
  * 原理与机制：
  * 1. 存储的事件包含原始领域事件的所有信息
  * 2. 添加了存储相关的元数据，如存储时间、版本等
  * 3. 支持事件的序列化和反序列化
  * 4. 提供事件的重放和审计能力
- * 
+ *
  * 功能与职责：
  * 1. 定义存储事件的基本结构
  * 2. 提供事件的元数据信息
@@ -26,13 +26,13 @@ export interface StoredEvent extends DomainEvent {
 /**
  * @interface EventStore
  * @description 事件存储接口，定义事件存储的基本操作
- * 
+ *
  * 原理与机制：
  * 1. 事件存储是事件溯源模式的核心组件
  * 2. 负责事件的持久化和检索
  * 3. 支持聚合根的事件流重建
  * 4. 提供事件的重放和投影能力
- * 
+ *
  * 功能与职责：
  * 1. 存储领域事件
  * 2. 检索聚合根的事件流
@@ -57,7 +57,7 @@ export interface EventStore {
   getEvents(
     aggregateId: string,
     aggregateType: string,
-    fromVersion?: number
+    fromVersion?: number,
   ): Promise<StoredEvent[]>;
 
   /**
@@ -76,36 +76,36 @@ export interface EventStore {
    */
   getCurrentVersion(
     aggregateId: string,
-    aggregateType: string
+    aggregateType: string,
   ): Promise<number>;
 }
 
 /**
  * @class InMemoryEventStore
  * @description 内存事件存储实现，用于测试和开发环境
- * 
+ *
  * 原理与机制：
  * 1. 使用内存数据结构存储事件
  * 2. 提供完整的事件存储接口实现
  * 3. 支持事件的快速访问和检索
  * 4. 适用于开发和测试环境
- * 
+ *
  * 功能与职责：
  * 1. 在内存中存储领域事件
  * 2. 提供事件流的检索功能
  * 3. 支持事件的重放
  * 4. 提供版本控制功能
- * 
+ *
  * @example
  * ```typescript
  * const eventStore = new InMemoryEventStore();
- * 
+ *
  * // 存储事件
  * await eventStore.store(new UserCreatedEvent({
  *   userId: 'user-123',
  *   username: 'john'
  * }));
- * 
+ *
  * // 获取事件流
  * const events = await eventStore.getEvents('user-123', 'User', 1);
  * ```
@@ -141,8 +141,8 @@ export class InMemoryEventStore implements EventStore {
           aggregateId: event.aggregateId,
           aggregateType: event.aggregateType,
           version: event.version,
-          occurredOn: event.occurredOn
-        })
+          occurredOn: event.occurredOn,
+        }),
       };
 
       this.events.push(storedEvent);
@@ -153,7 +153,7 @@ export class InMemoryEventStore implements EventStore {
     } catch (error) {
       throw new EventStoreException(
         `Failed to store event: ${event.eventType}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -173,13 +173,13 @@ export class InMemoryEventStore implements EventStore {
   async getEvents(
     aggregateId: string,
     aggregateType: string,
-    fromVersion: number = 1
+    fromVersion: number = 1,
   ): Promise<StoredEvent[]> {
     return this.events.filter(
       event =>
         event.aggregateId === aggregateId &&
         event.aggregateType === aggregateType &&
-        event.version >= fromVersion
+        event.version >= fromVersion,
     );
   }
 
@@ -196,12 +196,14 @@ export class InMemoryEventStore implements EventStore {
    */
   async getAllEvents(
     fromEventId?: string,
-    limit?: number
+    limit?: number,
   ): Promise<StoredEvent[]> {
     let filteredEvents = this.events;
 
     if (fromEventId) {
-      const fromIndex = this.events.findIndex(event => event.eventId === fromEventId);
+      const fromIndex = this.events.findIndex(
+        event => event.eventId === fromEventId,
+      );
       if (fromIndex !== -1) {
         filteredEvents = this.events.slice(fromIndex + 1);
       }
@@ -227,7 +229,7 @@ export class InMemoryEventStore implements EventStore {
    */
   async getCurrentVersion(
     aggregateId: string,
-    aggregateType: string
+    aggregateType: string,
   ): Promise<number> {
     const aggregateKey = `${aggregateType}:${aggregateId}`;
     return this.aggregateVersions.get(aggregateKey) || 0;
@@ -263,19 +265,22 @@ export class InMemoryEventStore implements EventStore {
 /**
  * @class EventStoreException
  * @description 事件存储异常
- * 
+ *
  * 原理与机制：
  * 1. 当事件存储操作失败时抛出此异常
  * 2. 包含原始错误信息
  * 3. 提供事件存储的上下文信息
- * 
+ *
  * 功能与职责：
  * 1. 标识事件存储失败的错误
  * 2. 保留原始错误信息
  * 3. 提供错误上下文
  */
 export class EventStoreException extends Error {
-  constructor(message: string, public readonly originalError?: Error) {
+  constructor(
+    message: string,
+    public readonly originalError?: Error,
+  ) {
     super(message);
     this.name = 'EventStoreException';
   }

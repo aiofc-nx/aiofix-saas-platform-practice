@@ -22,14 +22,14 @@ pnpm add @aiofix/cache
 ### 使用
 
 ```typescript
-import { CacheModule } from '@aiofix/cache';
+import { CacheModule } from "@aiofix/cache";
 
 @Module({
   imports: [
     CacheModule.register({
       // 缓存配置
-    })
-  ]
+    }),
+  ],
 })
 export class AppModule {}
 ```

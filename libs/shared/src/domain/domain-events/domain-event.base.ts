@@ -27,7 +27,7 @@ export abstract class DomainEvent<TData = any> {
   constructor(
     public readonly eventType: string,
     protected readonly data: TData,
-    eventId?: string
+    eventId?: string,
   ) {
     this.occurredOn = new Date();
     this.eventId = eventId || this.generateEventId();
@@ -98,7 +98,7 @@ export abstract class DomainEvent<TData = any> {
     const event = new (this as any)(
       parsed.eventType,
       parsed.data,
-      parsed.eventId
+      parsed.eventId,
     );
     event.occurredOn = new Date(parsed.occurredOn);
     return event;

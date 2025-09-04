@@ -79,7 +79,10 @@ export interface UserRelationshipRepository {
    * @param {string} targetEntityType 目标实体类型
    * @returns {Promise<UserRelationshipEntity[]>} 用户关系实体列表
    */
-  findByTargetEntity(targetEntityId: string, targetEntityType: string): Promise<UserRelationshipEntity[]>;
+  findByTargetEntity(
+    targetEntityId: string,
+    targetEntityType: string,
+  ): Promise<UserRelationshipEntity[]>;
 
   /**
    * 根据条件查询用户关系列表
@@ -87,7 +90,9 @@ export interface UserRelationshipRepository {
    * @param {UserRelationshipQueryCriteria} criteria 查询条件
    * @returns {Promise<UserRelationshipEntity[]>} 用户关系实体列表
    */
-  findByCriteria(criteria: UserRelationshipQueryCriteria): Promise<UserRelationshipEntity[]>;
+  findByCriteria(
+    criteria: UserRelationshipQueryCriteria,
+  ): Promise<UserRelationshipEntity[]>;
 
   /**
    * 根据租户ID查找用户关系列表
@@ -97,7 +102,11 @@ export interface UserRelationshipRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserRelationshipEntity[]>} 用户关系实体列表
    */
-  findByTenantId(tenantId: TenantId, limit?: number, offset?: number): Promise<UserRelationshipEntity[]>;
+  findByTenantId(
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserRelationshipEntity[]>;
 
   /**
    * 根据组织ID查找用户关系列表
@@ -108,7 +117,12 @@ export interface UserRelationshipRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserRelationshipEntity[]>} 用户关系实体列表
    */
-  findByOrganizationId(organizationId: string, tenantId: TenantId, limit?: number, offset?: number): Promise<UserRelationshipEntity[]>;
+  findByOrganizationId(
+    organizationId: string,
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserRelationshipEntity[]>;
 
   /**
    * 根据部门ID查找用户关系列表
@@ -119,7 +133,12 @@ export interface UserRelationshipRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserRelationshipEntity[]>} 用户关系实体列表
    */
-  findByDepartmentId(departmentId: string, tenantId: TenantId, limit?: number, offset?: number): Promise<UserRelationshipEntity[]>;
+  findByDepartmentId(
+    departmentId: string,
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserRelationshipEntity[]>;
 
   /**
    * 保存用户关系
@@ -135,7 +154,9 @@ export interface UserRelationshipRepository {
    * @param {UserRelationshipEntity[]} relationships 用户关系实体列表
    * @returns {Promise<UserRelationshipEntity[]>} 保存后的用户关系实体列表
    */
-  saveMany(relationships: UserRelationshipEntity[]): Promise<UserRelationshipEntity[]>;
+  saveMany(
+    relationships: UserRelationshipEntity[],
+  ): Promise<UserRelationshipEntity[]>;
 
   /**
    * 删除用户关系
@@ -160,7 +181,10 @@ export interface UserRelationshipRepository {
    * @param {string} targetEntityType 目标实体类型
    * @returns {Promise<boolean>} 是否删除成功
    */
-  deleteByTargetEntity(targetEntityId: string, targetEntityType: string): Promise<boolean>;
+  deleteByTargetEntity(
+    targetEntityId: string,
+    targetEntityType: string,
+  ): Promise<boolean>;
 
   /**
    * 检查关系是否存在
@@ -170,7 +194,11 @@ export interface UserRelationshipRepository {
    * @param {string} targetEntityType 目标实体类型
    * @returns {Promise<boolean>} 是否存在
    */
-  existsByUserAndTarget(userId: UserId, targetEntityId: string, targetEntityType: string): Promise<boolean>;
+  existsByUserAndTarget(
+    userId: UserId,
+    targetEntityId: string,
+    targetEntityType: string,
+  ): Promise<boolean>;
 
   /**
    * 更新关系状态

@@ -1,7 +1,11 @@
 /**
  * @description User基础设施层映射器索引文件
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 
-// TODO: 实现用户管理映射器
+// 导出PostgreSQL映射器
+export * from './postgresql';
+
+// 导出MongoDB映射器
+export * from './mongodb';

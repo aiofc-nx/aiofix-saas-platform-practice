@@ -4,7 +4,7 @@
  *
  * 该值对象封装租户ID的业务规则和验证逻辑。
  * 继承自Uuid，确保租户ID的全局唯一性。
- * 
+ *
  * 通用性说明：
  * 1. 跨领域使用：所有需要租户隔离的模块都需要
  * 2. 标准化规则：租户ID格式、唯一性等规则相对统一
@@ -12,7 +12,7 @@
  * 4. 频繁复用：在多个子领域中被大量使用
  */
 
-import { Uuid, InvalidUuidError } from './uuid.vo';
+import { Uuid } from './uuid.vo';
 
 /**
  * @class TenantId

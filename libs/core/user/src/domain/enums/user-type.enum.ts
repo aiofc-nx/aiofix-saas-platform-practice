@@ -55,7 +55,7 @@ export enum UserType {
    * 访客用户
    * @description 访客级用户，具有有限的访问权限
    */
-  GUEST_USER = 'GUEST_USER'
+  GUEST_USER = 'GUEST_USER',
 }
 
 /**
@@ -68,36 +68,36 @@ export const UserTypePermissions = {
     description: '平台级权限，可以管理整个系统',
     canManageTenants: true,
     canManageUsers: true,
-    canAccessAllData: true
+    canAccessAllData: true,
   },
   [UserType.TENANT_USER]: {
     level: 'TENANT',
     description: '租户级权限，可以管理租户内资源',
     canManageTenants: false,
     canManageUsers: true,
-    canAccessAllData: false
+    canAccessAllData: false,
   },
   [UserType.SYSTEM_USER]: {
     level: 'SYSTEM',
     description: '系统级权限，用于系统内部操作',
     canManageTenants: false,
     canManageUsers: false,
-    canAccessAllData: true
+    canAccessAllData: true,
   },
   [UserType.SERVICE_USER]: {
     level: 'SERVICE',
     description: '服务级权限，用于服务间通信',
     canManageTenants: false,
     canManageUsers: false,
-    canAccessAllData: false
+    canAccessAllData: false,
   },
   [UserType.GUEST_USER]: {
     level: 'GUEST',
     description: '访客级权限，具有有限的访问权限',
     canManageTenants: false,
     canManageUsers: false,
-    canAccessAllData: false
-  }
+    canAccessAllData: false,
+  },
 } as const;
 
 /**
@@ -112,7 +112,7 @@ export function getUserTypeDisplayName(userType: UserType): string {
     [UserType.TENANT_USER]: '租户用户',
     [UserType.SYSTEM_USER]: '系统用户',
     [UserType.SERVICE_USER]: '服务用户',
-    [UserType.GUEST_USER]: '访客用户'
+    [UserType.GUEST_USER]: '访客用户',
   };
   return displayNames[userType];
 }

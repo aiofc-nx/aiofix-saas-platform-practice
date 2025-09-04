@@ -22,15 +22,11 @@ pnpm add @aiofix/shared
 ### 使用
 
 ```typescript
-import { 
-  Uuid, 
-  EmailValueObject, 
-  ValidationException 
-} from '@aiofix/shared';
+import { Uuid, EmailValueObject, ValidationException } from "@aiofix/shared";
 
 // 使用共享类型和工具
 const id = new Uuid();
-const email = new EmailValueObject('user@example.com');
+const email = new EmailValueObject("user@example.com");
 ```
 
 ## 开发

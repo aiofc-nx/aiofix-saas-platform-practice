@@ -82,7 +82,9 @@ export class UpdateUserCommand {
     this.userType = data.userType;
     this.dataPrivacyLevel = data.dataPrivacyLevel;
     this.organizationId = data.organizationId;
-    this.departmentIds = data.departmentIds ? [...data.departmentIds] : undefined;
+    this.departmentIds = data.departmentIds
+      ? [...data.departmentIds]
+      : undefined;
     this.profile = data.profile ? { ...data.profile } : undefined;
 
     // 验证命令数据
@@ -104,8 +106,15 @@ export class UpdateUserCommand {
     }
 
     // 至少需要提供一个更新字段
-    if (!this.email && !this.phone && !this.userType && !this.dataPrivacyLevel && 
-        !this.organizationId && !this.departmentIds && !this.profile) {
+    if (
+      !this.email &&
+      !this.phone &&
+      !this.userType &&
+      !this.dataPrivacyLevel &&
+      !this.organizationId &&
+      !this.departmentIds &&
+      !this.profile
+    ) {
       throw new Error('至少需要提供一个更新字段');
     }
   }
@@ -136,7 +145,7 @@ export class UpdateUserCommand {
       dataPrivacyLevel: this.dataPrivacyLevel,
       organizationId: this.organizationId,
       departmentIds: this.departmentIds,
-      profile: this.profile
+      profile: this.profile,
     };
   }
 
@@ -163,7 +172,7 @@ export class UpdateUserCommand {
       dataPrivacyLevel: this.dataPrivacyLevel,
       organizationId: this.organizationId,
       departmentIds: this.departmentIds ? [...this.departmentIds] : undefined,
-      profile: this.profile ? { ...this.profile } : undefined
+      profile: this.profile ? { ...this.profile } : undefined,
     });
   }
 
@@ -201,7 +210,7 @@ export class UpdateUserCommand {
    */
   getUpdatedFields(): string[] {
     const fields: string[] = [];
-    
+
     if (this.email) fields.push('email');
     if (this.phone) fields.push('phone');
     if (this.userType) fields.push('userType');

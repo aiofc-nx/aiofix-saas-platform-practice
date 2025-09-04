@@ -46,7 +46,7 @@ export interface EmailNotificationRepository {
   findByTenant(
     tenantId: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -57,7 +57,7 @@ export interface EmailNotificationRepository {
     status: NotificationStatus,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -68,7 +68,7 @@ export interface EmailNotificationRepository {
     priority: NotificationPriority,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -79,7 +79,7 @@ export interface EmailNotificationRepository {
     templateId: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -90,7 +90,7 @@ export interface EmailNotificationRepository {
     recipient: string,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -100,7 +100,7 @@ export interface EmailNotificationRepository {
   findPendingNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -112,7 +112,7 @@ export interface EmailNotificationRepository {
     toDate: Date,
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -122,7 +122,7 @@ export interface EmailNotificationRepository {
   findFailedNotifications(
     tenantId?: string,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<EmailNotification[]>;
 
   /**
@@ -154,7 +154,7 @@ export interface EmailNotificationRepository {
    * @description 按优先级统计邮件通知数量
    */
   countByPriority(
-    tenantId?: string
+    tenantId?: string,
   ): Promise<Record<NotificationPriority, number>>;
 
   /**
@@ -164,7 +164,7 @@ export interface EmailNotificationRepository {
   getStatistics(
     tenantId?: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;

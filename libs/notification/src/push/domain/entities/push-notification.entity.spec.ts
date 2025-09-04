@@ -5,12 +5,16 @@
 
 import { PushNotification } from './push-notification.entity';
 import { Uuid } from '@aiofix/shared';
-import { NotificationType, NotificationStatus, NotificationPriority } from '@aiofix/shared';
+import {
+  NotificationType,
+  NotificationStatus,
+  NotificationPriority,
+} from '@aiofix/shared';
 
 // Mock DeviceToken
 class MockDeviceToken {
   constructor(public readonly value: string) {}
-  
+
   static create(token: string): MockDeviceToken {
     return new MockDeviceToken(token);
   }
@@ -44,7 +48,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.type).toBe(NotificationType.PUSH);
@@ -66,7 +70,7 @@ describe('PushNotification', () => {
         data,
         priority,
         undefined,
-        title
+        title,
       );
 
       expect(notification.title).toBe(title);
@@ -80,7 +84,7 @@ describe('PushNotification', () => {
         recipients,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
 
       expect(notification.scheduledAt).toEqual(scheduledAt);
@@ -96,7 +100,7 @@ describe('PushNotification', () => {
         priority,
         undefined,
         undefined,
-        metadata
+        metadata,
       );
 
       expect(notification.metadata).toEqual(metadata);
@@ -109,7 +113,7 @@ describe('PushNotification', () => {
         templateId,
         recipientTokens,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipientTokens).toEqual(recipientTokens);
@@ -117,13 +121,15 @@ describe('PushNotification', () => {
     });
 
     it('应该拒绝创建没有收件人的Push通知', () => {
-      expect(() => PushNotification.createFromStrings(
-        tenantId,
-        templateId,
-        [],
-        data,
-        priority
-      )).toThrow('Push通知必须包含至少一个收件人');
+      expect(() =>
+        PushNotification.createFromStrings(
+          tenantId,
+          templateId,
+          [],
+          data,
+          priority,
+        ),
+      ).toThrow('Push通知必须包含至少一个收件人');
     });
   });
 
@@ -136,7 +142,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -151,7 +157,7 @@ describe('PushNotification', () => {
         deliveryStatus: 'delivered',
         provider: 'fcm',
         providerMessageId: 'provider-msg-123',
-        retryCount: 0
+        retryCount: 0,
       };
 
       notification.markAsSent(sendParams);
@@ -173,7 +179,7 @@ describe('PushNotification', () => {
         provider: 'fcm',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       };
 
       notification.markAsFailed(failParams);
@@ -195,7 +201,7 @@ describe('PushNotification', () => {
         provider: 'fcm',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.retry();
@@ -213,7 +219,7 @@ describe('PushNotification', () => {
         provider: 'fcm',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.resetForRetry();
@@ -246,38 +252,44 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
     it('应该拒绝从非待发送状态标记为发送中', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSending()).toThrow('只有待发送状态的通知才能标记为发送中');
+
+      expect(() => notification.markAsSending()).toThrow(
+        '只有待发送状态的通知才能标记为发送中',
+      );
     });
 
     it('应该拒绝从非待发送状态标记为已发送', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSent({
-        messageId: 'msg-123',
-        deliveryStatus: 'delivered',
-        provider: 'fcm',
-        retryCount: 0
-      })).toThrow('只有待发送状态的通知才能标记为已发送');
+
+      expect(() =>
+        notification.markAsSent({
+          messageId: 'msg-123',
+          deliveryStatus: 'delivered',
+          provider: 'fcm',
+          retryCount: 0,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为已发送');
     });
 
     it('应该拒绝从非待发送状态标记为失败', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsFailed({
-        errorCode: 'FCM_ERROR',
-        errorMessage: '设备令牌无效',
-        provider: 'fcm',
-        retryCount: 0,
-        maxRetries: 3,
-        canRetry: true
-      })).toThrow('只有待发送状态的通知才能标记为失败');
+
+      expect(() =>
+        notification.markAsFailed({
+          errorCode: 'FCM_ERROR',
+          errorMessage: '设备令牌无效',
+          provider: 'fcm',
+          retryCount: 0,
+          maxRetries: 3,
+          canRetry: true,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为失败');
     });
 
     it('应该拒绝从非失败状态重试', () => {
@@ -285,7 +297,9 @@ describe('PushNotification', () => {
     });
 
     it('应该拒绝从非失败状态重置重试', () => {
-      expect(() => notification.resetForRetry()).toThrow('只有失败状态的通知才能重试');
+      expect(() => notification.resetForRetry()).toThrow(
+        '只有失败状态的通知才能重试',
+      );
     });
 
     it('应该拒绝重试超过最大次数', () => {
@@ -296,7 +310,7 @@ describe('PushNotification', () => {
         provider: 'fcm',
         retryCount: 2,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       // 重试3次，达到最大次数
@@ -307,7 +321,7 @@ describe('PushNotification', () => {
         provider: 'fcm',
         retryCount: 3,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.retry()).toThrow('已达到最大重试次数');
@@ -318,7 +332,7 @@ describe('PushNotification', () => {
         messageId: 'msg-123',
         deliveryStatus: 'delivered',
         provider: 'fcm',
-        retryCount: 0
+        retryCount: 0,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -331,7 +345,7 @@ describe('PushNotification', () => {
         provider: 'fcm',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -345,7 +359,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
       expect(notification1.isScheduled()).toBe(false);
 
@@ -356,7 +370,7 @@ describe('PushNotification', () => {
         recipients,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
       expect(notification2.isScheduled()).toBe(true);
     });
@@ -367,7 +381,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
       expect(notification1.shouldSendNow()).toBe(true);
 
@@ -379,7 +393,7 @@ describe('PushNotification', () => {
         recipients,
         data,
         priority,
-        futureTime
+        futureTime,
       );
       expect(notification2.shouldSendNow()).toBe(false);
 
@@ -391,7 +405,7 @@ describe('PushNotification', () => {
         recipients,
         data,
         priority,
-        pastTime
+        pastTime,
       );
       expect(notification3.shouldSendNow()).toBe(true);
     });
@@ -404,7 +418,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.validateRecipient()).toBe(true);
@@ -414,7 +428,7 @@ describe('PushNotification', () => {
       const multipleRecipients = [
         MockDeviceToken.create('device-token-123'),
         MockDeviceToken.create('device-token-456'),
-        MockDeviceToken.create('device-token-789')
+        MockDeviceToken.create('device-token-789'),
       ];
 
       const notification = PushNotification.create(
@@ -422,23 +436,25 @@ describe('PushNotification', () => {
         templateId,
         multipleRecipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(multipleRecipients);
       expect(notification.recipientTokens).toEqual([
         'device-token-123',
         'device-token-456',
-        'device-token-789'
+        'device-token-789',
       ]);
-      expect(notification.recipient).toBe('device-token-123,device-token-456,device-token-789');
+      expect(notification.recipient).toBe(
+        'device-token-123,device-token-456,device-token-789',
+      );
     });
 
     it('应该处理不同平台的设备令牌', () => {
       const platformTokens = [
         MockDeviceToken.create('fcm-token-123'), // Firebase Cloud Messaging
         MockDeviceToken.create('apns-token-456'), // Apple Push Notification Service
-        MockDeviceToken.create('hms-token-789')  // Huawei Mobile Services
+        MockDeviceToken.create('hms-token-789'), // Huawei Mobile Services
       ];
 
       const notification = PushNotification.create(
@@ -446,14 +462,14 @@ describe('PushNotification', () => {
         templateId,
         platformTokens,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(platformTokens);
       expect(notification.recipientTokens).toEqual([
         'fcm-token-123',
         'apns-token-456',
-        'hms-token-789'
+        'hms-token-789',
       ]);
     });
   });
@@ -467,7 +483,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -504,7 +520,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -520,7 +536,7 @@ describe('PushNotification', () => {
         'INVALID_DEVICE_TOKEN',
         'DEVICE_NOT_REGISTERED',
         'MESSAGE_TOO_LARGE',
-        'RATE_LIMIT_EXCEEDED'
+        'RATE_LIMIT_EXCEEDED',
       ];
 
       pushErrorCodes.forEach(errorCode => {
@@ -530,11 +546,11 @@ describe('PushNotification', () => {
           provider: 'fcm',
           retryCount: 0,
           maxRetries: 3,
-          canRetry: true
+          canRetry: true,
         });
 
         expect(notification.errorCode).toBe(errorCode);
-        
+
         // 重置状态以便下次测试
         notification.resetForRetry();
       });
@@ -542,12 +558,12 @@ describe('PushNotification', () => {
 
     it('应该正确处理Push特有的提供商', () => {
       const pushProviders = [
-        'fcm',      // Firebase Cloud Messaging
-        'apns',     // Apple Push Notification Service
-        'hms',      // Huawei Mobile Services
-        'mipush',   // Xiaomi Push
-        'oppo',     // OPPO Push
-        'vivo'      // VIVO Push
+        'fcm', // Firebase Cloud Messaging
+        'apns', // Apple Push Notification Service
+        'hms', // Huawei Mobile Services
+        'mipush', // Xiaomi Push
+        'oppo', // OPPO Push
+        'vivo', // VIVO Push
       ];
 
       pushProviders.forEach(provider => {
@@ -555,18 +571,18 @@ describe('PushNotification', () => {
           messageId: 'msg-123',
           deliveryStatus: 'delivered',
           provider,
-          retryCount: 0
+          retryCount: 0,
         });
 
         expect(notification.provider).toBe(provider);
-        
+
         // 重置状态以便下次测试
         notification = PushNotification.create(
           tenantId,
           templateId,
           recipients,
           data,
-          priority
+          priority,
         );
       });
     });
@@ -580,7 +596,7 @@ describe('PushNotification', () => {
         data,
         priority,
         undefined,
-        title
+        title,
       );
 
       expect(notificationWithTitle.title).toBe(title);
@@ -593,7 +609,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         silentData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(silentData);
@@ -603,13 +619,9 @@ describe('PushNotification', () => {
 
   describe('边界情况', () => {
     it('应该处理空收件人列表', () => {
-      expect(() => PushNotification.create(
-        tenantId,
-        templateId,
-        [],
-        data,
-        priority
-      )).toThrow('Push通知必须包含至少一个收件人');
+      expect(() =>
+        PushNotification.create(tenantId, templateId, [], data, priority),
+      ).toThrow('Push通知必须包含至少一个收件人');
     });
 
     it('应该处理空数据对象', () => {
@@ -618,7 +630,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         {},
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual({});
@@ -633,7 +645,7 @@ describe('PushNotification', () => {
         priority,
         undefined,
         undefined,
-        {}
+        {},
       );
 
       expect(notification.metadata).toEqual({});
@@ -643,7 +655,7 @@ describe('PushNotification', () => {
       const specialData = {
         userName: '张三🎉',
         company: '测试公司🚀',
-        message: '包含特殊字符: !@#$%^&*()'
+        message: '包含特殊字符: !@#$%^&*()',
       };
 
       const notification = PushNotification.create(
@@ -651,7 +663,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         specialData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(specialData);
@@ -666,7 +678,7 @@ describe('PushNotification', () => {
         templateId,
         recipients,
         longData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(longData);
@@ -676,7 +688,7 @@ describe('PushNotification', () => {
       const differentFormatTokens = [
         MockDeviceToken.create('fcm-token-123'),
         MockDeviceToken.create('apns-token-456'),
-        MockDeviceToken.create('hms-token-789')
+        MockDeviceToken.create('hms-token-789'),
       ];
 
       const notification = PushNotification.create(
@@ -684,16 +696,15 @@ describe('PushNotification', () => {
         templateId,
         differentFormatTokens,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(differentFormatTokens);
       expect(notification.recipientTokens).toEqual([
         'fcm-token-123',
         'apns-token-456',
-        'hms-token-789'
+        'hms-token-789',
       ]);
     });
   });
 });
-

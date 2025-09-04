@@ -28,12 +28,12 @@ export class InvalidDateRangeError extends InvalidValueObjectError {
  */
 export enum DateRangeUnit {
   DAY = 'day',
-  DAYS = 'day',
+  DAYS = 'days',
   WEEK = 'week',
   MONTH = 'month',
   QUARTER = 'quarter',
   YEAR = 'year',
-  YEARS = 'year',
+  YEARS = 'years',
 }
 
 /**
@@ -74,7 +74,7 @@ export class DateRange extends BaseValueObject {
   constructor(
     startDate: Date | string,
     endDate: Date | string,
-    config?: Partial<DateRangeConfig>
+    config?: Partial<DateRangeConfig>,
   ) {
     super();
     this._includeStart = config?.includeStart ?? true;
@@ -221,7 +221,7 @@ export class DateRange extends BaseValueObject {
     } catch {
       throw new InvalidDateRangeError(
         'Invalid JSON format for DateRange',
-        json
+        json,
       );
     }
   }
@@ -317,7 +317,8 @@ export class DateRange extends BaseValueObject {
       throw new InvalidDateRangeError('Date ranges are not mergeable');
     }
 
-    const start = this._startDate < other._startDate ? this._startDate : other._startDate;
+    const start =
+      this._startDate < other._startDate ? this._startDate : other._startDate;
     const end = this._endDate > other._endDate ? this._endDate : other._endDate;
 
     return new DateRange(start, end, {
@@ -417,9 +418,7 @@ export class DateRange extends BaseValueObject {
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
     endOfWeek.setHours(23, 59, 59, 999);
-    return (
-      this._startDate >= startOfWeek && this._endDate <= endOfWeek
-    );
+    return this._startDate >= startOfWeek && this._endDate <= endOfWeek;
   }
 
   /** 判断是否是本月范围 */
@@ -506,7 +505,7 @@ export class DateRange extends BaseValueObject {
     if (this._startDate > this._endDate) {
       throw new InvalidDateRangeError(
         'Start date cannot be later than end date',
-        { startDate: this._startDate, endDate: this._endDate }
+        { startDate: this._startDate, endDate: this._endDate },
       );
     }
   }
@@ -519,7 +518,7 @@ export class DateRange extends BaseValueObject {
   protected override validateInvariants(): void {
     if (this._startDate > this._endDate) {
       throw new InvalidDateRangeError(
-        'Start date cannot be later than end date'
+        'Start date cannot be later than end date',
       );
     }
   }
@@ -535,7 +534,7 @@ export class DateRange extends BaseValueObject {
     const startOfDay = new Date(
       today.getFullYear(),
       today.getMonth(),
-      today.getDate()
+      today.getDate(),
     );
     const endOfDay = new Date(
       today.getFullYear(),
@@ -543,7 +542,7 @@ export class DateRange extends BaseValueObject {
       today.getDate(),
       23,
       59,
-      59
+      59,
     );
     return new DateRange(startOfDay, endOfDay);
   }
@@ -583,7 +582,7 @@ export class DateRange extends BaseValueObject {
       23,
       59,
       59,
-      999
+      999,
     );
     return new DateRange(startOfMonth, endOfMonth);
   }
@@ -610,12 +609,12 @@ export class DateRange extends BaseValueObject {
    */
   static fromString(value: string): DateRange {
     const match = value.match(
-      /^(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})$/
+      /^(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})$/,
     );
     if (!match) {
       throw new InvalidDateRangeError(
         `Invalid date range format: ${value}`,
-        value
+        value,
       );
     }
 
@@ -662,7 +661,11 @@ export class DateRange extends BaseValueObject {
    * @method fromDuration
    * @description 从起始日期和数量+单位创建范围
    */
-  static fromDuration(start: Date, amount: number, unit: DateRangeUnit): DateRange {
+  static fromDuration(
+    start: Date,
+    amount: number,
+    unit: DateRangeUnit,
+  ): DateRange {
     const s = new Date(start);
     const e = new Date(start);
     switch (unit) {

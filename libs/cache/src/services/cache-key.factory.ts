@@ -114,7 +114,7 @@ export class CacheKeyFactory {
     namespace: string,
     type: string,
     id: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     const parts = [
       options?.namespace || this.config.defaultNamespace,
@@ -146,7 +146,7 @@ export class CacheKeyFactory {
     if (this.config.enableValidation && key.length > this.config.maxKeyLength) {
       this.logger.warn(
         `Cache key too long: ${key.length} > ${this.config.maxKeyLength}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       key = this.truncateKey(key);
     }
@@ -172,7 +172,7 @@ export class CacheKeyFactory {
     tenantId: string,
     type: string,
     id: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     return this.createKey('user', type, id, {
       ...options,
@@ -194,7 +194,7 @@ export class CacheKeyFactory {
     tenantId: string,
     type: string,
     id: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     return this.createKey('tenant', type, id, {
       ...options,
@@ -217,7 +217,7 @@ export class CacheKeyFactory {
     tenantId: string,
     resource: string,
     action: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     const id = `${resource}:${action}`;
     return this.createKey('permission', 'access', id, {
@@ -240,7 +240,7 @@ export class CacheKeyFactory {
     sessionId: string,
     userId: string,
     tenantId: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     return this.createKey('session', 'data', sessionId, {
       ...options,
@@ -262,7 +262,7 @@ export class CacheKeyFactory {
     eventId: string,
     aggregateId: string,
     eventType: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     return this.createKey('event', eventType, eventId, {
       ...options,
@@ -284,7 +284,7 @@ export class CacheKeyFactory {
   createAggregateKey(
     aggregateId: string,
     aggregateType: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     return this.createKey('aggregate', aggregateType, aggregateId, options);
   }
@@ -300,7 +300,7 @@ export class CacheKeyFactory {
   createSnapshotKey(
     aggregateId: string,
     version: number,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     return this.createKey('snapshot', 'state', aggregateId, {
       ...options,
@@ -319,13 +319,13 @@ export class CacheKeyFactory {
   createProjectionKey(
     projectionName: string,
     projectionType: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     return this.createKey(
       'projection',
       projectionType,
       projectionName,
-      options
+      options,
     );
   }
 
@@ -342,7 +342,7 @@ export class CacheKeyFactory {
     namespace: string,
     type: string,
     pattern: string,
-    options?: CacheKeyOptions
+    options?: CacheKeyOptions,
   ): string {
     const parts = [
       options?.namespace || this.config.defaultNamespace,
@@ -377,7 +377,18 @@ export class CacheKeyFactory {
     userId?: string;
   } {
     const parts = key.split(this.config.separator);
-    const result: any = {};
+    const result: {
+      namespace: string;
+      type: string;
+      id: string;
+      version?: string;
+      tenantId?: string;
+      userId?: string;
+    } = {
+      namespace: '',
+      type: '',
+      id: '',
+    };
 
     if (parts.length >= 4) {
       result.namespace = parts[1];
@@ -440,7 +451,7 @@ export class CacheKeyFactory {
     // 简单的压缩算法：移除重复的分隔符和空段
     return key
       .split(this.config.separator)
-      .filter((part) => part.length > 0)
+      .filter(part => part.length > 0)
       .join(this.config.separator);
   }
 
@@ -464,7 +475,7 @@ export class CacheKeyFactory {
     const prefix = key.substring(0, prefixLength);
     const suffix = key.substring(key.length - suffixLength);
     const hash = this.simpleHash(
-      key.substring(prefixLength, key.length - suffixLength)
+      key.substring(prefixLength, key.length - suffixLength),
     );
 
     return `${prefix}...${hash.substring(0, middleLength)}...${suffix}`;

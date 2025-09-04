@@ -12,12 +12,23 @@
 
 import { EmailNotificationDomainService } from './email-notification-domain.service';
 import { EmailNotification } from '../entities/email-notification.entity';
-import { EmailAddress, NotificationStatus, NotificationPriority, Uuid } from '@aiofix/shared';
+import {
+  EmailAddress,
+  NotificationStatus,
+  NotificationPriority,
+  Uuid,
+} from '@aiofix/shared';
 
 // 模拟 EmailNotificationRepository 接口
 interface EmailNotificationRepository {
-  getStatistics(tenantId: string, fromDate?: Date, toDate?: Date): Promise<any>;
-  countByPriority(tenantId: string): Promise<Record<NotificationPriority, number>>;
+  getStatistics(
+    tenantId: string,
+    fromDate?: Date,
+    toDate?: Date,
+  ): Promise<unknown>;
+  countByPriority(
+    tenantId: string,
+  ): Promise<Record<NotificationPriority, number>>;
   countByStatus(tenantId: string): Promise<Record<NotificationStatus, number>>;
 }
 
@@ -32,8 +43,8 @@ describe('EmailNotificationDomainService', () => {
       countByStatus: jest.fn(),
     };
 
-    service = new EmailNotificationDomainService(mockRepository as any);
-    mockEmailNotificationRepository = mockRepository as any;
+    service = new EmailNotificationDomainService(mockRepository as unknown);
+    mockEmailNotificationRepository = mockRepository as unknown;
   });
 
   describe('validateEmailNotification', () => {
@@ -45,7 +56,7 @@ describe('EmailNotificationDomainService', () => {
         Uuid.generate(),
         [EmailAddress.create('test@example.com')],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -63,10 +74,12 @@ describe('EmailNotificationDomainService', () => {
         Uuid.generate(),
         [],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.validateEmailNotification(notificationWithNoRecipients);
+      const result = service.validateEmailNotification(
+        notificationWithNoRecipients,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('邮件通知必须包含至少一个收件人');
@@ -76,13 +89,15 @@ describe('EmailNotificationDomainService', () => {
       // 创建一个有效的通知，然后修改收件人
       const notificationWithInvalidEmail = {
         ...validNotification,
-        recipients: [{ value: 'invalid-email' } as any],
+        recipients: [{ value: 'invalid-email' } as unknown],
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateEmailNotification(notificationWithInvalidEmail);
+      const result = service.validateEmailNotification(
+        notificationWithInvalidEmail,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('无效的邮箱地址: invalid-email');
@@ -91,12 +106,14 @@ describe('EmailNotificationDomainService', () => {
     it('应该检测无效的优先级', () => {
       const notificationWithInvalidPriority = {
         ...validNotification,
-        priority: 'INVALID_PRIORITY' as any,
+        priority: 'INVALID_PRIORITY' as unknown,
         recipients: validNotification.recipients,
         data: validNotification.data,
-      } as any;
+      } as unknown;
 
-      const result = service.validateEmailNotification(notificationWithInvalidPriority);
+      const result = service.validateEmailNotification(
+        notificationWithInvalidPriority,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('邮件通知必须包含有效的优先级');
@@ -111,9 +128,11 @@ describe('EmailNotificationDomainService', () => {
         scheduledAt: pastDate,
         recipients: validNotification.recipients,
         data: validNotification.data,
-      } as any;
+      } as unknown;
 
-      const result = service.validateEmailNotification(notificationWithPastSchedule);
+      const result = service.validateEmailNotification(
+        notificationWithPastSchedule,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('计划发送时间必须晚于当前时间');
@@ -127,17 +146,19 @@ describe('EmailNotificationDomainService', () => {
         recipients: validNotification.recipients,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateEmailNotification(notificationWithLargeData);
+      const result = service.validateEmailNotification(
+        notificationWithLargeData,
+      );
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain('邮件数据过大，可能影响发送性能');
     });
 
     it('应该检测过多的收件人', () => {
-      const manyRecipients = Array.from({ length: 101 }, (_, i) => 
-        EmailAddress.create(`user${i}@example.com`)
+      const manyRecipients = Array.from({ length: 101 }, (_, i) =>
+        EmailAddress.create(`user${i}@example.com`),
       );
       const notificationWithManyRecipients = {
         ...validNotification,
@@ -145,9 +166,11 @@ describe('EmailNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateEmailNotification(notificationWithManyRecipients);
+      const result = service.validateEmailNotification(
+        notificationWithManyRecipients,
+      );
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain('收件人数量过多，建议分批发送');
@@ -163,7 +186,7 @@ describe('EmailNotificationDomainService', () => {
         Uuid.generate(),
         [EmailAddress.create('test@example.com')],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -214,12 +237,15 @@ describe('EmailNotificationDomainService', () => {
         Uuid.generate(),
         [EmailAddress.create('test@example.com')],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
     it('应该允许重试临时错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
@@ -227,14 +253,20 @@ describe('EmailNotificationDomainService', () => {
     });
 
     it('应该允许重试频率限制错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'RATE_LIMIT_EXCEEDED');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'RATE_LIMIT_EXCEEDED',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
     });
 
     it('不应该重试永久错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'INVALID_EMAIL');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'INVALID_EMAIL',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -247,7 +279,10 @@ describe('EmailNotificationDomainService', () => {
         maxRetries: 3,
       } as EmailNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithMaxRetries, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithMaxRetries,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -259,7 +294,10 @@ describe('EmailNotificationDomainService', () => {
         retryCount: 2,
       } as EmailNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithRetryCount, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithRetryCount,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBe(240000); // 4分钟 (60 * 2^2)
@@ -276,21 +314,21 @@ describe('EmailNotificationDomainService', () => {
           Uuid.generate(),
           [EmailAddress.create('user1@example.com')],
           {},
-          NotificationPriority.HIGH
+          NotificationPriority.HIGH,
         ),
         EmailNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           [EmailAddress.create('user2@example.com')],
           {},
-          NotificationPriority.NORMAL
+          NotificationPriority.NORMAL,
         ),
         EmailNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           [EmailAddress.create('user3@example.com')],
           {},
-          NotificationPriority.LOW
+          NotificationPriority.LOW,
         ),
       ];
     });
@@ -313,7 +351,10 @@ describe('EmailNotificationDomainService', () => {
     });
 
     it('应该处理单个通知', async () => {
-      const batches = await service.optimizeBatchSending([notifications[0]], 10);
+      const batches = await service.optimizeBatchSending(
+        [notifications[0]],
+        10,
+      );
 
       expect(batches).toHaveLength(1);
       expect(batches[0]).toHaveLength(1);
@@ -373,11 +414,9 @@ describe('EmailNotificationDomainService', () => {
 
       await service.getEmailStatistics(tenantId, fromDate, toDate);
 
-      expect(mockEmailNotificationRepository.getStatistics).toHaveBeenCalledWith(
-        tenantId,
-        fromDate,
-        toDate
-      );
+      expect(
+        mockEmailNotificationRepository.getStatistics,
+      ).toHaveBeenCalledWith(tenantId, fromDate, toDate);
     });
   });
 
@@ -385,7 +424,9 @@ describe('EmailNotificationDomainService', () => {
     it('应该处理无效的邮件通知对象', () => {
       const invalidNotification = {} as EmailNotification;
 
-      expect(() => service.validateEmailNotification(invalidNotification)).toThrow();
+      expect(() =>
+        service.validateEmailNotification(invalidNotification),
+      ).toThrow();
     });
 
     it('应该处理空的路由设置', () => {
@@ -394,7 +435,7 @@ describe('EmailNotificationDomainService', () => {
         Uuid.generate(),
         [EmailAddress.create('test@example.com')],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
       const result = service.determineEmailRouting(validNotification, {});
@@ -409,10 +450,13 @@ describe('EmailNotificationDomainService', () => {
         Uuid.generate(),
         [EmailAddress.create('test@example.com')],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.calculateRetryStrategy(validNotification, 'UNKNOWN_ERROR');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'UNKNOWN_ERROR',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);

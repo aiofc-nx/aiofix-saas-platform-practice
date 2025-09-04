@@ -52,7 +52,7 @@ export interface EmailRoutingResult {
 @Injectable()
 export class EmailNotificationDomainService {
   constructor(
-    private readonly emailNotificationRepository: EmailNotificationRepository
+    private readonly emailNotificationRepository: EmailNotificationRepository,
   ) {}
 
   /**
@@ -60,7 +60,7 @@ export class EmailNotificationDomainService {
    * @description 验证邮件通知
    */
   validateEmailNotification(
-    notification: EmailNotification
+    notification: EmailNotification,
   ): EmailValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -121,7 +121,7 @@ export class EmailNotificationDomainService {
    */
   determineEmailRouting(
     notification: EmailNotification,
-    tenantSettings?: Record<string, unknown>
+    tenantSettings?: Record<string, unknown>,
   ): EmailRoutingResult {
     // 1. 检查是否应该立即发送
     if (notification.scheduledAt) {
@@ -187,7 +187,7 @@ export class EmailNotificationDomainService {
    */
   calculateRetryStrategy(
     notification: EmailNotification,
-    errorCode: string
+    errorCode: string,
   ): {
     shouldRetry: boolean;
     retryDelay: number;
@@ -239,7 +239,7 @@ export class EmailNotificationDomainService {
    */
   async optimizeBatchSending(
     notifications: EmailNotification[],
-    batchSize: number = 100
+    batchSize: number = 100,
   ): Promise<EmailNotification[][]> {
     // 1. 按优先级分组
     const highPriority: EmailNotification[] = [];
@@ -321,7 +321,7 @@ export class EmailNotificationDomainService {
   async getEmailStatistics(
     tenantId: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;
@@ -335,15 +335,13 @@ export class EmailNotificationDomainService {
     const statistics = await this.emailNotificationRepository.getStatistics(
       tenantId,
       fromDate,
-      toDate
+      toDate,
     );
 
-    const byPriority = await this.emailNotificationRepository.countByPriority(
-      tenantId
-    );
-    const byStatus = await this.emailNotificationRepository.countByStatus(
-      tenantId
-    );
+    const byPriority =
+      await this.emailNotificationRepository.countByPriority(tenantId);
+    const byStatus =
+      await this.emailNotificationRepository.countByStatus(tenantId);
 
     return {
       ...statistics,
@@ -360,7 +358,7 @@ export class EmailNotificationDomainService {
   private isInQuietHours(
     quietStart: string,
     quietEnd: string,
-    _timezone: string
+    _timezone: string,
   ): boolean {
     // 简化实现，实际应该使用moment.js或day.js处理时区
     const now = new Date();

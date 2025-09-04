@@ -1,6 +1,6 @@
 /**
  * @description UserEntity单元测试
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 
@@ -39,7 +39,7 @@ describe('UserEntity', () => {
       departmentIds,
       UserType.TENANT_USER,
       DataPrivacyLevel.PROTECTED,
-      phone
+      phone,
     );
   });
 
@@ -63,13 +63,15 @@ describe('UserEntity', () => {
         userId,
         username,
         email,
-        tenantId
+        tenantId,
       );
 
       expect(userWithoutOptional.organizationId).toBeUndefined();
       expect(userWithoutOptional.departmentIds).toEqual([]);
       expect(userWithoutOptional.userType).toBe(UserType.TENANT_USER);
-      expect(userWithoutOptional.dataPrivacyLevel).toBe(DataPrivacyLevel.PROTECTED);
+      expect(userWithoutOptional.dataPrivacyLevel).toBe(
+        DataPrivacyLevel.PROTECTED,
+      );
     });
   });
 
@@ -193,14 +195,14 @@ describe('UserEntity', () => {
   describe('状态检查方法', () => {
     it('应该正确检查用户是否激活', () => {
       expect(userEntity.isActive()).toBe(true);
-      
+
       userEntity.deactivate();
       expect(userEntity.isActive()).toBe(false);
     });
 
     it('应该正确检查用户是否为平台用户', () => {
       expect(userEntity.isPlatformUser()).toBe(false);
-      
+
       const platformUser = new UserEntity(
         userId,
         username,
@@ -208,14 +210,14 @@ describe('UserEntity', () => {
         tenantId,
         undefined,
         [],
-        UserType.PLATFORM_USER
+        UserType.PLATFORM_USER,
       );
       expect(platformUser.isPlatformUser()).toBe(true);
     });
 
     it('应该正确检查用户是否为租户用户', () => {
       expect(userEntity.isTenantUser()).toBe(true);
-      
+
       const platformUser = new UserEntity(
         userId,
         username,
@@ -223,7 +225,7 @@ describe('UserEntity', () => {
         tenantId,
         undefined,
         [],
-        UserType.PLATFORM_USER
+        UserType.PLATFORM_USER,
       );
       expect(platformUser.isTenantUser()).toBe(false);
     });
@@ -246,7 +248,7 @@ describe('UserEntity', () => {
         email,
         tenantId,
         organizationId,
-        []
+        [],
       );
 
       expect(userWithoutDepartments.departmentIds).toEqual([]);
@@ -257,7 +259,7 @@ describe('UserEntity', () => {
         userId,
         username,
         email,
-        tenantId
+        tenantId,
       );
 
       expect(userWithoutPhone.phone).toBeUndefined();
@@ -267,45 +269,25 @@ describe('UserEntity', () => {
   describe('错误处理', () => {
     it('应该验证用户ID不能为空', () => {
       expect(() => {
-        new UserEntity(
-          UserId.create(''),
-          username,
-          email,
-          tenantId
-        );
+        new UserEntity(UserId.create(''), username, email, tenantId);
       }).toThrow();
     });
 
     it('应该验证用户名不能为空', () => {
       expect(() => {
-        new UserEntity(
-          userId,
-          Username.create(''),
-          email,
-          tenantId
-        );
+        new UserEntity(userId, Username.create(''), email, tenantId);
       }).toThrow();
     });
 
     it('应该验证邮箱不能为空', () => {
       expect(() => {
-        new UserEntity(
-          userId,
-          username,
-          new Email(''),
-          tenantId
-        );
+        new UserEntity(userId, username, new Email(''), tenantId);
       }).toThrow();
     });
 
     it('应该验证租户ID不能为空', () => {
       expect(() => {
-        new UserEntity(
-          userId,
-          username,
-          email,
-          TenantId.create('')
-        );
+        new UserEntity(userId, username, email, TenantId.create(''));
       }).toThrow();
     });
   });

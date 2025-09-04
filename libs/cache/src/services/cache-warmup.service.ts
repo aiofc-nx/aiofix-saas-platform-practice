@@ -144,7 +144,7 @@ export class CacheWarmupService implements OnModuleInit {
 
     @Inject('CACHE_WARMUP_CONFIG') config: CacheWarmupConfig,
     private readonly eventEmitter: EventEmitter2,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.logger = logger;
     this.config = {
@@ -183,7 +183,7 @@ export class CacheWarmupService implements OnModuleInit {
       if (this.warmupItems.has(item.id)) {
         this.logger.warn(
           `Warmup item already exists: ${item.id}`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
         return false;
       }
@@ -203,7 +203,7 @@ export class CacheWarmupService implements OnModuleInit {
         `Failed to add warmup item: ${item.id}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -231,7 +231,7 @@ export class CacheWarmupService implements OnModuleInit {
         `Failed to remove warmup item: ${itemId}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -254,7 +254,7 @@ export class CacheWarmupService implements OnModuleInit {
    */
   getAllWarmupItems(): WarmupItem[] {
     return Array.from(this.warmupItems.values()).sort(
-      (a, b) => a.priority - b.priority
+      (a, b) => a.priority - b.priority,
     );
   }
 
@@ -276,9 +276,9 @@ export class CacheWarmupService implements OnModuleInit {
     try {
       const items = itemIds
         ? (itemIds
-            .map((id) => this.warmupItems.get(id))
+            .map(id => this.warmupItems.get(id))
             .filter(Boolean) as WarmupItem[])
-        : this.getAllWarmupItems().filter((item) => item.enabled);
+        : this.getAllWarmupItems().filter(item => item.enabled);
 
       if (items.length === 0) {
         this.logger.info('No warmup items to process', LogContext.CACHE);
@@ -287,7 +287,7 @@ export class CacheWarmupService implements OnModuleInit {
 
       this.logger.info(
         `Starting warmup for ${items.length} items`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
 
       // 并发执行预热
@@ -299,9 +299,9 @@ export class CacheWarmupService implements OnModuleInit {
       const totalTime = Date.now() - startTime;
       this.logger.info(
         `Warmup completed in ${totalTime}ms. Success: ${
-          results.filter((r) => r.success).length
+          results.filter(r => r.success).length
         }/${results.length}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
 
       // 发送预热完成事件
@@ -317,7 +317,7 @@ export class CacheWarmupService implements OnModuleInit {
         'Warmup failed',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return [];
     } finally {
@@ -401,7 +401,7 @@ export class CacheWarmupService implements OnModuleInit {
    * @returns 预热结果列表
    */
   private async executeWarmupConcurrently(
-    items: WarmupItem[]
+    items: WarmupItem[],
   ): Promise<WarmupResult[]> {
     const results: WarmupResult[] = [];
     const concurrency = this.config.concurrency;
@@ -409,7 +409,7 @@ export class CacheWarmupService implements OnModuleInit {
     // 分批执行
     for (let i = 0; i < items.length; i += concurrency) {
       const batch = items.slice(i, i + concurrency);
-      const batchPromises = batch.map((item) => this.executeWarmupItem(item));
+      const batchPromises = batch.map(item => this.executeWarmupItem(item));
 
       const batchResults = await Promise.all(batchPromises);
       results.push(...batchResults.filter(Boolean));
@@ -443,7 +443,7 @@ export class CacheWarmupService implements OnModuleInit {
           if (this.config.logWarmup) {
             this.logger.debug(
               `Warmup item condition not met: ${item.id}`,
-              LogContext.CACHE
+              LogContext.CACHE,
             );
           }
           return result;
@@ -453,7 +453,7 @@ export class CacheWarmupService implements OnModuleInit {
       // 获取数据
       const data = await this.withTimeout(
         item.dataProvider(),
-        item.timeout || this.config.timeout
+        item.timeout || this.config.timeout,
       );
 
       if (data !== null && data !== undefined) {
@@ -464,7 +464,7 @@ export class CacheWarmupService implements OnModuleInit {
         if (this.config.logWarmup) {
           this.logger.debug(
             `Warmup item completed: ${item.id}`,
-            LogContext.CACHE
+            LogContext.CACHE,
           );
         }
       } else {
@@ -472,7 +472,7 @@ export class CacheWarmupService implements OnModuleInit {
         if (this.config.logWarmup) {
           this.logger.warn(
             `Warmup item failed - no data: ${item.id}`,
-            LogContext.CACHE
+            LogContext.CACHE,
           );
         }
       }
@@ -482,7 +482,7 @@ export class CacheWarmupService implements OnModuleInit {
         `Warmup item failed: ${item.id}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
     }
 
@@ -502,7 +502,7 @@ export class CacheWarmupService implements OnModuleInit {
     return Promise.race([
       promise,
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), timeout)
+        setTimeout(() => reject(new Error('Timeout')), timeout),
       ),
     ]);
   }
@@ -514,8 +514,8 @@ export class CacheWarmupService implements OnModuleInit {
    * @param results 预热结果列表
    */
   private updateStats(results: WarmupResult[]): void {
-    const successful = results.filter((r) => r.success);
-    const failed = results.filter((r) => !r.success);
+    const successful = results.filter(r => r.success);
+    const failed = results.filter(r => !r.success);
 
     this.stats.successfulItems += successful.length;
     this.stats.failedItems += failed.length;
@@ -524,7 +524,7 @@ export class CacheWarmupService implements OnModuleInit {
     // 更新平均执行时间
     const totalExecutionTime = results.reduce(
       (sum, r) => sum + r.executionTime,
-      0
+      0,
     );
     const totalResults = this.stats.successfulItems + this.stats.failedItems;
     this.stats.averageExecutionTime =

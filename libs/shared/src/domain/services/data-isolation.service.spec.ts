@@ -31,7 +31,7 @@ class TestEntity extends DataIsolationAwareEntity {
     departmentIds: Uuid[] = [],
     dataIsolationLevel: DataIsolationLevel = DataIsolationLevel.TENANT,
     dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
-    userId?: Uuid
+    userId?: Uuid,
   ) {
     super(
       tenantId,
@@ -40,7 +40,7 @@ class TestEntity extends DataIsolationAwareEntity {
       id,
       organizationId,
       departmentIds,
-      userId
+      userId,
     );
   }
 
@@ -74,7 +74,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -83,7 +83,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.SHARED
+        DataPrivacyLevel.SHARED,
       );
 
       const request = {
@@ -105,7 +105,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -114,7 +114,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -137,7 +137,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.PLATFORM,
-        DataPrivacyLevel.SHARED
+        DataPrivacyLevel.SHARED,
       );
 
       const target = new TestEntity(
@@ -146,7 +146,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.PLATFORM,
-        DataPrivacyLevel.SHARED
+        DataPrivacyLevel.SHARED,
       );
 
       const request = {
@@ -171,7 +171,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -180,7 +180,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -204,7 +204,7 @@ describe('DataIsolationService', () => {
         Uuid.generate(),
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -213,7 +213,7 @@ describe('DataIsolationService', () => {
         Uuid.generate(),
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -239,7 +239,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [departmentId],
         DataIsolationLevel.DEPARTMENT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -248,7 +248,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [departmentId],
         DataIsolationLevel.DEPARTMENT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -273,7 +273,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [Uuid.generate()],
         DataIsolationLevel.DEPARTMENT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -282,7 +282,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [Uuid.generate()],
         DataIsolationLevel.DEPARTMENT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -308,7 +308,7 @@ describe('DataIsolationService', () => {
         [],
         DataIsolationLevel.USER,
         DataPrivacyLevel.PROTECTED,
-        userId
+        userId,
       );
 
       const target = new TestEntity(
@@ -318,7 +318,7 @@ describe('DataIsolationService', () => {
         [],
         DataIsolationLevel.USER,
         DataPrivacyLevel.PROTECTED,
-        userId
+        userId,
       );
 
       const request = {
@@ -343,7 +343,7 @@ describe('DataIsolationService', () => {
         [],
         DataIsolationLevel.USER,
         DataPrivacyLevel.PROTECTED,
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const target = new TestEntity(
@@ -353,7 +353,7 @@ describe('DataIsolationService', () => {
         [],
         DataIsolationLevel.USER,
         DataPrivacyLevel.PROTECTED,
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const request = {
@@ -378,7 +378,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -387,13 +387,13 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const result = service.validateByIsolationLevel(
         source,
         target,
-        DataIsolationLevel.TENANT
+        DataIsolationLevel.TENANT,
       );
 
       expect(result.isValid).toBe(true);
@@ -407,7 +407,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -416,13 +416,13 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const result = service.validateByIsolationLevel(
         source,
         target,
-        DataIsolationLevel.ORGANIZATION
+        DataIsolationLevel.ORGANIZATION,
       );
 
       expect(result.isValid).toBe(false);
@@ -450,7 +450,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -459,7 +459,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const result = service.validateCrossLevelAccess(source, target);
@@ -491,7 +491,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -500,7 +500,7 @@ describe('DataIsolationService', () => {
         undefined,
         [],
         DataIsolationLevel.TENANT,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {
@@ -525,7 +525,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const target = new TestEntity(
@@ -534,7 +534,7 @@ describe('DataIsolationService', () => {
         organizationId,
         [],
         DataIsolationLevel.ORGANIZATION,
-        DataPrivacyLevel.PROTECTED
+        DataPrivacyLevel.PROTECTED,
       );
 
       const request = {

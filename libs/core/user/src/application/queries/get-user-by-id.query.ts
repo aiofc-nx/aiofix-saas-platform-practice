@@ -48,7 +48,11 @@ export class GetUserByIdQuery {
   public readonly options: GetUserByIdQueryOptions;
   public readonly requestUserId?: string; // 请求用户的ID，用于权限控制
 
-  constructor(userId: string, options: GetUserByIdQueryOptions = {}, requestUserId?: string) {
+  constructor(
+    userId: string,
+    options: GetUserByIdQueryOptions = {},
+    requestUserId?: string,
+  ) {
     this.queryId = `qry-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     this.timestamp = new Date();
     this.occurredOn = new Date();
@@ -95,7 +99,7 @@ export class GetUserByIdQuery {
       timestamp: this.timestamp,
       userId: this.userId.toString(),
       options: this.options,
-      requestUserId: this.requestUserId
+      requestUserId: this.requestUserId,
     };
   }
 
@@ -117,7 +121,7 @@ export class GetUserByIdQuery {
     return new GetUserByIdQuery(
       this.userId.toString(),
       { ...this.options },
-      this.requestUserId
+      this.requestUserId,
     );
   }
 

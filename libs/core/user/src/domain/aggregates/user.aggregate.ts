@@ -6,7 +6,7 @@
  * 原理与机制：
  * 1. 作为聚合根，UserAggregate管理用户实体的一致性边界
  * 2. 封装用户相关的业务规则和验证逻辑
- * 3. 管理未提交的领域事件
+ * 3. 使用AggregateRoot基类的事件管理功能
  * 4. 确保用户数据的完整性和一致性
  *
  * 功能与职责：
@@ -29,29 +29,29 @@
  * @since 1.0.0
  */
 
+import { AggregateRoot } from '@aiofix/shared';
 import { UserEntity } from '../entities/user.entity';
 import { UserProfileEntity } from '../entities/user-profile.entity';
 import { UserRelationshipEntity } from '../entities/user-relationship.entity';
 import { UserId, Username, Email, PhoneNumber, TenantId } from '@aiofix/shared';
-import { UserStatus } from '../enums/user-status.enum';
 import { UserType } from '../enums/user-type.enum';
 import { DataPrivacyLevel } from '@aiofix/shared';
+import { UserStatus } from '../enums/user-status.enum';
+import { UserCreatedEvent, UserUpdatedEvent } from '../domain-events';
 
 /**
  * 用户聚合根类
- * @description 管理用户实体和相关的业务规则
+ * @description 管理用户实体和相关的业务规则，支持事件溯源
  */
-export class UserAggregate {
+export class UserAggregate extends AggregateRoot<string> {
   private _user!: UserEntity;
   private _profile?: UserProfileEntity;
   private _relationships: UserRelationshipEntity[] = [];
-  private _uncommittedEvents: any[] = [];
 
-  /**
-   * 私有构造函数
-   * @description 防止外部直接创建实例
-   */
-  private constructor() {}
+  constructor(id: string) {
+    super(id);
+    // 聚合根构造函数，用于事件溯源重建
+  }
 
   /**
    * 静态工厂方法，创建用户聚合根
@@ -59,9 +59,9 @@ export class UserAggregate {
    * @param {UserId} id 用户ID
    * @param {Username} username 用户名
    * @param {Email} email 邮箱
-   * @param {string} tenantId 租户ID
-   * @param {string} [organizationId] 组织ID
-   * @param {string[]} [departmentIds] 部门ID列表
+   * @param {TenantId} tenantId 租户ID
+   * @param {TenantId} [organizationId] 组织ID
+   * @param {TenantId[]} [departmentIds] 部门ID列表
    * @param {UserType} [userType] 用户类型
    * @param {DataPrivacyLevel} [dataPrivacyLevel] 数据隐私级别
    * @returns {UserAggregate} 用户聚合根实例
@@ -74,30 +74,32 @@ export class UserAggregate {
     organizationId?: TenantId,
     departmentIds: TenantId[] = [],
     userType: UserType = UserType.TENANT_USER,
-    dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED
+    dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
   ): UserAggregate {
-    const aggregate = new UserAggregate();
-    
+    const aggregate = new UserAggregate(id.toString());
+
     // 创建用户实体
-    aggregate._user = new UserEntity(
+    aggregate._user = UserEntity.createTenantUser(
       id,
       username,
       email,
       tenantId,
       organizationId,
       departmentIds,
-      userType,
-      dataPrivacyLevel
     );
 
-    // 创建用户档案
-    aggregate._profile = UserProfileEntity.createPrivateProfile(
-      `profile-${id.toString()}`,
-      username.toString(),
-      tenantId.toString(),
-      id.toString(),
-      organizationId?.toString(),
-      departmentIds.map(id => id.toString())
+    // 应用用户创建事件
+    aggregate.addDomainEvent(
+      new UserCreatedEvent(
+        id.toString(),
+        username.toString(),
+        email.toString(),
+        tenantId.toString(),
+        organizationId?.toString(),
+        departmentIds.map(deptId => deptId.toString()),
+        userType,
+        dataPrivacyLevel,
+      ),
     );
 
     return aggregate;
@@ -114,9 +116,9 @@ export class UserAggregate {
   static fromExisting(
     user: UserEntity,
     profile?: UserProfileEntity,
-    relationships: UserRelationshipEntity[] = []
+    relationships: UserRelationshipEntity[] = [],
   ): UserAggregate {
-    const aggregate = new UserAggregate();
+    const aggregate = new UserAggregate(user.id.toString());
     aggregate._user = user;
     aggregate._profile = profile;
     aggregate._relationships = [...relationships];
@@ -130,17 +132,47 @@ export class UserAggregate {
    */
   public changeEmail(newEmail: Email): void {
     this._user.changeEmail(newEmail);
-    // 这里可以添加邮箱变更的业务规则验证
-    // 例如：检查邮箱是否已被其他用户使用
+
+    // 应用邮箱变更事件
+    this.addDomainEvent(
+      new UserUpdatedEvent(
+        this._user.id.toString(),
+        ['email'],
+        newEmail.toString(),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true,
+      ),
+    );
   }
 
   /**
    * 修改用户电话
    * @description 更新用户的电话号码
-   * @param {Phone} newPhone 新的电话号码
+   * @param {PhoneNumber} newPhone 新的电话号码
    */
   public changePhone(newPhone: PhoneNumber): void {
     this._user.changePhone(newPhone);
+
+    // 应用电话变更事件
+    this.addDomainEvent(
+      new UserUpdatedEvent(
+        this._user.id.toString(),
+        ['phone'],
+        undefined,
+        newPhone.toString(),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true,
+      ),
+    );
   }
 
   /**
@@ -187,13 +219,15 @@ export class UserAggregate {
    * @description 更新用户的档案信息
    * @param {Partial<UserProfileData>} profileData 档案数据
    */
-  public updateProfile(profileData: Partial<{
-    displayName: string;
-    avatar: string;
-    bio: string;
-    location: string;
-    website: string;
-  }>): void {
+  public updateProfile(
+    profileData: Partial<{
+      displayName: string;
+      avatar: string;
+      bio: string;
+      location: string;
+      website: string;
+    }>,
+  ): void {
     if (!this._profile) {
       throw new Error('用户档案不存在');
     }
@@ -236,8 +270,9 @@ export class UserAggregate {
   public addRelationship(relationship: UserRelationshipEntity): void {
     // 检查关系是否已存在
     const existingRelationship = this._relationships.find(
-      r => r.targetEntityId === relationship.targetEntityId && 
-           r.targetEntityType === relationship.targetEntityType
+      r =>
+        r.targetEntityId === relationship.targetEntityId &&
+        r.targetEntityType === relationship.targetEntityType,
     );
 
     if (existingRelationship) {
@@ -251,12 +286,16 @@ export class UserAggregate {
    * 移除用户关系
    * @description 移除用户与其他实体的关系
    * @param {string} targetEntityId 目标实体ID
-   * @param {string} targetEntityType 目标实体类型
+   * @param {string} _targetEntityType 目标实体类型
    */
-  public removeRelationship(targetEntityId: string, targetEntityType: string): void {
+  public removeRelationship(
+    targetEntityId: string,
+    _targetEntityType: string,
+  ): void {
     const index = this._relationships.findIndex(
-      r => r.targetEntityId === targetEntityId && 
-           r.targetEntityType === targetEntityType
+      r =>
+        r.targetEntityId === targetEntityId &&
+        r.targetEntityType === _targetEntityType,
     );
 
     if (index > -1) {
@@ -292,28 +331,55 @@ export class UserAggregate {
   }
 
   /**
-   * 获取未提交的事件
-   * @description 获取聚合根中未提交的领域事件
-   * @returns {any[]} 未提交的领域事件列表
+   * 用户入职
+   * @description 将用户分配到指定组织和部门
+   * @param {TenantId} organizationId 组织ID
+   * @param {TenantId[]} departmentIds 部门ID列表
    */
-  public get uncommittedEvents(): any[] {
-    return [...this._uncommittedEvents];
+  public onboardUser(
+    organizationId: TenantId,
+    departmentIds: TenantId[],
+  ): void {
+    // 业务规则验证
+    if (this._user.status !== UserStatus.ACTIVE) {
+      throw new Error('只有激活状态的用户才能入职');
+    }
+
+    // 更新用户组织归属
+    this._user!.assignToOrganization(organizationId, departmentIds);
   }
 
   /**
-   * 标记事件为已提交
-   * @description 清空未提交的领域事件列表
+   * 用户离职
+   * @description 处理用户离职流程
+   * @param {string} _reason 离职原因
    */
-  public markEventsAsCommitted(): void {
-    this._uncommittedEvents = [];
+  public offboardUser(_reason: string): void {
+    // 业务规则验证
+    if (this._user.status === UserStatus.DELETED) {
+      throw new Error('用户已经离职');
+    }
+
+    // 更新用户状态
+    this._user.deactivate();
   }
 
   /**
-   * 应用领域事件
-   * @description 将领域事件添加到未提交事件列表
-   * @param {any} event 领域事件
+   * 跨组织分配
+   * @description 将用户分配到其他组织
+   * @param {TenantId} organizationId 目标组织ID
+   * @param {TenantId[]} departmentIds 目标部门ID列表
    */
-  protected apply(event: any): void {
-    this._uncommittedEvents.push(event);
+  public assignToOrganization(
+    organizationId: TenantId,
+    departmentIds: TenantId[],
+  ): void {
+    // 业务规则验证
+    if (this._user.status !== UserStatus.ACTIVE) {
+      throw new Error('只有激活状态的用户才能跨组织分配');
+    }
+
+    // 更新用户组织归属
+    this._user.assignToOrganization(organizationId, departmentIds);
   }
 }

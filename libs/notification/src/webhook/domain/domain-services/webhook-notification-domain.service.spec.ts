@@ -16,8 +16,14 @@ import { NotificationStatus, NotificationPriority, Uuid } from '@aiofix/shared';
 
 // 模拟 WebhookNotificationRepository 接口
 interface WebhookNotificationRepository {
-  getStatistics(tenantId: string, fromDate?: Date, toDate?: Date): Promise<any>;
-  countByPriority(tenantId: string): Promise<Record<NotificationPriority, number>>;
+  getStatistics(
+    tenantId: string,
+    fromDate?: Date,
+    toDate?: Date,
+  ): Promise<unknown>;
+  countByPriority(
+    tenantId: string,
+  ): Promise<Record<NotificationPriority, number>>;
   countByStatus(tenantId: string): Promise<Record<NotificationStatus, number>>;
   countByProtocol(tenantId: string): Promise<Record<string, number>>;
 }
@@ -34,8 +40,8 @@ describe('WebhookNotificationDomainService', () => {
       countByProtocol: jest.fn(),
     };
 
-    service = new WebhookNotificationDomainService(mockRepository as any);
-    mockWebhookNotificationRepository = mockRepository as any;
+    service = new WebhookNotificationDomainService(mockRepository as unknown);
+    mockWebhookNotificationRepository = mockRepository as unknown;
   });
 
   describe('validateWebhookNotification', () => {
@@ -47,7 +53,7 @@ describe('WebhookNotificationDomainService', () => {
         Uuid.generate(),
         ['https://api.example.com/webhook'],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -65,10 +71,12 @@ describe('WebhookNotificationDomainService', () => {
         Uuid.generate(),
         [],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.validateWebhookNotification(notificationWithNoRecipients);
+      const result = service.validateWebhookNotification(
+        notificationWithNoRecipients,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Webhook通知必须包含至少一个收件人');
@@ -81,9 +89,11 @@ describe('WebhookNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateWebhookNotification(notificationWithInvalidUrl);
+      const result = service.validateWebhookNotification(
+        notificationWithInvalidUrl,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('无效的Webhook URL: invalid-url');
@@ -92,13 +102,15 @@ describe('WebhookNotificationDomainService', () => {
     it('应该检测无效的优先级', () => {
       const notificationWithInvalidPriority = {
         ...validNotification,
-        priority: 'INVALID_PRIORITY' as any,
+        priority: 'INVALID_PRIORITY' as unknown,
         recipients: validNotification.recipients,
         data: validNotification.data,
         templateId: validNotification.templateId,
-      } as any;
+      } as unknown;
 
-      const result = service.validateWebhookNotification(notificationWithInvalidPriority);
+      const result = service.validateWebhookNotification(
+        notificationWithInvalidPriority,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Webhook通知必须包含有效的优先级');
@@ -115,9 +127,11 @@ describe('WebhookNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateWebhookNotification(notificationWithPastSchedule);
+      const result = service.validateWebhookNotification(
+        notificationWithPastSchedule,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('计划发送时间必须晚于当前时间');
@@ -131,17 +145,20 @@ describe('WebhookNotificationDomainService', () => {
         recipients: validNotification.recipients,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateWebhookNotification(notificationWithLargeData);
+      const result = service.validateWebhookNotification(
+        notificationWithLargeData,
+      );
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain('Webhook数据过大，可能影响发送性能');
     });
 
     it('应该检测过多的收件人', () => {
-      const manyRecipients = Array.from({ length: 101 }, (_, i) => 
-        `https://api${i}.example.com/webhook`
+      const manyRecipients = Array.from(
+        { length: 101 },
+        (_, i) => `https://api${i}.example.com/webhook`,
       );
       const notificationWithManyRecipients = {
         ...validNotification,
@@ -149,9 +166,11 @@ describe('WebhookNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateWebhookNotification(notificationWithManyRecipients);
+      const result = service.validateWebhookNotification(
+        notificationWithManyRecipients,
+      );
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain('收件人数量过多，建议分批发送');
@@ -167,7 +186,7 @@ describe('WebhookNotificationDomainService', () => {
         Uuid.generate(),
         ['https://api.example.com/webhook'],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -218,12 +237,15 @@ describe('WebhookNotificationDomainService', () => {
         Uuid.generate(),
         ['https://api.example.com/webhook'],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
     it('应该允许重试临时错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
@@ -231,14 +253,20 @@ describe('WebhookNotificationDomainService', () => {
     });
 
     it('应该允许重试频率限制错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'RATE_LIMIT_EXCEEDED');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'RATE_LIMIT_EXCEEDED',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
     });
 
     it('不应该重试永久错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'INVALID_URL');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'INVALID_URL',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -251,7 +279,10 @@ describe('WebhookNotificationDomainService', () => {
         maxRetries: 3,
       } as WebhookNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithMaxRetries, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithMaxRetries,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -263,7 +294,10 @@ describe('WebhookNotificationDomainService', () => {
         retryCount: 2,
       } as WebhookNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithRetryCount, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithRetryCount,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBe(20000); // 20秒 (5 * 2^2)
@@ -280,21 +314,21 @@ describe('WebhookNotificationDomainService', () => {
           Uuid.generate(),
           ['https://api1.example.com/webhook'],
           {},
-          NotificationPriority.HIGH
+          NotificationPriority.HIGH,
         ),
         WebhookNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           ['https://api2.example.com/webhook'],
           {},
-          NotificationPriority.NORMAL
+          NotificationPriority.NORMAL,
         ),
         WebhookNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           ['https://api3.example.com/webhook'],
           {},
-          NotificationPriority.LOW
+          NotificationPriority.LOW,
         ),
       ];
     });
@@ -317,7 +351,10 @@ describe('WebhookNotificationDomainService', () => {
     });
 
     it('应该处理单个通知', async () => {
-      const batches = await service.optimizeBatchSending([notifications[0]], 10);
+      const batches = await service.optimizeBatchSending(
+        [notifications[0]],
+        10,
+      );
 
       expect(batches).toHaveLength(1);
       expect(batches[0]).toHaveLength(1);
@@ -384,11 +421,9 @@ describe('WebhookNotificationDomainService', () => {
 
       await service.getWebhookStatistics(tenantId, fromDate, toDate);
 
-      expect(mockWebhookNotificationRepository.getStatistics).toHaveBeenCalledWith(
-        tenantId,
-        fromDate,
-        toDate
-      );
+      expect(
+        mockWebhookNotificationRepository.getStatistics,
+      ).toHaveBeenCalledWith(tenantId, fromDate, toDate);
     });
   });
 
@@ -396,7 +431,9 @@ describe('WebhookNotificationDomainService', () => {
     it('应该处理无效的Webhook通知对象', () => {
       const invalidNotification = {} as WebhookNotification;
 
-      expect(() => service.validateWebhookNotification(invalidNotification)).toThrow();
+      expect(() =>
+        service.validateWebhookNotification(invalidNotification),
+      ).toThrow();
     });
 
     it('应该处理空的路由设置', () => {
@@ -405,7 +442,7 @@ describe('WebhookNotificationDomainService', () => {
         Uuid.generate(),
         ['https://api.example.com/webhook'],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
       const result = service.determineWebhookRouting(validNotification, {});
@@ -420,10 +457,13 @@ describe('WebhookNotificationDomainService', () => {
         Uuid.generate(),
         ['https://api.example.com/webhook'],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.calculateRetryStrategy(validNotification, 'UNKNOWN_ERROR');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'UNKNOWN_ERROR',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);

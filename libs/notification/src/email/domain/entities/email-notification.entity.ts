@@ -80,7 +80,7 @@ export class EmailNotification
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
     subject?: EmailSubject,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ) {
     // super(tenantId, isolationLevel, privacyLevel, id)
     super(tenantId, DataIsolationLevel.TENANT, DataPrivacyLevel.PROTECTED, id);
@@ -432,7 +432,7 @@ export class EmailNotification
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
     subject?: EmailSubject,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): EmailNotification {
     const id = Uuid.generate();
     return new EmailNotification(
@@ -444,7 +444,7 @@ export class EmailNotification
       priority,
       scheduledAt,
       subject,
-      metadata
+      metadata,
     );
   }
 
@@ -469,7 +469,7 @@ export class EmailNotification
     priority: NotificationPriority = NotificationPriority.NORMAL,
     scheduledAt?: Date,
     subject?: string,
-    metadata: Record<string, unknown> = {}
+    metadata: Record<string, unknown> = {},
   ): EmailNotification {
     const emails = Array.isArray(recipientEmails)
       ? recipientEmails
@@ -481,7 +481,7 @@ export class EmailNotification
     }
 
     const recipients = emails.map((email: string) =>
-      EmailAddress.create(email)
+      EmailAddress.create(email),
     );
     const subjectVo = subject ? EmailSubject.create(subject) : undefined;
 
@@ -493,7 +493,7 @@ export class EmailNotification
       priority,
       scheduledAt,
       subjectVo,
-      metadata
+      metadata,
     );
   }
 }

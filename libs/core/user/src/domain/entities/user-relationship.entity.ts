@@ -31,7 +31,12 @@
  * @since 1.0.0
  */
 
-import { DataIsolationAwareEntity, DataIsolationLevel, DataPrivacyLevel, Uuid } from '@aiofix/shared';
+import {
+  DataIsolationAwareEntity,
+  DataIsolationLevel,
+  DataPrivacyLevel,
+  Uuid,
+} from '@aiofix/shared';
 
 /**
  * 关系类型枚举
@@ -78,7 +83,7 @@ export enum RelationshipType {
    * 租户所有者
    * @description 用户是租户的所有者
    */
-  TENANT_OWNER = 'TENANT_OWNER'
+  TENANT_OWNER = 'TENANT_OWNER',
 }
 
 /**
@@ -120,7 +125,7 @@ export enum RelationshipStatus {
    * 过期状态
    * @description 关系已过期
    */
-  EXPIRED = 'EXPIRED'
+  EXPIRED = 'EXPIRED',
 }
 
 /**
@@ -162,13 +167,13 @@ export class UserRelationshipEntity extends DataIsolationAwareEntity {
    * 权限列表
    * @description 用户在该关系中的权限列表
    */
-  private _permissions: string[] = [];
+  private readonly _permissions: string[] = [];
 
   /**
    * 关系开始时间
    * @description 关系开始生效的时间
    */
-  private _startDate: Date;
+  private readonly _startDate: Date;
 
   /**
    * 关系结束时间
@@ -207,7 +212,7 @@ export class UserRelationshipEntity extends DataIsolationAwareEntity {
     tenantId: string,
     organizationId?: string,
     departmentIds: string[] = [],
-    dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED
+    dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
   ) {
     // 调用父类构造函数，设置数据隔离信息
     super(
@@ -217,7 +222,7 @@ export class UserRelationshipEntity extends DataIsolationAwareEntity {
       new Uuid(id),
       organizationId ? new Uuid(organizationId) : undefined,
       departmentIds.map(deptId => new Uuid(deptId)),
-      new Uuid(userId)
+      new Uuid(userId),
     );
 
     this._userId = new Uuid(userId);

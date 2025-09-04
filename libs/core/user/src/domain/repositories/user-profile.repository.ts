@@ -74,7 +74,9 @@ export interface UserProfileRepository {
    * @param {UserProfileQueryCriteria} criteria 查询条件
    * @returns {Promise<UserProfileEntity[]>} 用户档案实体列表
    */
-  findByCriteria(criteria: UserProfileQueryCriteria): Promise<UserProfileEntity[]>;
+  findByCriteria(
+    criteria: UserProfileQueryCriteria,
+  ): Promise<UserProfileEntity[]>;
 
   /**
    * 根据租户ID查找用户档案列表
@@ -84,7 +86,11 @@ export interface UserProfileRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserProfileEntity[]>} 用户档案实体列表
    */
-  findByTenantId(tenantId: TenantId, limit?: number, offset?: number): Promise<UserProfileEntity[]>;
+  findByTenantId(
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserProfileEntity[]>;
 
   /**
    * 根据组织ID查找用户档案列表
@@ -95,7 +101,12 @@ export interface UserProfileRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserProfileEntity[]>} 用户档案实体列表
    */
-  findByOrganizationId(organizationId: string, tenantId: TenantId, limit?: number, offset?: number): Promise<UserProfileEntity[]>;
+  findByOrganizationId(
+    organizationId: string,
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserProfileEntity[]>;
 
   /**
    * 根据部门ID查找用户档案列表
@@ -106,7 +117,12 @@ export interface UserProfileRepository {
    * @param {number} [offset] 偏移量
    * @returns {Promise<UserProfileEntity[]>} 用户档案实体列表
    */
-  findByDepartmentId(departmentId: string, tenantId: TenantId, limit?: number, offset?: number): Promise<UserProfileEntity[]>;
+  findByDepartmentId(
+    departmentId: string,
+    tenantId: TenantId,
+    limit?: number,
+    offset?: number,
+  ): Promise<UserProfileEntity[]>;
 
   /**
    * 保存用户档案
@@ -157,7 +173,10 @@ export interface UserProfileRepository {
    * @param {Record<string, unknown>} preferences 偏好设置
    * @returns {Promise<boolean>} 是否更新成功
    */
-  updatePreferences(id: string, preferences: Record<string, unknown>): Promise<boolean>;
+  updatePreferences(
+    id: string,
+    preferences: Record<string, unknown>,
+  ): Promise<boolean>;
 
   /**
    * 统计用户档案数量

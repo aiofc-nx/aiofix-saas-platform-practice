@@ -137,7 +137,7 @@ export class CacheManagerService implements ICacheService {
     @Inject('CACHE_MANAGER_CONFIG') config: CacheManagerConfig,
 
     private readonly eventEmitter: EventEmitter2,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.logger = logger;
     this.config = {
@@ -200,7 +200,7 @@ export class CacheManagerService implements ICacheService {
         `Error getting cache value: ${key.key}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.emitEvent('cache_error', { key, error });
       return null;
@@ -218,7 +218,7 @@ export class CacheManagerService implements ICacheService {
   async set<T = any>(
     key: CacheKey,
     value: T,
-    options?: Partial<CacheOptions>
+    options?: Partial<CacheOptions>,
   ): Promise<boolean> {
     const startTime = Date.now();
 
@@ -244,7 +244,7 @@ export class CacheManagerService implements ICacheService {
             `Failed to set cache in layer ${layer.name}: ${key.key}`,
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
       }
@@ -256,7 +256,7 @@ export class CacheManagerService implements ICacheService {
         `Error setting cache value: ${key.key}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.emitEvent('cache_error', { key, error });
       return false;
@@ -290,7 +290,7 @@ export class CacheManagerService implements ICacheService {
             `Failed to delete cache from layer ${layer.name}: ${key.key}`,
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
       }
@@ -302,7 +302,7 @@ export class CacheManagerService implements ICacheService {
         `Error deleting cache value: ${key.key}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.emitEvent('cache_error', { key, error });
       return false;
@@ -340,7 +340,7 @@ export class CacheManagerService implements ICacheService {
         `Error checking cache existence: ${key.key}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.emitEvent('cache_error', { key, error });
       return false;
@@ -374,7 +374,7 @@ export class CacheManagerService implements ICacheService {
             `Failed to clear cache layer ${layer.name}`,
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
       }
@@ -386,7 +386,7 @@ export class CacheManagerService implements ICacheService {
         'Error clearing cache',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.emitEvent('cache_error', { error });
       return false;
@@ -411,7 +411,7 @@ export class CacheManagerService implements ICacheService {
               `Failed to get stats for layer ${name}`,
               LogContext.CACHE,
               undefined,
-              error as Error
+              error as Error,
             );
             layerStats[name] = null;
           }
@@ -422,7 +422,7 @@ export class CacheManagerService implements ICacheService {
       this.stats.hitRate =
         this.requestCount > 0 ? this.hitCount / this.requestCount : 0;
       this.stats.activeLayers = Array.from(this.layers.values()).filter(
-        (layer) => layer.enabled
+        layer => layer.enabled,
       ).length;
       this.stats.layerStats = layerStats;
       this.stats.lastUpdated = new Date();
@@ -433,7 +433,7 @@ export class CacheManagerService implements ICacheService {
         'Error getting cache stats',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return this.stats;
     }
@@ -471,7 +471,7 @@ export class CacheManagerService implements ICacheService {
       }
 
       const activeLayers = Array.from(this.layers.values()).filter(
-        (layer) => layer.enabled
+        layer => layer.enabled,
       ).length;
       const averageResponseTime =
         activeLayers > 0 ? totalResponseTime / activeLayers : 0;
@@ -488,7 +488,7 @@ export class CacheManagerService implements ICacheService {
         'Error getting cache health',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return {
         healthy: false,
@@ -511,7 +511,7 @@ export class CacheManagerService implements ICacheService {
       if (this.layers.has(config.name)) {
         this.logger.warn(
           `Cache layer ${config.name} already exists, replacing...`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
       }
 
@@ -524,7 +524,7 @@ export class CacheManagerService implements ICacheService {
 
       this.logger.info(
         `Added cache layer: ${config.name} with priority ${config.priority}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       this.emitEvent('layer_added', {
         layer: config.name,
@@ -536,7 +536,7 @@ export class CacheManagerService implements ICacheService {
         `Failed to add cache layer: ${config.name}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -553,7 +553,7 @@ export class CacheManagerService implements ICacheService {
       if (!this.layers.has(name)) {
         this.logger.warn(
           `Cache layer ${name} does not exist`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
         return false;
       }
@@ -567,7 +567,7 @@ export class CacheManagerService implements ICacheService {
         `Failed to remove cache layer: ${name}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -586,7 +586,7 @@ export class CacheManagerService implements ICacheService {
       if (!layer) {
         this.logger.warn(
           `Cache layer ${name} does not exist`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
         return false;
       }
@@ -594,7 +594,7 @@ export class CacheManagerService implements ICacheService {
       layer.enabled = enabled;
       this.logger.info(
         `${enabled ? 'Enabled' : 'Disabled'} cache layer: ${name}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       this.emitEvent('layer_toggled', { layer: name, enabled });
       return true;
@@ -603,7 +603,7 @@ export class CacheManagerService implements ICacheService {
         `Failed to toggle cache layer: ${name}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -615,7 +615,7 @@ export class CacheManagerService implements ICacheService {
    * @returns {CacheLayerConfig[]} 缓存层配置列表
    */
   getLayers(): CacheLayerConfig[] {
-    return Array.from(this.layers.values()).map((layer) => ({ ...layer }));
+    return Array.from(this.layers.values()).map(layer => ({ ...layer }));
   }
 
   /**
@@ -634,7 +634,7 @@ export class CacheManagerService implements ICacheService {
               `Failed to reset stats for layer ${name}`,
               LogContext.CACHE,
               undefined,
-              error as Error
+              error as Error,
             );
           }
         }
@@ -653,7 +653,7 @@ export class CacheManagerService implements ICacheService {
         'Failed to reset cache stats',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -714,7 +714,7 @@ export class CacheManagerService implements ICacheService {
    */
   private getSortedLayers(): CacheLayerConfig[] {
     return Array.from(this.layers.values())
-      .filter((layer) => layer.enabled)
+      .filter(layer => layer.enabled)
       .sort((a, b) => a.priority - b.priority);
   }
 
@@ -729,13 +729,15 @@ export class CacheManagerService implements ICacheService {
   private async promoteToHigherLayer<T>(
     key: CacheKey,
     value: T,
-    currentPriority: number
+    currentPriority: number,
   ): Promise<void> {
     try {
       const higherLayers = Array.from(this.layers.values())
         .filter(
-          (layer) =>
-            layer.enabled && !layer.readOnly && layer.priority < currentPriority
+          layer =>
+            layer.enabled &&
+            !layer.readOnly &&
+            layer.priority < currentPriority,
         )
         .sort((a, b) => a.priority - b.priority);
 
@@ -753,7 +755,7 @@ export class CacheManagerService implements ICacheService {
             `Failed to promote cache to layer ${layer.name}: ${key.key}`,
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
       }
@@ -762,7 +764,7 @@ export class CacheManagerService implements ICacheService {
         `Error promoting cache: ${key.key}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -787,12 +789,12 @@ export class CacheManagerService implements ICacheService {
    * @param type 事件类型
    * @param data 事件数据
    */
-  private emitEvent(type: string, data: any): void {
+  private emitEvent(type: string, _data: Record<string, unknown>): void {
     if (this.config.enableEvents) {
       try {
         this.eventEmitter.emit(`cache.${type}`, {
           type,
-          data,
+          data: _data,
           timestamp: new Date(),
           managerId: 'cache-manager',
         });
@@ -801,7 +803,7 @@ export class CacheManagerService implements ICacheService {
           `Failed to emit cache event: ${type}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -822,14 +824,14 @@ export class CacheManagerService implements ICacheService {
             'Cache monitoring failed',
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
       }, this.config.monitoringInterval);
 
       this.logger.info(
         `Started cache monitoring, interval: ${this.config.monitoringInterval}ms`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
     }
   }
@@ -862,14 +864,14 @@ export class CacheManagerService implements ICacheService {
             'Cache cleanup failed',
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
       }, this.config.cleanupInterval);
 
       this.logger.info(
         `Started cache cleanup, interval: ${this.config.cleanupInterval}ms`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
     }
   }
@@ -908,7 +910,7 @@ export class CacheManagerService implements ICacheService {
         'Cache monitoring execution failed',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -931,7 +933,7 @@ export class CacheManagerService implements ICacheService {
               `Failed to cleanup layer ${layer.name}`,
               LogContext.CACHE,
               undefined,
-              error as Error
+              error as Error,
             );
           }
         }
@@ -943,7 +945,7 @@ export class CacheManagerService implements ICacheService {
         'Cache cleanup execution failed',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
     }
   }

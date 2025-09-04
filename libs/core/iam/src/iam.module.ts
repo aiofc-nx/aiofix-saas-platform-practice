@@ -1,6 +1,6 @@
 /**
  * @description IAM身份认证与授权管理模块
- * @author 技术架构师
+ * @author 江郎
  * @since 2.1.0
  */
 

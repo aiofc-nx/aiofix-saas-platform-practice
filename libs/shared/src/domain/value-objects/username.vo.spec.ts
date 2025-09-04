@@ -41,13 +41,19 @@ describe('Username', () => {
     });
 
     it('should throw error for null username', () => {
-      expect(() => new Username(null as any)).toThrow(InvalidUsernameException);
-      expect(() => new Username(null as any)).toThrow('用户名不能为空');
+      expect(() => new Username(null as unknown)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(null as unknown)).toThrow('用户名不能为空');
     });
 
     it('should throw error for undefined username', () => {
-      expect(() => new Username(undefined as any)).toThrow(InvalidUsernameException);
-      expect(() => new Username(undefined as any)).toThrow('用户名不能为空');
+      expect(() => new Username(undefined as unknown)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(undefined as unknown)).toThrow(
+        '用户名不能为空',
+      );
     });
 
     it('should throw error for username with only spaces', () => {
@@ -56,48 +62,84 @@ describe('Username', () => {
     });
 
     it('should throw error for username too short', () => {
-      expect(() => new Username(invalidUsername)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsername)).toThrow('用户名长度不能少于3个字符');
+      expect(() => new Username(invalidUsername)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsername)).toThrow(
+        '用户名长度不能少于3个字符',
+      );
     });
 
     it('should throw error for username too long', () => {
-      expect(() => new Username(invalidUsernameTooLong)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameTooLong)).toThrow('用户名长度不能超过50个字符');
+      expect(() => new Username(invalidUsernameTooLong)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameTooLong)).toThrow(
+        '用户名长度不能超过50个字符',
+      );
     });
 
     it('should throw error for username with spaces', () => {
-      expect(() => new Username(invalidUsernameWithSpaces)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameWithSpaces)).toThrow('用户名只能包含字母、数字、下划线和连字符');
+      expect(() => new Username(invalidUsernameWithSpaces)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameWithSpaces)).toThrow(
+        '用户名只能包含字母、数字、下划线和连字符',
+      );
     });
 
     it('should throw error for username with special characters', () => {
-      expect(() => new Username(invalidUsernameWithSpecialChars)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameWithSpecialChars)).toThrow('用户名只能包含字母、数字、下划线和连字符');
+      expect(() => new Username(invalidUsernameWithSpecialChars)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameWithSpecialChars)).toThrow(
+        '用户名只能包含字母、数字、下划线和连字符',
+      );
     });
 
     it('should throw error for username starting with number', () => {
-      expect(() => new Username(invalidUsernameStartingWithNumber)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameStartingWithNumber)).toThrow('用户名不能以数字开头');
+      expect(() => new Username(invalidUsernameStartingWithNumber)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameStartingWithNumber)).toThrow(
+        '用户名不能以数字开头',
+      );
     });
 
     it('should throw error for username ending with hyphen', () => {
-      expect(() => new Username(invalidUsernameEndingWithHyphen)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameEndingWithHyphen)).toThrow('用户名不能以连字符或下划线结尾');
+      expect(() => new Username(invalidUsernameEndingWithHyphen)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameEndingWithHyphen)).toThrow(
+        '用户名不能以连字符或下划线结尾',
+      );
     });
 
     it('should throw error for username ending with underscore', () => {
-      expect(() => new Username(invalidUsernameEndingWithUnderscore)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameEndingWithUnderscore)).toThrow('用户名不能以连字符或下划线结尾');
+      expect(() => new Username(invalidUsernameEndingWithUnderscore)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameEndingWithUnderscore)).toThrow(
+        '用户名不能以连字符或下划线结尾',
+      );
     });
 
     it('should throw error for username with consecutive hyphens', () => {
-      expect(() => new Username(invalidUsernameConsecutiveHyphens)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameConsecutiveHyphens)).toThrow('用户名不能包含连续的特殊字符');
+      expect(() => new Username(invalidUsernameConsecutiveHyphens)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameConsecutiveHyphens)).toThrow(
+        '用户名不能包含连续的特殊字符',
+      );
     });
 
     it('should throw error for username with consecutive underscores', () => {
-      expect(() => new Username(invalidUsernameConsecutiveUnderscores)).toThrow(InvalidUsernameException);
-      expect(() => new Username(invalidUsernameConsecutiveUnderscores)).toThrow('用户名不能包含连续的特殊字符');
+      expect(() => new Username(invalidUsernameConsecutiveUnderscores)).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => new Username(invalidUsernameConsecutiveUnderscores)).toThrow(
+        '用户名不能包含连续的特殊字符',
+      );
     });
 
     it('should accept username with minimum length', () => {
@@ -256,13 +298,19 @@ describe('Username', () => {
 
     it('should throw error for invalid JSON', () => {
       const username = new Username(validUsername);
-      expect(() => username.fromJSON('invalid json')).toThrow(InvalidUsernameException);
-      expect(() => username.fromJSON('invalid json')).toThrow('Invalid JSON format for Username');
+      expect(() => username.fromJSON('invalid json')).toThrow(
+        InvalidUsernameException,
+      );
+      expect(() => username.fromJSON('invalid json')).toThrow(
+        'Invalid JSON format for Username',
+      );
     });
 
     it('should throw error for JSON without value property', () => {
       const username = new Username(validUsername);
-      expect(() => username.fromJSON('{"invalid": "data"}')).toThrow(InvalidUsernameException);
+      expect(() => username.fromJSON('{"invalid": "data"}')).toThrow(
+        InvalidUsernameException,
+      );
     });
 
     it('should throw error for JSON with invalid username value', () => {
@@ -358,7 +406,9 @@ describe('Username', () => {
         new Username('invalid@username');
       } catch (error) {
         expect(error).toBeInstanceOf(InvalidUsernameException);
-        expect((error as Error).message).toContain('用户名只能包含字母、数字、下划线和连字符');
+        expect((error as Error).message).toContain(
+          '用户名只能包含字母、数字、下划线和连字符',
+        );
       }
     });
   });

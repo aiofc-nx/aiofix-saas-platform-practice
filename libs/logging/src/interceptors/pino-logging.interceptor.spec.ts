@@ -56,7 +56,7 @@ describe('PinoLoggingInterceptor', () => {
           userId: 'user-456',
         }),
       }),
-    } as any;
+    } as unknown;
 
     // 设置模拟调用处理器
     mockCallHandler = {
@@ -76,7 +76,7 @@ describe('PinoLoggingInterceptor', () => {
             'Method Start: TestController.testMethod',
             LogContext.BUSINESS,
             expect.objectContaining({
-              methodId: expect.any(String),
+              methodId: expect.unknown(String),
               className: 'TestController',
               methodName: 'testMethod',
               requestId: 'req-123',
@@ -92,23 +92,23 @@ describe('PinoLoggingInterceptor', () => {
             ),
             LogContext.BUSINESS,
             expect.objectContaining({
-              methodId: expect.any(String),
+              methodId: expect.unknown(String),
               className: 'TestController',
               methodName: 'testMethod',
               requestId: 'req-123',
               tenantId: 'tenant-123',
               userId: 'user-456',
               result: { success: true, data: 'test' },
-              duration: expect.any(Number),
+              duration: expect.unknown(Number),
             }),
           );
 
           expect(logger.performance).toHaveBeenCalledWith(
             'method_execution',
-            expect.any(Number),
+            expect.unknown(Number),
             LogContext.PERFORMANCE,
             expect.objectContaining({
-              methodId: expect.any(String),
+              methodId: expect.unknown(String),
               className: 'TestController',
               methodName: 'testMethod',
             }),
@@ -172,7 +172,7 @@ describe('PinoLoggingInterceptor', () => {
             'Method Start: TestController.testMethod',
             LogContext.BUSINESS,
             expect.objectContaining({
-              methodId: expect.any(String),
+              methodId: expect.unknown(String),
               className: 'TestController',
               methodName: 'testMethod',
             }),
@@ -184,11 +184,11 @@ describe('PinoLoggingInterceptor', () => {
             ),
             LogContext.BUSINESS,
             expect.objectContaining({
-              methodId: expect.any(String),
+              methodId: expect.unknown(String),
               className: 'TestController',
               methodName: 'testMethod',
               parameters: [{ id: 1, name: 'test' }],
-              duration: expect.any(Number),
+              duration: expect.unknown(Number),
             }),
             testError,
           );
@@ -205,7 +205,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.debug).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               parameters: [{ id: 1, name: 'test' }],
@@ -225,7 +225,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.debug).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               parameters: [],
@@ -254,7 +254,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.debug).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               parameters: [
@@ -291,7 +291,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.debug).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               parameters: [
@@ -326,7 +326,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.debug).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               parameters: [
@@ -361,7 +361,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.info).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               result: {
@@ -387,7 +387,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.debug).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               requestId: 'req-123',
@@ -409,7 +409,7 @@ describe('PinoLoggingInterceptor', () => {
       interceptor.intercept(mockExecutionContext, mockCallHandler).subscribe({
         next: () => {
           expect(logger.debug).toHaveBeenCalledWith(
-            expect.any(String),
+            expect.unknown(String),
             LogContext.BUSINESS,
             expect.objectContaining({
               requestId: undefined,

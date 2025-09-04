@@ -45,7 +45,7 @@ export class PlatformAccessDeniedError extends Error {
  * - 需要平台级权限验证的公共数据
  * - 系统级安全实体
  * - 平台级安全设置
- * 
+ *
  * 注意：这个基类不管理平台业务逻辑，只是标识实体具有平台感知能力
  */
 export abstract class PlatformAwareEntity extends BaseEntity {
@@ -103,7 +103,7 @@ export abstract class PlatformAwareEntity extends BaseEntity {
    * @method isPlatformAdmin
    * @description 检查当前实体是否具有平台管理员权限
    * @returns 是否具有平台管理员权限
-   * 
+   *
    * 注意：这是一个抽象方法，子类必须实现具体的权限检查逻辑
    */
   protected abstract isPlatformAdmin(): boolean;

@@ -9,7 +9,10 @@
  * - 权限检查方法
  */
 
-import { PlatformAwareEntity, PlatformAccessDeniedError } from './platform-aware.entity';
+import {
+  PlatformAwareEntity,
+  PlatformAccessDeniedError,
+} from './platform-aware.entity';
 import { Uuid } from '../value-objects/uuid.vo';
 import { DataPrivacyLevel } from './data-isolation-aware.entity';
 
@@ -54,7 +57,7 @@ describe('PlatformAwareEntity', () => {
     it('应该创建一个具有指定隐私级别的实体', () => {
       const sharedEntity = new TestPlatformAwareEntity(
         undefined,
-        DataPrivacyLevel.SHARED
+        DataPrivacyLevel.SHARED,
       );
       expect(sharedEntity.dataPrivacyLevel).toBe(DataPrivacyLevel.SHARED);
     });
@@ -130,7 +133,9 @@ describe('PlatformAwareEntity', () => {
       // 等待一小段时间确保时间戳会不同
       setTimeout(() => {
         entity.testSetDataPrivacyLevel(DataPrivacyLevel.SHARED);
-        expect(entity.updatedAt.getTime()).toBeGreaterThan(originalTimestamp.getTime());
+        expect(entity.updatedAt.getTime()).toBeGreaterThan(
+          originalTimestamp.getTime(),
+        );
       }, 1);
     });
   });
@@ -152,7 +157,7 @@ describe('PlatformAwareEntity', () => {
         protected isPlatformAdmin(): boolean {
           return false;
         }
-        
+
         // 添加测试方法
         public testAssertPlatformAccess(target: PlatformAwareEntity): void {
           this.assertPlatformAccess(target);
@@ -160,7 +165,9 @@ describe('PlatformAwareEntity', () => {
       }
       const nonAdminEntity = new NonAdminTestEntity();
       targetEntity.testSetDataPrivacyLevel(DataPrivacyLevel.PROTECTED);
-      expect(() => nonAdminEntity.testAssertPlatformAccess(targetEntity)).toThrow(PlatformAccessDeniedError);
+      expect(() =>
+        nonAdminEntity.testAssertPlatformAccess(targetEntity),
+      ).toThrow(PlatformAccessDeniedError);
     });
 
     it('应该抛出正确的错误消息', () => {
@@ -169,7 +176,7 @@ describe('PlatformAwareEntity', () => {
         protected isPlatformAdmin(): boolean {
           return false;
         }
-        
+
         // 添加测试方法
         public testAssertPlatformAccess(target: PlatformAwareEntity): void {
           this.assertPlatformAccess(target);
@@ -177,9 +184,9 @@ describe('PlatformAwareEntity', () => {
       }
       const nonAdminEntity = new NonAdminTestEntity();
       targetEntity.testSetDataPrivacyLevel(DataPrivacyLevel.PROTECTED);
-      expect(() => nonAdminEntity.testAssertPlatformAccess(targetEntity)).toThrow(
-        '平台级访问被拒绝: 目标对象隐私级别为protected'
-      );
+      expect(() =>
+        nonAdminEntity.testAssertPlatformAccess(targetEntity),
+      ).toThrow('平台级访问被拒绝: 目标对象隐私级别为protected');
     });
   });
 });
@@ -196,4 +203,3 @@ describe('PlatformAccessDeniedError', () => {
     expect(error.message).toBe(errorMessage);
   });
 });
-

@@ -74,7 +74,7 @@ export class Money extends BaseValueObject {
   constructor(
     amount: number,
     currency: Currency = Currency.CNY,
-    config?: Partial<MoneyConfig>
+    config?: Partial<MoneyConfig>,
   ) {
     super();
     this._currency = currency;
@@ -190,7 +190,7 @@ export class Money extends BaseValueObject {
         {
           precision: data.precision,
           roundingMode: data.roundingMode,
-        }
+        },
       ) as this;
     } catch {
       throw new InvalidMoneyError('Invalid JSON format for Money', json);
@@ -218,7 +218,7 @@ export class Money extends BaseValueObject {
   add(other: Money): Money {
     if (this._currency !== other._currency) {
       throw new InvalidMoneyError(
-        `Cannot add different currencies: ${this._currency} and ${other._currency}`
+        `Cannot add different currencies: ${this._currency} and ${other._currency}`,
       );
     }
     const newAmount = this._amount + other._amount;
@@ -228,7 +228,7 @@ export class Money extends BaseValueObject {
       {
         precision: this._precision,
         roundingMode: this._roundingMode,
-      }
+      },
     );
   }
 
@@ -241,7 +241,7 @@ export class Money extends BaseValueObject {
   subtract(other: Money): Money {
     if (this._currency !== other._currency) {
       throw new InvalidMoneyError(
-        `Cannot subtract different currencies: ${this._currency} and ${other._currency}`
+        `Cannot subtract different currencies: ${this._currency} and ${other._currency}`,
       );
     }
     const newAmount = this._amount - other._amount;
@@ -251,7 +251,7 @@ export class Money extends BaseValueObject {
       {
         precision: this._precision,
         roundingMode: this._roundingMode,
-      }
+      },
     );
   }
 
@@ -269,7 +269,7 @@ export class Money extends BaseValueObject {
       {
         precision: this._precision,
         roundingMode: this._roundingMode,
-      }
+      },
     );
   }
 
@@ -290,7 +290,7 @@ export class Money extends BaseValueObject {
       {
         precision: this._precision,
         roundingMode: this._roundingMode,
-      }
+      },
     );
   }
 
@@ -330,7 +330,7 @@ export class Money extends BaseValueObject {
   compareTo(other: Money): number {
     if (this._currency !== other._currency) {
       throw new InvalidMoneyError(
-        `Cannot compare different currencies: ${this._currency} and ${other._currency}`
+        `Cannot compare different currencies: ${this._currency} and ${other._currency}`,
       );
     }
     if (this._amount < other._amount) return -1;

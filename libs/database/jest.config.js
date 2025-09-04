@@ -1,26 +1,26 @@
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['<rootDir>/src'],
-  testMatch: ['**/*.spec.ts', '**/*.test.ts'],
+  preset: "ts-jest",
+  testEnvironment: "node",
+  roots: ["<rootDir>/src"],
+  testMatch: ["**/*.spec.ts", "**/*.test.ts"],
   collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/*.d.ts',
-    '!src/index.ts',
-    '!src/**/*.spec.ts',
-    '!src/**/*.test.ts'
+    "src/**/*.ts",
+    "!src/**/*.d.ts",
+    "!src/index.ts",
+    "!src/**/*.spec.ts",
+    "!src/**/*.test.ts",
   ],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
+  coverageDirectory: "coverage",
+  coverageReporters: ["text", "lcov", "html"],
   moduleNameMapper: {
-    '^@aiofix/database/(.*)$': '<rootDir>/src/$1'
+    "^@aiofix/database/(.*)$": "<rootDir>/src/$1",
   },
   globals: {
-    'ts-jest': {
+    "ts-jest": {
       tsconfig: {
         experimentalDecorators: true,
-        emitDecoratorMetadata: true
-      }
-    }
-  }
+        emitDecoratorMetadata: true,
+      },
+    },
+  },
 };

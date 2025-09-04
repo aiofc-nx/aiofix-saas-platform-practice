@@ -129,7 +129,7 @@ export class TemplateDomainService {
     for (const variable of declaredVariables) {
       if (!this.isValidVariableName(variable)) {
         errors.push(
-          `变量名称 "${variable}" 格式无效，只能包含字母、数字和下划线`
+          `变量名称 "${variable}" 格式无效，只能包含字母、数字和下划线`,
         );
       }
     }
@@ -162,11 +162,11 @@ export class TemplateDomainService {
   async validateTemplateName(
     name: string,
     tenantId: Uuid,
-    excludeId?: string
+    excludeId?: string,
   ): Promise<boolean> {
     const existingTemplate = await this.templateRepository.findByName(
       name,
-      tenantId.toString()
+      tenantId.toString(),
     );
 
     if (!existingTemplate) {
@@ -220,7 +220,7 @@ export class TemplateDomainService {
   async getTemplateStatistics(
     tenantId: Uuid,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     active: number;
@@ -240,24 +240,24 @@ export class TemplateDomainService {
     const statistics = await this.templateRepository.getStatistics(
       tenantId.toString(),
       fromDate,
-      toDate
+      toDate,
     );
 
     const byType = await this.templateRepository.countByType(
-      tenantId.toString()
+      tenantId.toString(),
     );
     const byStatus = await this.templateRepository.countByStatus(
-      tenantId.toString()
+      tenantId.toString(),
     );
     const byCategory = await this.templateRepository.countByCategory(
-      tenantId.toString()
+      tenantId.toString(),
     );
     const byLanguage = await this.templateRepository.countByLanguage(
-      tenantId.toString()
+      tenantId.toString(),
     );
     const mostUsed = await this.templateRepository.getMostUsedTemplates(
       tenantId.toString(),
-      10
+      10,
     );
 
     return {
@@ -278,7 +278,7 @@ export class TemplateDomainService {
     templateId: Uuid,
     newName: string,
     tenantId: Uuid,
-    createdBy: string
+    createdBy: string,
   ): Promise<Template> {
     const originalTemplate = await this.templateRepository.findById(templateId);
     if (!originalTemplate) {
@@ -303,7 +303,7 @@ export class TemplateDomainService {
       originalTemplate.subject,
       [...originalTemplate.tags],
       { ...originalTemplate.metadata },
-      Uuid.fromString(createdBy)
+      Uuid.fromString(createdBy),
     );
 
     return newTemplate;
@@ -325,13 +325,13 @@ export class TemplateDomainService {
       reviewStatus?: ReviewStatus;
     },
     limit: number = 20,
-    offset: number = 0
+    offset: number = 0,
   ): Promise<Template[]> {
     return this.templateRepository.search(
       tenantId.toString(),
       searchCriteria,
       limit,
-      offset
+      offset,
     );
   }
 
@@ -341,14 +341,14 @@ export class TemplateDomainService {
    */
   async getTemplateVersionHistory(
     templateId: Uuid,
-    _tenantId: Uuid
+    _tenantId: Uuid,
   ): Promise<TemplateVersionInfo[]> {
     const template = await this.templateRepository.findById(templateId);
     if (!template) {
       throw new Error(`模板 ${templateId.toString()} 不存在`);
     }
 
-    return template.versionHistory.map((version) => ({
+    return template.versionHistory.map(version => ({
       version: version.version,
       content: version.content,
       subject: version.subject,

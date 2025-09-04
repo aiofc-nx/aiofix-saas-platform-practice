@@ -94,7 +94,7 @@ export class SmsNotificationAggregate extends AggregateRoot {
   private notification: SmsNotification | null = null;
 
   constructor(
-    private readonly smsNotificationRepository: SmsNotificationRepository
+    private readonly smsNotificationRepository: SmsNotificationRepository,
   ) {
     super();
   }
@@ -104,12 +104,12 @@ export class SmsNotificationAggregate extends AggregateRoot {
    * @description 创建短信通知
    */
   async createSmsNotification(
-    command: CreateSmsNotificationCommand
+    command: CreateSmsNotificationCommand,
   ): Promise<SmsNotification> {
     // 1. 创建短信通知实体
     const tenantId = Uuid.fromString(command.tenantId);
-    const recipients = command.recipients.map((phone) =>
-      PhoneNumber.create(phone)
+    const recipients = command.recipients.map(phone =>
+      PhoneNumber.create(phone),
     );
 
     this.notification = SmsNotification.create(
@@ -119,7 +119,7 @@ export class SmsNotificationAggregate extends AggregateRoot {
       command.data,
       command.priority,
       command.scheduledAt,
-      command.metadata
+      command.metadata,
     );
 
     // 2. 保存到仓储
@@ -133,7 +133,7 @@ export class SmsNotificationAggregate extends AggregateRoot {
    * @description 发送短信通知
    */
   async sendSmsNotification(
-    command: SendSmsNotificationCommand
+    command: SendSmsNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('短信通知不存在');
@@ -162,7 +162,7 @@ export class SmsNotificationAggregate extends AggregateRoot {
    * @description 短信通知发送失败
    */
   async failSmsNotification(
-    command: FailSmsNotificationCommand
+    command: FailSmsNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('短信通知不存在');
@@ -171,7 +171,7 @@ export class SmsNotificationAggregate extends AggregateRoot {
     // 1. 验证通知状态
     if (this.notification.status !== NotificationStatus.PENDING) {
       throw new Error(
-        `无法标记状态为 ${this.notification.status} 的短信通知为失败`
+        `无法标记状态为 ${this.notification.status} 的短信通知为失败`,
       );
     }
 

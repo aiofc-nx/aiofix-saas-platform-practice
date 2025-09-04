@@ -102,7 +102,12 @@ export class Uuid extends BaseValueObject {
    */
   fromJSON(json: string): this {
     try {
-      const data = JSON.parse(json);
+      const data = JSON.parse(json) as { value: string };
+
+      if (typeof data.value !== 'string') {
+        throw new Error('Invalid JSON format: value must be a string');
+      }
+
       return new Uuid(data.value) as this;
     } catch {
       throw new InvalidUuidError('Invalid JSON format for UUID', json);

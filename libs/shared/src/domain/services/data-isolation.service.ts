@@ -15,12 +15,14 @@
  */
 
 import { Injectable } from '@nestjs/common';
+
+import { DataIsolationAwareEntity } from '../entities/data-isolation-aware.entity';
 import {
-  DataIsolationAwareEntity,
   DataIsolationLevel,
   DataPrivacyLevel,
   TenantContext,
 } from '../entities/data-isolation-aware.entity';
+import { PinoLoggerService, LogContext } from '@aiofix/logging';
 
 /**
  * @interface DataAccessRequest
@@ -81,12 +83,17 @@ export interface IsolationPolicy {
  */
 @Injectable()
 export class DataIsolationService {
+  private readonly logger: PinoLoggerService;
   private isolationPolicy: IsolationPolicy = {
     allowCrossLevelAccess: false,
     allowCrossTenantAccess: false,
     auditAllAccess: false,
     auditEnabled: true,
   };
+
+  constructor(logger: PinoLoggerService) {
+    this.logger = logger;
+  }
 
   /**
    * @method validateDataAccess
@@ -366,7 +373,7 @@ export class DataIsolationService {
 
     // 如果启用了审计，记录日志
     if (this.isolationPolicy.auditEnabled) {
-      console.log('数据访问审计:', auditInfo);
+      this.logger.info('数据访问审计', LogContext.SYSTEM, auditInfo);
     }
 
     return auditInfo;

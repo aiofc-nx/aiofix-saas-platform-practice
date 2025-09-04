@@ -10,4 +10,8 @@
 
 export { UserEntity } from './user.entity';
 export { UserProfileEntity } from './user-profile.entity';
-export { UserRelationshipEntity, RelationshipType, RelationshipStatus } from './user-relationship.entity';
+export {
+  UserRelationshipEntity,
+  RelationshipType,
+  RelationshipStatus,
+} from './user-relationship.entity';

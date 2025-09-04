@@ -24,22 +24,29 @@
  */
 
 import { Injectable } from '@nestjs/common';
-import { CommandHandler } from '@aiofix/shared';
+import { ICommandHandler } from '@nestjs/cqrs';
 import { UpdateUserCommand } from '../update-user.command';
-import { UpdateUserUseCase } from '../../use-cases/update-user.usecase';
-import { EventBus } from '@aiofix/shared';
-import { UserUpdatedEvent } from '../../../domain/domain-events';
+import { UserManagementService } from '../../services/user-management.service';
+import { EventBus } from '@nestjs/cqrs';
+import { UserUpdatedEvent } from '../../../domain/domain-events/user-updated.event';
+import { PinoLoggerService } from '@aiofix/logging';
+import { LogContext } from '@aiofix/logging';
 
 /**
  * 更新用户命令处理器
  * @description 处理用户更新命令
  */
 @Injectable()
-export class UpdateUserHandler implements CommandHandler<UpdateUserCommand> {
+export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
+  private readonly logger: PinoLoggerService;
+
   constructor(
-    private readonly updateUserUseCase: UpdateUserUseCase,
-    private readonly eventBus: EventBus
-  ) {}
+    private readonly userManagementService: UserManagementService,
+    private readonly eventBus: EventBus,
+    logger: PinoLoggerService,
+  ) {
+    this.logger = logger;
+  }
 
   /**
    * 执行更新用户命令
@@ -49,6 +56,12 @@ export class UpdateUserHandler implements CommandHandler<UpdateUserCommand> {
    */
   async execute(command: UpdateUserCommand): Promise<boolean> {
     try {
+      this.logger.info('开始执行更新用户命令', LogContext.BUSINESS, {
+        commandId: command.commandId,
+        userId: command.userId.toString(),
+        updatedFields: command.getUpdatedFields(),
+      });
+
       // 1. 转换命令为用例请求
       const request = {
         email: command.email?.toString(),
@@ -57,41 +70,71 @@ export class UpdateUserHandler implements CommandHandler<UpdateUserCommand> {
         dataPrivacyLevel: command.dataPrivacyLevel,
         organizationId: command.organizationId,
         departmentIds: command.departmentIds,
-        profile: command.profile
+        profile: command.profile,
+        currentUserId: command.userId.toString(), // 添加缺失的 currentUserId
       };
 
       // 2. 执行用户更新用例
-      const result = await this.updateUserUseCase.execute(
+      const result = await this.userManagementService.updateUser(
         command.userId.toString(),
-        request
+        request,
       );
 
       if (!result.success) {
-        throw new Error(`用户更新失败: ${result.errors?.join(', ')}`);
+        this.logger.error('用户更新用例执行失败', LogContext.BUSINESS, {
+          commandId: command.commandId,
+          userId: command.userId.toString(),
+          message: result.message,
+        });
+        throw new Error(`用户更新失败: ${result.message}`);
       }
+
+      this.logger.info('用户更新用例执行成功', LogContext.BUSINESS, {
+        commandId: command.commandId,
+        userId: command.userId.toString(),
+        updatedFields: command.getUpdatedFields(), // 使用命令的 getUpdatedFields 方法
+      });
 
       // 3. 发布用户更新事件
       await this.eventBus.publish(
         new UserUpdatedEvent(
           command.userId.toString(),
-          result.updatedFields,
+          command.getUpdatedFields(), // 使用命令的 getUpdatedFields 方法
           command.email?.toString(),
           command.phone?.toString(),
           command.userType,
           command.dataPrivacyLevel,
           command.organizationId,
           command.departmentIds,
-          command.profile
-        )
+          command.profile,
+        ),
       );
+
+      this.logger.info('用户更新事件发布成功', LogContext.EVENT, {
+        commandId: command.commandId,
+        userId: command.userId.toString(),
+        eventType: 'UserUpdated',
+      });
 
       // 4. 返回更新结果
       return result.success;
-
     } catch (error) {
       // 5. 处理错误情况
-      console.error('处理更新用户命令失败:', error);
-      
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      const errorName = error instanceof Error ? error.name : 'UnknownError';
+
+      this.logger.error('处理更新用户命令失败', LogContext.BUSINESS, {
+        commandId: command.commandId,
+        userId: command.userId.toString(),
+        error: {
+          message: errorMessage,
+          stack: errorStack,
+          name: errorName,
+        },
+      });
+
       // 发布用户更新失败事件
       await this.eventBus.publish(
         new UserUpdatedEvent(
@@ -105,8 +148,8 @@ export class UpdateUserHandler implements CommandHandler<UpdateUserCommand> {
           command.departmentIds,
           command.profile,
           false, // 更新失败
-          error instanceof Error ? error.message : '未知错误'
-        )
+          error instanceof Error ? error.message : '未知错误',
+        ),
       );
 
       throw error;
@@ -120,11 +163,13 @@ export class UpdateUserHandler implements CommandHandler<UpdateUserCommand> {
    * @returns {boolean} 命令是否有效
    */
   validate(command: UpdateUserCommand): boolean {
-    return !!(command && 
-           command.userId && 
-           command.commandId &&
-           command.timestamp &&
-           command.occurredOn);
+    return !!(
+      command &&
+      command.userId &&
+      command.commandId &&
+      command.timestamp &&
+      command.occurredOn
+    );
   }
 
   /**

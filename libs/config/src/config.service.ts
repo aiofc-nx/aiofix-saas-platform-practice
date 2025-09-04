@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { KnexModuleOptions } from 'nest-knexjs';
 import { getConfig } from './config-loader';
+import { PinoLoggerService, LogContext } from '@aiofix/logging';
 
 /**
  * @interface IamConfig
@@ -56,6 +57,7 @@ export interface IamConfig {
  * 3. 使用只读配置对象，防止运行时配置被意外修改
  * 4. 提供类型安全的配置访问方法，支持泛型约束
  * 5. 集成环境变量管理，支持动态配置更新
+ * 6. 使用自定义的PinoLoggerService进行日志记录，提供高性能的结构化日志
  *
  * 功能与业务规则：
  * 1. 配置加载和初始化
@@ -63,6 +65,7 @@ export interface IamConfig {
  * 3. 环境变量管理
  * 4. 配置模块化访问
  * 5. 类型安全的配置操作
+ * 6. 结构化日志记录
  */
 @Injectable()
 export class ConfigService {
@@ -72,7 +75,7 @@ export class ConfigService {
     env: {} as Record<string, string>,
   };
   /** 日志服务实例 */
-  private readonly logger = new Logger(ConfigService.name);
+  private readonly logger: PinoLoggerService;
   /** 系统配置对象 */
   private config: Partial<IamConfig> = {};
 
@@ -81,8 +84,11 @@ export class ConfigService {
    * @description
    * 配置服务构造函数，在服务实例化时自动初始化配置。
    * 由于构造函数不能是异步的，所以使用void调用异步初始化方法。
+   *
+   * @param logger 自定义的Pino日志服务实例
    */
-  constructor() {
+  constructor(logger: PinoLoggerService) {
+    this.logger = logger;
     void this.initConfig();
   }
 
@@ -97,12 +103,14 @@ export class ConfigService {
    * 2. 遍历环境配置，动态设置process.env环境变量
    * 3. 记录生产环境状态到日志中
    * 4. 确保配置在服务启动前完成加载
+   * 5. 使用自定义的PinoLoggerService记录结构化日志
    *
    * 功能与业务规则：
    * 1. 配置加载和初始化
    * 2. 环境变量设置
    * 3. 启动状态日志记录
    * 4. 配置验证和错误处理
+   * 5. 结构化日志记录
    *
    * @returns {Promise<void>} 返回一个Promise，表示配置初始化过程
    */
@@ -112,11 +120,19 @@ export class ConfigService {
     // 动态设置环境变量
     if (this.environment.env) {
       Object.entries(this.environment.env).forEach(([key, value]) => {
-        process.env[key] = value as string;
+        process.env[key] = value;
       });
     }
 
-    this.logger.log(`Is Production: ${this.environment.production}`);
+    this.logger.info(
+      `配置服务初始化完成，生产环境状态: ${this.environment.production}`,
+      LogContext.CONFIG,
+      {
+        isProduction: this.environment.production,
+        nodeEnv: process.env.NODE_ENV,
+        configKeys: Object.keys(this.config),
+      },
+    );
   }
 
   /**
@@ -130,16 +146,22 @@ export class ConfigService {
    * 2. 使用展开运算符创建配置对象的深拷贝
    * 3. 返回只读类型，防止运行时修改
    * 4. 提供类型安全的配置访问
+   * 5. 记录配置访问日志，便于审计和调试
    *
    * 功能与业务规则：
    * 1. 完整配置获取
    * 2. 配置对象保护
    * 3. 类型安全访问
    * 4. 配置完整性保证
+   * 5. 配置访问审计
    *
    * @returns {Readonly<Partial<IamConfig>>} 返回只读的完整配置对象
    */
   public getConfig(): Readonly<Partial<IamConfig>> {
+    this.logger.debug('获取完整配置对象', LogContext.CONFIG, {
+      configKeys: Object.keys(this.config),
+      timestamp: new Date().toISOString(),
+    });
     return Object.freeze({ ...this.config });
   }
 
@@ -154,12 +176,14 @@ export class ConfigService {
    * 2. 检查配置键是否存在，不存在则抛出错误
    * 3. 返回只读的配置值，确保类型安全
    * 4. 支持TypeScript的类型推断
+   * 5. 记录配置访问日志，便于审计和调试
    *
    * 功能与业务规则：
    * 1. 特定配置获取
    * 2. 配置键验证
    * 3. 类型安全访问
    * 4. 错误处理和提示
+   * 5. 配置访问审计
    *
    * @template K - 配置键的类型
    * @param {K} key - 要获取的配置键
@@ -167,11 +191,22 @@ export class ConfigService {
    * @throws {Error} 当配置键不存在时抛出错误
    */
   public getConfigValue<K extends keyof IamConfig>(
-    key: K
+    key: K,
   ): Readonly<IamConfig[K]> {
     if (!(key in this.config)) {
+      this.logger.error(`配置键不存在: ${String(key)}`, LogContext.CONFIG, {
+        requestedKey: String(key),
+        availableKeys: Object.keys(this.config),
+        timestamp: new Date().toISOString(),
+      });
       throw new Error(`Configuration key "${String(key)}" not found.`);
     }
+
+    this.logger.debug(`获取配置值: ${String(key)}`, LogContext.CONFIG, {
+      configKey: String(key),
+      timestamp: new Date().toISOString(),
+    });
+
     return this.config[key] as Readonly<IamConfig[K]>;
   }
 
@@ -298,12 +333,14 @@ export class ConfigService {
    * 2. 检查环境变量是否存在，不存在则抛出错误
    * 3. 返回类型安全的环境变量值
    * 4. 支持TypeScript的类型推断和自动补全
+   * 5. 记录环境变量访问日志，便于审计和调试
    *
    * 功能与业务规则：
    * 1. 环境变量获取
    * 2. 类型安全访问
    * 3. 错误处理和提示
    * 4. 环境变量验证
+   * 5. 环境变量访问审计
    *
    * @template K - 环境变量键的类型
    * @param {K} key - 要获取的环境变量键
@@ -313,8 +350,23 @@ export class ConfigService {
   get<K extends string>(key: K): string {
     const value = process.env[key];
     if (!value) {
+      this.logger.error(`环境变量未定义: ${key}`, LogContext.CONFIG, {
+        requestedKey: key,
+        availableEnvVars: Object.keys(process.env).filter(
+          k =>
+            k.startsWith('DB_') || k.startsWith('LOG_') || k.startsWith('JWT_'),
+        ),
+        timestamp: new Date().toISOString(),
+      });
       throw new Error(`Environment variable "${key}" is not defined.`);
     }
+
+    this.logger.debug(`获取环境变量: ${key}`, LogContext.CONFIG, {
+      envKey: key,
+      hasValue: !!value,
+      timestamp: new Date().toISOString(),
+    });
+
     return value;
   }
 

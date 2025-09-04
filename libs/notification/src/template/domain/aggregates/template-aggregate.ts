@@ -104,7 +104,7 @@ export class TemplateAggregate extends AggregateRoot {
     // 1. 验证模板名称唯一性
     const isNameAvailable = await this.validateTemplateName(
       command.name,
-      command.tenantId
+      command.tenantId,
     );
     if (!isNameAvailable) {
       throw new Error(`模板名称 "${command.name}" 已存在`);
@@ -124,7 +124,7 @@ export class TemplateAggregate extends AggregateRoot {
       command.subject,
       command.tags ?? [],
       command.metadata ?? {},
-      Uuid.fromString(command.createdBy)
+      Uuid.fromString(command.createdBy),
     );
 
     // 3. 保存到仓储
@@ -152,7 +152,7 @@ export class TemplateAggregate extends AggregateRoot {
       command.content,
       command.variables,
       command.subject,
-      Uuid.fromString(command.updatedBy)
+      Uuid.fromString(command.updatedBy),
     );
 
     // 3. 保存到仓储
@@ -196,12 +196,18 @@ export class TemplateAggregate extends AggregateRoot {
 
     // 2. 执行审核操作
     if (command.action === 'approve') {
-      this.template.approve(Uuid.fromString(command.reviewerId), command.comments);
+      this.template.approve(
+        Uuid.fromString(command.reviewerId),
+        command.comments,
+      );
     } else {
       if (!command.comments) {
         throw new Error('拒绝审核必须提供拒绝原因');
       }
-      this.template.reject(Uuid.fromString(command.reviewerId), command.comments);
+      this.template.reject(
+        Uuid.fromString(command.reviewerId),
+        command.comments,
+      );
     }
 
     // 3. 保存到仓储
@@ -268,7 +274,7 @@ export class TemplateAggregate extends AggregateRoot {
   async revertToVersion(
     templateId: string,
     version: number,
-    updatedBy: string
+    updatedBy: string,
   ): Promise<void> {
     if (!this.template) {
       throw new Error('模板不存在');
@@ -348,11 +354,11 @@ export class TemplateAggregate extends AggregateRoot {
    */
   private async validateTemplateName(
     name: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<boolean> {
     const existingTemplate = await this.templateRepository.findByName(
       name,
-      tenantId
+      tenantId,
     );
 
     return !existingTemplate;

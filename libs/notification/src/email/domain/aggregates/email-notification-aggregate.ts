@@ -96,7 +96,7 @@ export class EmailNotificationAggregate extends AggregateRoot {
   private notification: EmailNotification | null = null;
 
   constructor(
-    private readonly emailNotificationRepository: EmailNotificationRepository
+    private readonly emailNotificationRepository: EmailNotificationRepository,
   ) {
     super();
   }
@@ -106,12 +106,12 @@ export class EmailNotificationAggregate extends AggregateRoot {
    * @description 创建邮件通知
    */
   async createEmailNotification(
-    command: CreateEmailNotificationCommand
+    command: CreateEmailNotificationCommand,
   ): Promise<EmailNotification> {
     // 1. 创建邮件通知实体
     const tenantId = Uuid.fromString(command.tenantId);
-    const recipients = command.recipients.map((email) =>
-      EmailAddress.create(email)
+    const recipients = command.recipients.map(email =>
+      EmailAddress.create(email),
     );
     const subject = command.subject
       ? EmailSubject.create(command.subject)
@@ -125,7 +125,7 @@ export class EmailNotificationAggregate extends AggregateRoot {
       command.priority,
       command.scheduledAt,
       subject,
-      command.metadata
+      command.metadata,
     );
 
     // 2. 保存到仓储
@@ -139,7 +139,7 @@ export class EmailNotificationAggregate extends AggregateRoot {
    * @description 发送邮件通知
    */
   async sendEmailNotification(
-    command: SendEmailNotificationCommand
+    command: SendEmailNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('邮件通知不存在');
@@ -168,7 +168,7 @@ export class EmailNotificationAggregate extends AggregateRoot {
    * @description 邮件通知发送失败
    */
   async failEmailNotification(
-    command: FailEmailNotificationCommand
+    command: FailEmailNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('邮件通知不存在');
@@ -177,7 +177,7 @@ export class EmailNotificationAggregate extends AggregateRoot {
     // 1. 验证通知状态
     if (this.notification.status !== NotificationStatus.PENDING) {
       throw new Error(
-        `无法标记状态为 ${this.notification.status} 的邮件通知为失败`
+        `无法标记状态为 ${this.notification.status} 的邮件通知为失败`,
       );
     }
 

@@ -71,7 +71,7 @@ export class PlatformConfiguration extends PlatformAwareEntity {
     isSystem = false,
     description?: string,
     dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
-    id?: Uuid
+    id?: Uuid,
   ) {
     super(id, dataPrivacyLevel);
     this._key = key;
@@ -187,7 +187,7 @@ export class PlatformConfiguration extends PlatformAwareEntity {
     key: string,
     value: unknown,
     category: string,
-    description?: string
+    description?: string,
   ): PlatformConfiguration {
     return new PlatformConfiguration(
       key,
@@ -195,7 +195,7 @@ export class PlatformConfiguration extends PlatformAwareEntity {
       category,
       true, // isSystem = true
       description,
-      DataPrivacyLevel.PROTECTED // 系统配置默认为受保护
+      DataPrivacyLevel.PROTECTED, // 系统配置默认为受保护
     );
   }
 
@@ -213,7 +213,7 @@ export class PlatformConfiguration extends PlatformAwareEntity {
     key: string,
     value: unknown,
     category: string,
-    description?: string
+    description?: string,
   ): PlatformConfiguration {
     return new PlatformConfiguration(
       key,
@@ -221,7 +221,7 @@ export class PlatformConfiguration extends PlatformAwareEntity {
       category,
       false, // isSystem = false
       description,
-      DataPrivacyLevel.SHARED // 公共配置为可共享
+      DataPrivacyLevel.SHARED, // 公共配置为可共享
     );
   }
 }

@@ -22,14 +22,14 @@ pnpm add @aiofix/database
 ### 使用
 
 ```typescript
-import { DatabaseModule } from '@aiofix/database';
+import { DatabaseModule } from "@aiofix/database";
 
 @Module({
   imports: [
     DatabaseModule.register({
       // 数据库配置
-    })
-  ]
+    }),
+  ],
 })
 export class AppModule {}
 ```

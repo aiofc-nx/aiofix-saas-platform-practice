@@ -27,8 +27,8 @@ import {
   DataIsolationLevel,
   DataPrivacyLevel,
 } from '../../domain/entities/data-isolation-aware.entity';
-// 暂时注释掉日志服务，使用控制台日志
-// import { PinoLoggerService } from '../../infrastructure/logging/pino-logger.service';
+import { DataIsolationService } from '../../domain/services/data-isolation.service';
+import { PinoLoggerService, LogContext } from '@aiofix/logging';
 
 /**
  * @interface ApplicationDataAccessRequest
@@ -74,9 +74,23 @@ export interface DataAccessAuditLog {
 /**
  * @class DataAccessControlService
  * @description 数据访问控制服务
+ *
+ * 提供应用层的数据访问控制逻辑，包括：
+ * - 数据访问权限验证
+ * - 数据访问审计日志
+ * - 数据访问策略管理
  */
 @Injectable()
 export class DataAccessControlService {
+  private readonly logger: PinoLoggerService;
+
+  constructor(
+    private readonly dataIsolationService: DataIsolationService,
+    logger: PinoLoggerService,
+  ) {
+    this.logger = logger;
+  }
+
   /**
    * @method checkAccess
    * @description 检查数据访问权限
@@ -84,7 +98,7 @@ export class DataAccessControlService {
    * @returns 数据访问结果
    */
   checkAccess(
-    request: ApplicationDataAccessRequest
+    request: ApplicationDataAccessRequest,
   ): ApplicationDataAccessResult {
     try {
       // 创建模拟的访问实体
@@ -104,7 +118,7 @@ export class DataAccessControlService {
         auditLog,
       };
     } catch (error) {
-      console.error('数据访问控制检查失败', {
+      this.logger.error('数据访问控制检查失败', LogContext.BUSINESS, {
         error: error instanceof Error ? error.message : 'Unknown error',
         request,
       });
@@ -133,7 +147,7 @@ export class DataAccessControlService {
     organizationId: Uuid | undefined,
     departmentIds: Uuid[],
     entities: DataIsolationAwareEntity[],
-    operation: 'read' | 'write' | 'delete'
+    operation: 'read' | 'write' | 'delete',
   ): Map<string, ApplicationDataAccessResult> {
     const results = new Map<string, ApplicationDataAccessResult>();
 
@@ -171,9 +185,9 @@ export class DataAccessControlService {
     organizationId: Uuid | undefined,
     departmentIds: Uuid[],
     entities: DataIsolationAwareEntity[],
-    operation: 'read' | 'write' | 'delete'
+    operation: 'read' | 'write' | 'delete',
   ): DataIsolationAwareEntity[] {
-    return entities.filter((entity) => {
+    return entities.filter(entity => {
       const request: ApplicationDataAccessRequest = {
         userId,
         tenantId,
@@ -212,7 +226,7 @@ export class DataAccessControlService {
     userOrganizationId: Uuid | undefined,
     targetOrganizationId: Uuid | undefined,
     userTenantId: Uuid,
-    targetTenantId: Uuid
+    targetTenantId: Uuid,
   ): boolean {
     // 首先检查租户访问权限
     if (!this.validateTenantAccess(userTenantId, targetTenantId)) {
@@ -250,7 +264,7 @@ export class DataAccessControlService {
     userOrganizationId: Uuid | undefined,
     targetOrganizationId: Uuid | undefined,
     userTenantId: Uuid,
-    targetTenantId: Uuid
+    targetTenantId: Uuid,
   ): boolean {
     // 首先检查组织访问权限
     if (
@@ -258,7 +272,7 @@ export class DataAccessControlService {
         userOrganizationId,
         targetOrganizationId,
         userTenantId,
-        targetTenantId
+        targetTenantId,
       )
     ) {
       return false;
@@ -275,10 +289,8 @@ export class DataAccessControlService {
     }
 
     // 检查是否有共同部门
-    const commonDepartments = userDepartmentIds.filter((userDeptId) =>
-      targetDepartmentIds.some((targetDeptId) =>
-        userDeptId.equals(targetDeptId)
-      )
+    const commonDepartments = userDepartmentIds.filter(userDeptId =>
+      targetDepartmentIds.some(targetDeptId => userDeptId.equals(targetDeptId)),
     );
 
     return commonDepartments.length > 0;
@@ -299,7 +311,7 @@ export class DataAccessControlService {
     targetUserId: Uuid | undefined,
     userTenantId: Uuid,
     targetTenantId: Uuid,
-    targetPrivacyLevel: DataPrivacyLevel
+    targetPrivacyLevel: DataPrivacyLevel,
   ): boolean {
     // 首先检查租户访问权限
     if (!this.validateTenantAccess(userTenantId, targetTenantId)) {
@@ -327,7 +339,7 @@ export class DataAccessControlService {
    * @returns 访问实体
    */
   private createAccessEntity(
-    request: ApplicationDataAccessRequest
+    request: ApplicationDataAccessRequest,
   ): DataIsolationAwareEntity {
     // 创建一个临时的访问实体来检查权限
     return new (class extends DataIsolationAwareEntity {
@@ -339,7 +351,7 @@ export class DataAccessControlService {
           undefined,
           request.organizationId,
           request.departmentIds,
-          request.userId
+          request.userId,
         );
       }
     })();
@@ -355,7 +367,7 @@ export class DataAccessControlService {
    */
   private createAuditLog(
     request: ApplicationDataAccessRequest,
-    allowed: boolean
+    allowed: boolean,
   ): DataAccessAuditLog {
     return {
       timestamp: new Date(),
@@ -382,7 +394,7 @@ export class DataAccessControlService {
   private logAccess(
     request: ApplicationDataAccessRequest,
     allowed: boolean,
-    auditLog: DataAccessAuditLog
+    auditLog: DataAccessAuditLog,
   ): void {
     const logMessage = allowed ? '数据访问成功' : '数据访问被拒绝';
 
@@ -399,9 +411,9 @@ export class DataAccessControlService {
     };
 
     if (allowed) {
-      console.info(logMessage, logData);
+      this.logger.info(logMessage, LogContext.BUSINESS, logData);
     } else {
-      console.warn(logMessage, logData);
+      this.logger.warn(logMessage, LogContext.BUSINESS, logData);
     }
   }
 }

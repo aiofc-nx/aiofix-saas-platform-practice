@@ -21,8 +21,8 @@ describe('Uuid', () => {
     });
 
     it('should throw error for null UUID', () => {
-      expect(() => new Uuid(null as any)).toThrow(InvalidUuidError);
-      expect(() => new Uuid(null as any)).toThrow('UUID cannot be empty');
+      expect(() => new Uuid(null as unknown)).toThrow(InvalidUuidError);
+      expect(() => new Uuid(null as unknown)).toThrow('UUID cannot be empty');
     });
 
     it('should throw error for invalid UUID format', () => {
@@ -74,7 +74,7 @@ describe('Uuid', () => {
     it('should return valid JSON string', () => {
       const uuid = new Uuid(validUuid);
       const json = uuid.toJSON();
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as { value: string };
       expect(parsed).toEqual({ value: validUuid });
     });
   });
@@ -102,7 +102,7 @@ describe('Uuid', () => {
     it('should throw error for JSON without value property', () => {
       const uuid = new Uuid(validUuid);
       expect(() => uuid.fromJSON('{"invalid": "data"}')).toThrow(
-        InvalidUuidError
+        InvalidUuidError,
       );
     });
   });
@@ -180,7 +180,7 @@ describe('Uuid', () => {
       const uuid = new Uuid(validUuid);
       // 通过反射调用私有方法进行测试
       expect(() => {
-        (uuid as any).validateInvariants();
+        (uuid as unknown).validateInvariants();
       }).not.toThrow();
     });
   });

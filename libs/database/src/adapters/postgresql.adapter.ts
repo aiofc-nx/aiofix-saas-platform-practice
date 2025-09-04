@@ -63,7 +63,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     @Inject('DATABASE_CONFIG') config: DatabaseConfig,
     @Inject('DATABASE_NAME') name: string,
     eventEmitter: EventEmitter2,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.config = config;
     this.name = name;
@@ -75,11 +75,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     this.initializeKnex();
 
     // 自动连接数据库
-    this.connect().catch((error) => {
+    this.connect().catch(error => {
       this.logger.warn(
         'Failed to auto-connect to database, will retry on first query',
         LogContext.DATABASE,
-        { adapter: this.name, error: (error as Error).message }
+        { adapter: this.name, error: (error as Error).message },
       );
     });
   }
@@ -103,7 +103,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       this.logger.info(
         `Connecting to PostgreSQL database: ${this.config.database}`,
         LogContext.DATABASE,
-        { adapter: this.name, host: this.config.host, port: this.config.port }
+        { adapter: this.name, host: this.config.host, port: this.config.port },
       );
 
       // 测试连接池连接
@@ -116,7 +116,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       this.logger.info(
         `Successfully connected to PostgreSQL database: ${this.config.database}`,
         LogContext.DATABASE,
-        { adapter: this.name }
+        { adapter: this.name },
       );
 
       this.emitEvent('connected', {
@@ -130,7 +130,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
         `Failed to connect to PostgreSQL database: ${this.config.database}`,
         LogContext.DATABASE,
         { adapter: this.name, error: (error as Error).message },
-        error as Error
+        error as Error,
       );
 
       this.emitEvent('connection_error', {
@@ -153,7 +153,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       this.logger.info(
         `Disconnecting from PostgreSQL database: ${this.config.database}`,
         LogContext.DATABASE,
-        { adapter: this.name }
+        { adapter: this.name },
       );
 
       await this.pool.end();
@@ -164,7 +164,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       this.logger.info(
         `Successfully disconnected from PostgreSQL database: ${this.config.database}`,
         LogContext.DATABASE,
-        { adapter: this.name }
+        { adapter: this.name },
       );
 
       this.emitEvent('disconnected', {
@@ -176,7 +176,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
         `Failed to disconnect from PostgreSQL database: ${this.config.database}`,
         LogContext.DATABASE,
         { adapter: this.name, error: (error as Error).message },
-        error as Error
+        error as Error,
       );
 
       this.emitEvent('disconnection_error', {
@@ -200,7 +200,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
   async query(
     sql: string,
     params: any[] = [],
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<QueryResult> {
     const startTime = Date.now();
     this.stats.totalQueries++;
@@ -256,7 +256,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
           responseTime,
           error: (error as Error).message,
         },
-        error as Error
+        error as Error,
       );
 
       this.emitEvent('query_error', {
@@ -283,7 +283,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
   async execute(
     sql: string,
     params: any[] = [],
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<QueryResult> {
     return this.query(sql, params, { ...options, logQuery: true });
   }
@@ -296,8 +296,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
    * @returns {Promise<T>} 事务结果
    */
   async transaction<T>(
-    callback: (trx: any) => Promise<T>,
-    options: TransactionOptions = {}
+    callback: (_trx: unknown) => Promise<T>,
+    options: TransactionOptions = {},
   ): Promise<T> {
     const startTime = Date.now();
 
@@ -307,10 +307,10 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
         tag: options.tag,
       });
 
-      const result = await this.knexInstance.transaction(async (trx) => {
+      const result = await this.knexInstance.transaction(async trx => {
         if (options.isolationLevel) {
           await trx.raw(
-            `SET TRANSACTION ISOLATION LEVEL ${options.isolationLevel.toUpperCase()}`
+            `SET TRANSACTION ISOLATION LEVEL ${options.isolationLevel.toUpperCase()}`,
           );
         }
 
@@ -349,7 +349,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
           error: (error as Error).message,
           tag: options.tag,
         },
-        error as Error
+        error as Error,
       );
 
       this.emitEvent('transaction_error', {
@@ -504,12 +504,12 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       });
     });
 
-    this.pool.on('error', (err) => {
+    this.pool.on('error', err => {
       this.logger.error(
         'Unexpected error on idle client',
         LogContext.DATABASE,
         { adapter: this.name },
-        err
+        err,
       );
     });
   }
@@ -581,11 +581,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     } else {
       this.stats.minResponseTime = Math.min(
         this.stats.minResponseTime,
-        responseTime
+        responseTime,
       );
       this.stats.maxResponseTime = Math.max(
         this.stats.maxResponseTime,
-        responseTime
+        responseTime,
       );
       this.stats.averageResponseTime =
         (this.stats.averageResponseTime * (this.stats.totalQueries - 1) +
@@ -603,12 +603,12 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
    * @method emitEvent
    * @description 发射事件
    * @param event 事件名称
-   * @param data 事件数据
+   * @param _data 事件数据
    */
-  private emitEvent(event: string, data: any): void {
+  private emitEvent(event: string, _data: Record<string, unknown>): void {
     this.eventEmitter.emit(`database.${event}`, {
       adapter: this.name,
-      ...data,
+      ..._data,
     });
   }
 }

@@ -10,20 +10,29 @@ import { ICacheService } from '../interfaces/cache.interface';
 import { ICacheKeyFactory } from '../interfaces/cache.interface';
 import { CacheKey } from '../interfaces/cache.interface';
 import { PinoLoggerService } from '@aiofix/logging';
+import {
+  describe,
+  it,
+  beforeEach,
+  afterEach,
+  expect,
+  jest,
+} from '@jest/globals';
 
 /**
  * @class MockCacheService
  * @description 模拟缓存服务，用于测试
  */
 class MockCacheService implements ICacheService {
-  private cache = new Map<string, any>();
+  private cache = new Map<string, unknown>();
 
-  async get<T = any>(key: CacheKey): Promise<T | null> {
+  async get<T = unknown>(key: CacheKey): Promise<T | null> {
     const cacheKey = this.buildKey(key);
-    return this.cache.get(cacheKey) || null;
+    const value = this.cache.get(cacheKey);
+    return (value as T) || null;
   }
 
-  async set<T = any>(key: CacheKey, value: T): Promise<boolean> {
+  async set<T = unknown>(key: CacheKey, value: T): Promise<boolean> {
     const cacheKey = this.buildKey(key);
     this.cache.set(cacheKey, value);
     return true;
@@ -43,12 +52,13 @@ class MockCacheService implements ICacheService {
     if (namespace) {
       // 清除指定命名空间的缓存
       const keysToDelete: string[] = [];
-      for (const [key] of this.cache) {
+      const keys = Array.from(this.cache.keys());
+      for (const key of keys) {
         if (key.startsWith(namespace + ':')) {
           keysToDelete.push(key);
         }
       }
-      keysToDelete.forEach((key) => this.cache.delete(key));
+      keysToDelete.forEach(key => this.cache.delete(key));
     } else {
       this.cache.clear();
     }
@@ -106,7 +116,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createNamespace(
     namespace: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, namespace });
   }
@@ -114,7 +124,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createTenant(
     tenantId: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, tenantId });
   }
@@ -122,7 +132,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createUser(
     userId: string,
     key: string,
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, userId });
   }
@@ -130,7 +140,7 @@ class MockCacheKeyFactory implements ICacheKeyFactory {
   createTagged(
     key: string,
     tags: string[],
-    options?: Partial<CacheKey>
+    options?: Partial<CacheKey>,
   ): CacheKey {
     return this.create(key, { ...options, tags });
   }
@@ -171,14 +181,14 @@ describe('CacheInvalidationService', () => {
   beforeEach(async () => {
     mockEventEmitter = {
       emit: jest.fn(),
-    } as any;
+    } as unknown as jest.Mocked<EventEmitter2>;
 
     mockLogger = {
       info: jest.fn(),
       error: jest.fn(),
       warn: jest.fn(),
       debug: jest.fn(),
-    } as any;
+    } as unknown as jest.Mocked<PinoLoggerService>;
 
     mockKeyFactory = new MockCacheKeyFactory();
     mockCacheService = new MockCacheService();
@@ -221,7 +231,7 @@ describe('CacheInvalidationService', () => {
     it('should set cache service', () => {
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Cache service set for invalidation service',
-        expect.any(String)
+        expect.any(String),
       );
     });
   });
@@ -354,7 +364,7 @@ describe('CacheInvalidationService', () => {
     it('should invalidate exact keys', async () => {
       const result = await service.invalidate(
         ['test-namespace:key1', 'test-namespace:key2'],
-        InvalidationStrategy.EXACT
+        InvalidationStrategy.EXACT,
       );
 
       expect(result.success).toBe(true);
@@ -366,7 +376,7 @@ describe('CacheInvalidationService', () => {
     it('should invalidate by namespace', async () => {
       const result = await service.invalidate(
         ['test-namespace'],
-        InvalidationStrategy.NAMESPACE
+        InvalidationStrategy.NAMESPACE,
       );
 
       expect(result.success).toBe(true);
@@ -377,7 +387,7 @@ describe('CacheInvalidationService', () => {
     it('should invalidate batch', async () => {
       const result = await service.invalidate(
         ['test-namespace:key1', 'test-namespace:key2', 'other-namespace:key3'],
-        InvalidationStrategy.BATCH
+        InvalidationStrategy.BATCH,
       );
 
       expect(result.success).toBe(true);
@@ -387,7 +397,7 @@ describe('CacheInvalidationService', () => {
     it('should handle invalidate with non-existent keys', async () => {
       const result = await service.invalidate(
         ['non-existent-key'],
-        InvalidationStrategy.EXACT
+        InvalidationStrategy.EXACT,
       );
 
       expect(result.success).toBe(true);
@@ -402,7 +412,7 @@ describe('CacheInvalidationService', () => {
 
       const result = await service.invalidate(
         ['key1'],
-        InvalidationStrategy.EXACT
+        InvalidationStrategy.EXACT,
       );
 
       expect(result.success).toBe(true);
@@ -459,7 +469,7 @@ describe('CacheInvalidationService', () => {
 
     it('should handle non-existent rule', async () => {
       await expect(
-        service.invalidateByRule('non-existent-rule')
+        service.invalidateByRule('non-existent-rule'),
       ).rejects.toThrow('Invalidation rule not found: non-existent-rule');
     });
   });
@@ -484,7 +494,7 @@ describe('CacheInvalidationService', () => {
 
       await service.invalidate(
         ['test-namespace:key1'],
-        InvalidationStrategy.EXACT
+        InvalidationStrategy.EXACT,
       );
 
       const stats = service.getStats();
@@ -498,7 +508,7 @@ describe('CacheInvalidationService', () => {
 
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Invalidation stats reset',
-        expect.any(String)
+        expect.any(String),
       );
     });
   });
@@ -509,7 +519,7 @@ describe('CacheInvalidationService', () => {
         mockConfig,
         mockKeyFactory,
         mockEventEmitter,
-        mockLogger
+        mockLogger,
       );
 
       const result = await serviceWithoutCache.invalidate(['key1']);
@@ -519,11 +529,14 @@ describe('CacheInvalidationService', () => {
     });
 
     it('should handle unsupported strategy', async () => {
-      const result = await service.invalidate(['key1'], 'unsupported' as any);
+      const result = await service.invalidate(
+        ['key1'],
+        'unsupported' as InvalidationStrategy,
+      );
 
       expect(result.success).toBe(false);
       expect(result.error).toBe(
-        'Unsupported invalidation strategy: unsupported'
+        'Unsupported invalidation strategy: unsupported',
       );
     });
   });
@@ -548,7 +561,7 @@ describe('CacheInvalidationService', () => {
           data: expect.objectContaining({
             rule: expect.objectContaining({ name: 'test-rule' }),
           }),
-        })
+        }),
       );
     });
 
@@ -568,7 +581,7 @@ describe('CacheInvalidationService', () => {
             result: expect.any(Object),
             strategy: InvalidationStrategy.EXACT,
           }),
-        })
+        }),
       );
     });
   });
@@ -590,7 +603,7 @@ describe('CacheInvalidationService', () => {
     it('should handle prefix invalidation', async () => {
       const result = await service.invalidate(
         ['users'],
-        InvalidationStrategy.PREFIX
+        InvalidationStrategy.PREFIX,
       );
 
       expect(result.success).toBe(true);
@@ -601,7 +614,7 @@ describe('CacheInvalidationService', () => {
     it('should handle tag invalidation', async () => {
       const result = await service.invalidate(
         ['user-tag'],
-        InvalidationStrategy.TAG
+        InvalidationStrategy.TAG,
       );
 
       expect(result.success).toBe(true);
@@ -611,7 +624,7 @@ describe('CacheInvalidationService', () => {
     it('should handle wildcard invalidation', async () => {
       const result = await service.invalidate(
         ['user:*'],
-        InvalidationStrategy.WILDCARD
+        InvalidationStrategy.WILDCARD,
       );
 
       expect(result.success).toBe(true);
@@ -621,7 +634,7 @@ describe('CacheInvalidationService', () => {
     it('should handle regex invalidation', async () => {
       const result = await service.invalidate(
         ['user:\\d+'],
-        InvalidationStrategy.REGEX
+        InvalidationStrategy.REGEX,
       );
 
       expect(result.success).toBe(true);

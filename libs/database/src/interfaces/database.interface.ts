@@ -231,7 +231,7 @@ export interface IDatabaseAdapter {
    * @returns {Promise<T>} 事务结果
    */
   transaction<T>(
-    callback: (trx: any) => Promise<T>,
+    callback: (_trx: unknown) => Promise<T>,
     options?: TransactionOptions,
   ): Promise<T>;
 

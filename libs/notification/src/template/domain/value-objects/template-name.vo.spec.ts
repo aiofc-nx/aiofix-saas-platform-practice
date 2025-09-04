@@ -25,15 +25,21 @@ describe('TemplateName', () => {
     });
 
     it('应该拒绝null值', () => {
-      expect(() => new TemplateName(null as any)).toThrow('模板名称不能为空');
+      expect(() => new TemplateName(null as unknown)).toThrow(
+        '模板名称不能为空',
+      );
     });
 
     it('应该拒绝undefined值', () => {
-      expect(() => new TemplateName(undefined as any)).toThrow('模板名称不能为空');
+      expect(() => new TemplateName(undefined as unknown)).toThrow(
+        '模板名称不能为空',
+      );
     });
 
     it('应该拒绝非字符串类型', () => {
-      expect(() => new TemplateName(123 as any)).toThrow('模板名称必须是字符串类型');
+      expect(() => new TemplateName(123 as unknown)).toThrow(
+        '模板名称必须是字符串类型',
+      );
     });
 
     it('应该拒绝只包含空格的字符串', () => {
@@ -41,36 +47,62 @@ describe('TemplateName', () => {
     });
 
     it('应该拒绝长度少于2个字符的名称', () => {
-      expect(() => new TemplateName('a')).toThrow('模板名称长度不能少于2个字符');
+      expect(() => new TemplateName('a')).toThrow(
+        '模板名称长度不能少于2个字符',
+      );
     });
 
     it('应该拒绝长度超过100个字符的名称', () => {
       const longName = 'a'.repeat(101);
-      expect(() => new TemplateName(longName)).toThrow('模板名称长度不能超过100个字符');
+      expect(() => new TemplateName(longName)).toThrow(
+        '模板名称长度不能超过100个字符',
+      );
     });
 
     it('应该拒绝包含不允许字符的名称', () => {
-      expect(() => new TemplateName('test<template')).toThrow('模板名称包含不允许的字符');
-      expect(() => new TemplateName('test>template')).toThrow('模板名称包含不允许的字符');
-      expect(() => new TemplateName('test"template')).toThrow('模板名称包含不允许的字符');
-      expect(() => new TemplateName("test'template")).toThrow('模板名称包含不允许的字符');
-      expect(() => new TemplateName('test&template')).toThrow('模板名称包含不允许的字符');
+      expect(() => new TemplateName('test<template')).toThrow(
+        '模板名称包含不允许的字符',
+      );
+      expect(() => new TemplateName('test>template')).toThrow(
+        '模板名称包含不允许的字符',
+      );
+      expect(() => new TemplateName('test"template')).toThrow(
+        '模板名称包含不允许的字符',
+      );
+      expect(() => new TemplateName("test'template")).toThrow(
+        '模板名称包含不允许的字符',
+      );
+      expect(() => new TemplateName('test&template')).toThrow(
+        '模板名称包含不允许的字符',
+      );
     });
 
     it('应该拒绝包含控制字符的名称', () => {
-      expect(() => new TemplateName('test\u0000template')).toThrow('模板名称包含控制字符');
-      expect(() => new TemplateName('test\u0007template')).toThrow('模板名称包含控制字符');
-      expect(() => new TemplateName('test\u007ftemplate')).toThrow('模板名称包含控制字符');
+      expect(() => new TemplateName('test\u0000template')).toThrow(
+        '模板名称包含控制字符',
+      );
+      expect(() => new TemplateName('test\u0007template')).toThrow(
+        '模板名称包含控制字符',
+      );
+      expect(() => new TemplateName('test\u007ftemplate')).toThrow(
+        '模板名称包含控制字符',
+      );
     });
 
     it('应该拒绝以数字开头的名称', () => {
       expect(() => new TemplateName('1test')).toThrow('模板名称不能以数字开头');
-      expect(() => new TemplateName('123test')).toThrow('模板名称不能以数字开头');
+      expect(() => new TemplateName('123test')).toThrow(
+        '模板名称不能以数字开头',
+      );
     });
 
     it('应该拒绝包含连续空格的名称', () => {
-      expect(() => new TemplateName('test  template')).toThrow('模板名称不能包含连续的空格');
-      expect(() => new TemplateName('test   template')).toThrow('模板名称不能包含连续的空格');
+      expect(() => new TemplateName('test  template')).toThrow(
+        '模板名称不能包含连续的空格',
+      );
+      expect(() => new TemplateName('test   template')).toThrow(
+        '模板名称不能包含连续的空格',
+      );
     });
   });
 
@@ -246,7 +278,9 @@ describe('TemplateName', () => {
       });
 
       it('应该处理空slug', () => {
-        expect(() => TemplateName.createFromSlug('')).toThrow('模板名称不能为空');
+        expect(() => TemplateName.createFromSlug('')).toThrow(
+          '模板名称不能为空',
+        );
       });
     });
 
@@ -266,8 +300,8 @@ describe('TemplateName', () => {
       });
 
       it('应该处理null和undefined', () => {
-        expect(TemplateName.isValid(null as any)).toBe(false);
-        expect(TemplateName.isValid(undefined as any)).toBe(false);
+        expect(TemplateName.isValid(null as unknown)).toBe(false);
+        expect(TemplateName.isValid(undefined as unknown)).toBe(false);
       });
     });
   });
@@ -304,10 +338,10 @@ describe('TemplateName', () => {
 
       // 验证没有setter方法
       expect(templateName).not.toHaveProperty('setValue');
-      
+
       // 验证值对象是不可变的
       expect(templateName.value).toBe(originalValue);
-      
+
       // 验证值对象的行为符合不可变性原则
       const templateName2 = new TemplateName('测试模板');
       expect(templateName.equals(templateName2)).toBe(true);

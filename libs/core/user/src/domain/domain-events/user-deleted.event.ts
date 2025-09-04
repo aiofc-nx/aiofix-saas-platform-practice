@@ -58,7 +58,7 @@ export class UserDeletedEvent extends DomainEvent {
     public readonly deletedBy?: string,
     public readonly cascadeDelete: boolean = false,
     public readonly success: boolean = true,
-    public readonly errorMessage?: string
+    public readonly errorMessage?: string,
   ) {
     super('UserDeleted', {
       userId,
@@ -68,7 +68,7 @@ export class UserDeletedEvent extends DomainEvent {
       cascadeDelete,
       success,
       errorMessage,
-      deletedAt: new Date()
+      deletedAt: new Date(),
     });
     this.aggregateId = userId;
   }
@@ -85,7 +85,7 @@ export class UserDeletedEvent extends DomainEvent {
       reason: this.reason,
       deletedBy: this.deletedBy,
       cascadeDelete: this.cascadeDelete,
-      deletedAt: new Date()
+      deletedAt: new Date(),
     };
   }
 

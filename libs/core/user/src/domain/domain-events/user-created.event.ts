@@ -70,7 +70,7 @@ export class UserCreatedEvent extends DomainEvent {
     public readonly departmentIds: string[] = [],
     public readonly userType: UserType = UserType.TENANT_USER,
     public readonly dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
-    public readonly createdAt: Date = new Date()
+    public readonly createdAt: Date = new Date(),
   ) {
     super('UserCreated', {
       userId,
@@ -81,7 +81,7 @@ export class UserCreatedEvent extends DomainEvent {
       departmentIds,
       userType,
       dataPrivacyLevel,
-      createdAt
+      createdAt,
     });
     this.aggregateId = userId;
   }
@@ -101,7 +101,7 @@ export class UserCreatedEvent extends DomainEvent {
       departmentIds: this.departmentIds,
       userType: this.userType,
       dataPrivacyLevel: this.dataPrivacyLevel,
-      createdAt: this.createdAt
+      createdAt: this.createdAt,
     };
   }
 

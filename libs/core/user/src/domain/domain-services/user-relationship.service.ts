@@ -32,7 +32,6 @@ import { UserRelationshipRepository } from '../repositories/user-relationship.re
 import { UserRelationshipEntity } from '../entities/user-relationship.entity';
 import { UserId, TenantId } from '@aiofix/shared';
 import { DataPrivacyLevel } from '@aiofix/shared';
-import { UserRelationshipChangedEvent } from '../domain-events';
 
 /**
  * 关系创建数据接口
@@ -57,7 +56,7 @@ export interface RelationshipCreationData {
 @Injectable()
 export class UserRelationshipService {
   constructor(
-    private readonly userRelationshipRepository: UserRelationshipRepository
+    private readonly userRelationshipRepository: UserRelationshipRepository,
   ) {}
 
   /**
@@ -66,13 +65,16 @@ export class UserRelationshipService {
    * @param {RelationshipCreationData} relationshipData 关系创建数据
    * @returns {Promise<UserRelationshipEntity>} 创建的用户关系实体
    */
-  async createRelationship(relationshipData: RelationshipCreationData): Promise<UserRelationshipEntity> {
+  async createRelationship(
+    relationshipData: RelationshipCreationData,
+  ): Promise<UserRelationshipEntity> {
     // 1. 检查关系是否已存在
-    const existingRelationship = await this.userRelationshipRepository.existsByUserAndTarget(
-      UserId.create(relationshipData.userId),
-      relationshipData.targetEntityId,
-      relationshipData.targetEntityType
-    );
+    const existingRelationship =
+      await this.userRelationshipRepository.existsByUserAndTarget(
+        UserId.create(relationshipData.userId),
+        relationshipData.targetEntityId,
+        relationshipData.targetEntityType,
+      );
 
     if (existingRelationship) {
       throw new Error('用户关系已存在');
@@ -85,16 +87,19 @@ export class UserRelationshipService {
       relationshipData.userId,
       relationshipData.targetEntityId,
       relationshipData.targetEntityType,
-      relationshipData.relationshipType as any, // 临时类型转换
-      'ACTIVE' as any, // 默认状态
+      relationshipData.relationshipType,
+      'ACTIVE',
       relationshipData.tenantId,
       relationshipData.organizationId,
       relationshipData.departmentIds,
-      relationshipData.dataPrivacyLevel || DataPrivacyLevel.PROTECTED
+      relationshipData.dataPrivacyLevel || DataPrivacyLevel.PROTECTED,
     );
 
     // 3. 设置初始权限
-    if (relationshipData.permissions && relationshipData.permissions.length > 0) {
+    if (
+      relationshipData.permissions &&
+      relationshipData.permissions.length > 0
+    ) {
       relationshipData.permissions.forEach(permission => {
         relationship.grantPermission(permission);
       });
@@ -106,7 +111,8 @@ export class UserRelationshipService {
     }
 
     // 5. 保存关系
-    const savedRelationship = await this.userRelationshipRepository.save(relationship);
+    const savedRelationship =
+      await this.userRelationshipRepository.save(relationship);
 
     // 发布关系创建事件
     // TODO: 实现事件总线发布
@@ -121,15 +127,18 @@ export class UserRelationshipService {
    * @param {string} relationshipId 关系ID
    * @returns {Promise<UserRelationshipEntity>} 更新后的用户关系实体
    */
-  async activateRelationship(relationshipId: string): Promise<UserRelationshipEntity> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async activateRelationship(
+    relationshipId: string,
+  ): Promise<UserRelationshipEntity> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
 
-    const oldStatus = relationship.status;
     relationship.activate();
-    const updatedRelationship = await this.userRelationshipRepository.save(relationship);
+    const updatedRelationship =
+      await this.userRelationshipRepository.save(relationship);
 
     // 发布关系状态变更事件
     // TODO: 实现事件总线发布
@@ -144,15 +153,18 @@ export class UserRelationshipService {
    * @param {string} relationshipId 关系ID
    * @returns {Promise<UserRelationshipEntity>} 更新后的用户关系实体
    */
-  async deactivateRelationship(relationshipId: string): Promise<UserRelationshipEntity> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async deactivateRelationship(
+    relationshipId: string,
+  ): Promise<UserRelationshipEntity> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
 
-    const oldStatus = relationship.status;
     relationship.deactivate();
-    const updatedRelationship = await this.userRelationshipRepository.save(relationship);
+    const updatedRelationship =
+      await this.userRelationshipRepository.save(relationship);
 
     // 发布关系状态变更事件
     // TODO: 实现事件总线发布
@@ -167,15 +179,18 @@ export class UserRelationshipService {
    * @param {string} relationshipId 关系ID
    * @returns {Promise<UserRelationshipEntity>} 更新后的用户关系实体
    */
-  async suspendRelationship(relationshipId: string): Promise<UserRelationshipEntity> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async suspendRelationship(
+    relationshipId: string,
+  ): Promise<UserRelationshipEntity> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
 
-    const oldStatus = relationship.status;
     relationship.suspend();
-    const updatedRelationship = await this.userRelationshipRepository.save(relationship);
+    const updatedRelationship =
+      await this.userRelationshipRepository.save(relationship);
 
     // 发布关系状态变更事件
     // TODO: 实现事件总线发布
@@ -190,15 +205,18 @@ export class UserRelationshipService {
    * @param {string} relationshipId 关系ID
    * @returns {Promise<UserRelationshipEntity>} 更新后的用户关系实体
    */
-  async rejectRelationship(relationshipId: string): Promise<UserRelationshipEntity> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async rejectRelationship(
+    relationshipId: string,
+  ): Promise<UserRelationshipEntity> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
 
-    const oldStatus = relationship.status;
     relationship.reject();
-    const updatedRelationship = await this.userRelationshipRepository.save(relationship);
+    const updatedRelationship =
+      await this.userRelationshipRepository.save(relationship);
 
     // 发布关系状态变更事件
     // TODO: 实现事件总线发布
@@ -214,8 +232,12 @@ export class UserRelationshipService {
    * @param {string} permission 权限名称
    * @returns {Promise<boolean>} 是否授予成功
    */
-  async grantPermission(relationshipId: string, permission: string): Promise<boolean> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async grantPermission(
+    relationshipId: string,
+    permission: string,
+  ): Promise<boolean> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
@@ -233,8 +255,12 @@ export class UserRelationshipService {
    * @param {string} permission 权限名称
    * @returns {Promise<boolean>} 是否撤销成功
    */
-  async revokePermission(relationshipId: string, permission: string): Promise<boolean> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async revokePermission(
+    relationshipId: string,
+    permission: string,
+  ): Promise<boolean> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
@@ -252,8 +278,12 @@ export class UserRelationshipService {
    * @param {string} permission 权限名称
    * @returns {Promise<boolean>} 是否具有权限
    */
-  async hasPermission(relationshipId: string, permission: string): Promise<boolean> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async hasPermission(
+    relationshipId: string,
+    permission: string,
+  ): Promise<boolean> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       return false;
     }
@@ -268,8 +298,12 @@ export class UserRelationshipService {
    * @param {Date} endDate 结束日期
    * @returns {Promise<boolean>} 是否设置成功
    */
-  async setRelationshipEndDate(relationshipId: string, endDate: Date): Promise<boolean> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async setRelationshipEndDate(
+    relationshipId: string,
+    endDate: Date,
+  ): Promise<boolean> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
@@ -287,8 +321,12 @@ export class UserRelationshipService {
    * @param {string} description 新的描述信息
    * @returns {Promise<boolean>} 是否更新成功
    */
-  async updateRelationshipDescription(relationshipId: string, description: string): Promise<boolean> {
-    const relationship = await this.userRelationshipRepository.findById(relationshipId);
+  async updateRelationshipDescription(
+    relationshipId: string,
+    description: string,
+  ): Promise<boolean> {
+    const relationship =
+      await this.userRelationshipRepository.findById(relationshipId);
     if (!relationship) {
       throw new Error('用户关系不存在');
     }
@@ -305,7 +343,9 @@ export class UserRelationshipService {
    * @param {string} relationshipId 关系ID
    * @returns {Promise<UserRelationshipEntity | null>} 用户关系实体
    */
-  async getRelationship(relationshipId: string): Promise<UserRelationshipEntity | null> {
+  async getRelationship(
+    relationshipId: string,
+  ): Promise<UserRelationshipEntity | null> {
     return await this.userRelationshipRepository.findById(relationshipId);
   }
 
@@ -315,7 +355,9 @@ export class UserRelationshipService {
    * @param {UserId} userId 用户ID
    * @returns {Promise<UserRelationshipEntity[]>} 用户关系实体列表
    */
-  async getUserRelationships(userId: UserId): Promise<UserRelationshipEntity[]> {
+  async getUserRelationships(
+    userId: UserId,
+  ): Promise<UserRelationshipEntity[]> {
     return await this.userRelationshipRepository.findByUserId(userId);
   }
 
@@ -338,9 +380,12 @@ export class UserRelationshipService {
    */
   async getRelationshipsByTarget(
     targetEntityId: string,
-    targetEntityType: string
+    targetEntityType: string,
   ): Promise<UserRelationshipEntity[]> {
-    return await this.userRelationshipRepository.findByTargetEntity(targetEntityId, targetEntityType);
+    return await this.userRelationshipRepository.findByTargetEntity(
+      targetEntityId,
+      targetEntityType,
+    );
   }
 
   /**
@@ -354,8 +399,12 @@ export class UserRelationshipService {
   async getRelationshipsByTenant(
     tenantId: TenantId,
     limit?: number,
-    offset?: number
+    offset?: number,
   ): Promise<UserRelationshipEntity[]> {
-    return await this.userRelationshipRepository.findByTenantId(tenantId, limit, offset);
+    return await this.userRelationshipRepository.findByTenantId(
+      tenantId,
+      limit,
+      offset,
+    );
   }
 }

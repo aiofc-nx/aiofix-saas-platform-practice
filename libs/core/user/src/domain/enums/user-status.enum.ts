@@ -67,7 +67,7 @@ export enum UserStatus {
    * 过期状态
    * @description 用户账户已过期，需要续期或重新激活
    */
-  EXPIRED = 'EXPIRED'
+  EXPIRED = 'EXPIRED',
 }
 
 /**
@@ -76,12 +76,17 @@ export enum UserStatus {
  */
 export const UserStatusTransitions = {
   [UserStatus.INACTIVE]: [UserStatus.ACTIVE, UserStatus.DELETED],
-  [UserStatus.ACTIVE]: [UserStatus.SUSPENDED, UserStatus.LOCKED, UserStatus.DELETED, UserStatus.EXPIRED],
+  [UserStatus.ACTIVE]: [
+    UserStatus.SUSPENDED,
+    UserStatus.LOCKED,
+    UserStatus.DELETED,
+    UserStatus.EXPIRED,
+  ],
   [UserStatus.SUSPENDED]: [UserStatus.ACTIVE, UserStatus.DELETED],
   [UserStatus.LOCKED]: [UserStatus.ACTIVE, UserStatus.DELETED],
   [UserStatus.PENDING_VERIFICATION]: [UserStatus.ACTIVE, UserStatus.DELETED],
   [UserStatus.EXPIRED]: [UserStatus.ACTIVE, UserStatus.DELETED],
-  [UserStatus.DELETED]: [] // 删除状态是终态，无法转换
+  [UserStatus.DELETED]: [], // 删除状态是终态，无法转换
 } as const;
 
 /**
@@ -93,7 +98,7 @@ export const UserStatusTransitions = {
  */
 export function isStatusTransitionValid(
   fromStatus: UserStatus,
-  toStatus: UserStatus
+  toStatus: UserStatus,
 ): boolean {
   const allowedTransitions = UserStatusTransitions[fromStatus];
   return (allowedTransitions as unknown as UserStatus[]).includes(toStatus);
@@ -113,7 +118,7 @@ export function getUserStatusDisplayName(status: UserStatus): string {
     [UserStatus.LOCKED]: '锁定',
     [UserStatus.PENDING_VERIFICATION]: '待验证',
     [UserStatus.DELETED]: '已删除',
-    [UserStatus.EXPIRED]: '已过期'
+    [UserStatus.EXPIRED]: '已过期',
   };
   return displayNames[status];
 }
@@ -132,7 +137,7 @@ export function getUserStatusColor(status: UserStatus): string {
     [UserStatus.LOCKED]: 'danger',
     [UserStatus.PENDING_VERIFICATION]: 'info',
     [UserStatus.DELETED]: 'secondary',
-    [UserStatus.EXPIRED]: 'danger'
+    [UserStatus.EXPIRED]: 'danger',
   };
   return colors[status];
 }

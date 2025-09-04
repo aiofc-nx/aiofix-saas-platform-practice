@@ -51,7 +51,7 @@ export interface PushRoutingResult {
 @Injectable()
 export class PushNotificationDomainService {
   constructor(
-    private readonly pushNotificationRepository: PushNotificationRepository
+    private readonly pushNotificationRepository: PushNotificationRepository,
   ) {}
 
   /**
@@ -59,7 +59,7 @@ export class PushNotificationDomainService {
    * @description 验证推送通知
    */
   validatePushNotification(
-    notification: PushNotification
+    notification: PushNotification,
   ): PushValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -107,7 +107,7 @@ export class PushNotificationDomainService {
 
     // 7. 验证平台一致性
     const platforms = new Set(
-      notification.recipients.map((token) => this.getPlatformFromToken(token))
+      notification.recipients.map(token => this.getPlatformFromToken(token)),
     );
     if (platforms.size > 1) {
       warnings.push('不同平台的设备令牌混合发送，可能影响推送效果');
@@ -126,7 +126,7 @@ export class PushNotificationDomainService {
    */
   determinePushRouting(
     notification: PushNotification,
-    tenantSettings?: Record<string, unknown>
+    tenantSettings?: Record<string, unknown>,
   ): PushRoutingResult {
     // 1. 检查是否应该立即发送
     if (notification.scheduledAt) {
@@ -192,7 +192,7 @@ export class PushNotificationDomainService {
    */
   calculateRetryStrategy(
     notification: PushNotification,
-    errorCode: string
+    errorCode: string,
   ): {
     shouldRetry: boolean;
     retryDelay: number;
@@ -245,7 +245,7 @@ export class PushNotificationDomainService {
    */
   async optimizeBatchSending(
     notifications: PushNotification[],
-    batchSize: number = 500
+    batchSize: number = 500,
   ): Promise<PushNotification[][]> {
     // 1. 按平台分组
     const iosNotifications: PushNotification[] = [];
@@ -332,7 +332,7 @@ export class PushNotificationDomainService {
   async getPushStatistics(
     tenantId: string,
     fromDate?: Date,
-    toDate?: Date
+    toDate?: Date,
   ): Promise<{
     total: number;
     sent: number;
@@ -347,18 +347,15 @@ export class PushNotificationDomainService {
     const statistics = await this.pushNotificationRepository.getStatistics(
       tenantId,
       fromDate,
-      toDate
+      toDate,
     );
 
-    const byPriority = await this.pushNotificationRepository.countByPriority(
-      tenantId
-    );
-    const byStatus = await this.pushNotificationRepository.countByStatus(
-      tenantId
-    );
-    const byPlatform = await this.pushNotificationRepository.countByPlatform(
-      tenantId
-    );
+    const byPriority =
+      await this.pushNotificationRepository.countByPriority(tenantId);
+    const byStatus =
+      await this.pushNotificationRepository.countByStatus(tenantId);
+    const byPlatform =
+      await this.pushNotificationRepository.countByPlatform(tenantId);
 
     return {
       ...statistics,
@@ -403,7 +400,7 @@ export class PushNotificationDomainService {
   private isInQuietHours(
     quietStart: string,
     quietEnd: string,
-    _timezone: string
+    _timezone: string,
   ): boolean {
     // 简化实现，实际应该使用moment.js或day.js处理时区
     const now = new Date();

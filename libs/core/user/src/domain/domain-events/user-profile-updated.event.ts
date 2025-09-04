@@ -57,7 +57,7 @@ export class UserProfileUpdatedEvent extends DomainEvent {
     public readonly updatedFields: string[],
     public readonly newValues: Record<string, unknown>,
     public readonly tenantId: string = '',
-    public readonly updatedAt: Date = new Date()
+    public readonly updatedAt: Date = new Date(),
   ) {
     super('UserProfileUpdated', {
       userId,
@@ -65,7 +65,7 @@ export class UserProfileUpdatedEvent extends DomainEvent {
       updatedFields,
       newValues,
       tenantId,
-      updatedAt
+      updatedAt,
     });
   }
 
@@ -81,7 +81,7 @@ export class UserProfileUpdatedEvent extends DomainEvent {
       updatedFields: this.updatedFields,
       newValues: this.newValues,
       tenantId: this.tenantId,
-      updatedAt: this.updatedAt
+      updatedAt: this.updatedAt,
     };
   }
 

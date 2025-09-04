@@ -63,7 +63,7 @@ export class EmailNotificationFailedEvent extends BaseEvent {
     provider: string,
     failedAt: Date,
     errorDetails?: Record<string, unknown>,
-    operatorId?: string
+    _operatorId?: string,
   ) {
     super();
 
@@ -129,7 +129,7 @@ export class EmailNotificationFailedEvent extends BaseEvent {
     provider: string,
     failedAt: Date,
     errorDetails?: Record<string, unknown>,
-    operatorId?: string
+    operatorId?: string,
   ): EmailNotificationFailedEvent {
     return new EmailNotificationFailedEvent(
       notificationId,
@@ -142,7 +142,7 @@ export class EmailNotificationFailedEvent extends BaseEvent {
       provider,
       failedAt,
       errorDetails,
-      operatorId
+      operatorId,
     );
   }
 }

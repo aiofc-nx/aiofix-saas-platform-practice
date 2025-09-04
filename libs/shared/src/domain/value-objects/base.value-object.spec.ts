@@ -20,7 +20,7 @@ class TestValueObject extends BaseValueObject {
       throw new InvalidValueObjectError(
         'Value cannot be empty',
         'TestValueObject',
-        value
+        value,
       );
     }
   }
@@ -45,7 +45,7 @@ class TestValueObject extends BaseValueObject {
       throw new InvalidValueObjectError(
         'Invalid JSON format',
         'TestValueObject',
-        json
+        json,
       );
     }
   }
@@ -65,7 +65,7 @@ describe('BaseValueObject', () => {
       const error = new InvalidValueObjectError(
         'Test error',
         'TestType',
-        'test-value'
+        'test-value',
       );
 
       expect(error.message).toBe('Test error');
@@ -96,8 +96,8 @@ describe('BaseValueObject', () => {
       });
 
       it('should throw error for null value', () => {
-        expect(() => new TestValueObject(null as any)).toThrow(
-          InvalidValueObjectError
+        expect(() => new TestValueObject(null as unknown)).toThrow(
+          InvalidValueObjectError,
         );
       });
     });
@@ -146,16 +146,16 @@ describe('BaseValueObject', () => {
     });
 
     describe('fromJSON', () => {
-          it('should create value object from valid JSON', () => {
-      const json = JSON.stringify({ value: 'test' });
-      const vo = new TestValueObject('test').fromJSON(json);
-      expect(vo.value).toBe('test');
-    });
+      it('should create value object from valid JSON', () => {
+        const json = JSON.stringify({ value: 'test' });
+        const vo = new TestValueObject('test').fromJSON(json);
+        expect(vo.value).toBe('test');
+      });
 
       it('should throw error for invalid JSON', () => {
         const vo = new TestValueObject('test');
         expect(() => vo.fromJSON('invalid json')).toThrow(
-          InvalidValueObjectError
+          InvalidValueObjectError,
         );
       });
     });

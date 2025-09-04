@@ -4,7 +4,7 @@
  *
  * 该值对象封装用户ID的业务规则和验证逻辑。
  * 继承shared模块中的UUID值对象，确保ID的唯一性和有效性。
- * 
+ *
  * 跨领域使用场景：
  * - IAM领域：用户实体主键、会话外键
  * - 订单管理：订单创建者、分配者外键
@@ -26,7 +26,7 @@
  * 4. 跨领域一致性保证
  */
 
-import { Uuid, InvalidUuidError } from './uuid.vo';
+import { Uuid } from './uuid.vo';
 
 /**
  * @class UserId

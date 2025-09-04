@@ -141,7 +141,7 @@ export class Password extends BaseValueObject {
       // 注意：这里无法从哈希值恢复明文密码，所以抛出一个错误
       throw new InvalidPasswordError(
         'Cannot create Password from JSON (password is hashed)',
-        json
+        json,
       );
     } catch (error) {
       if (error instanceof InvalidPasswordError) {
@@ -495,7 +495,7 @@ export class Password extends BaseValueObject {
     ];
 
     const lowerPassword = password.toLowerCase();
-    return sequences.some((seq) => lowerPassword.includes(seq));
+    return sequences.some(seq => lowerPassword.includes(seq));
   }
 
   /**
@@ -512,7 +512,7 @@ export class Password extends BaseValueObject {
       /(.)(.)(.)\1\2\3/, // 三字符重复
     ];
 
-    return patterns.some((pattern) => pattern.test(password));
+    return patterns.some(pattern => pattern.test(password));
   }
 
   /**

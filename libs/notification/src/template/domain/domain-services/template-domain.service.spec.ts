@@ -19,14 +19,23 @@ import { NotificationType, TemplateStatus, Uuid } from '@aiofix/shared';
 // 模拟 TemplateRepository 接口
 interface TemplateRepository {
   findByName(name: string, tenantId: string): Promise<Template | null>;
-  getStatistics(tenantId: string, fromDate?: Date, toDate?: Date): Promise<any>;
+  getStatistics(
+    tenantId: string,
+    fromDate?: Date,
+    toDate?: Date,
+  ): Promise<unknown>;
   countByType(tenantId: string): Promise<Record<NotificationType, number>>;
   countByStatus(tenantId: string): Promise<Record<TemplateStatus, number>>;
   countByCategory(tenantId: string): Promise<Record<string, number>>;
   countByLanguage(tenantId: string): Promise<Record<string, number>>;
-  getMostUsedTemplates(tenantId: string, limit: number): Promise<any[]>;
+  getMostUsedTemplates(tenantId: string, limit: number): Promise<unknown[]>;
   findById(id: Uuid): Promise<Template | null>;
-  search(tenantId: string, criteria: any, limit: number, offset: number): Promise<Template[]>;
+  search(
+    tenantId: string,
+    criteria: unknown,
+    limit: number,
+    offset: number,
+  ): Promise<Template[]>;
 }
 
 describe('TemplateDomainService', () => {
@@ -46,8 +55,8 @@ describe('TemplateDomainService', () => {
       search: jest.fn(),
     };
 
-    service = new TemplateDomainService(mockRepository as any);
-    mockTemplateRepository = mockRepository as any;
+    service = new TemplateDomainService(mockRepository as unknown);
+    mockTemplateRepository = mockRepository as unknown;
   });
 
   describe('validateTemplate', () => {
@@ -65,7 +74,7 @@ describe('TemplateDomainService', () => {
         'Welcome Email',
         ['welcome'],
         { category: 'notification' },
-        Uuid.generate()
+        Uuid.generate(),
       );
     });
 
@@ -90,7 +99,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       // 模拟空名称的情况
@@ -125,7 +134,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
@@ -147,7 +156,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       // 模拟空内容的情况
@@ -182,7 +191,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
@@ -203,7 +212,7 @@ describe('TemplateDomainService', () => {
         undefined,
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
@@ -225,7 +234,7 @@ describe('TemplateDomainService', () => {
         longSubject,
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
@@ -246,7 +255,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
@@ -267,13 +276,15 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
 
       expect(result.isValid).toBe(true);
-      expect(result.warnings).toContain('变量 "company" 已声明但未在内容中使用');
+      expect(result.warnings).toContain(
+        '变量 "company" 已声明但未在内容中使用',
+      );
     });
 
     it('应该检测无效的变量名称', () => {
@@ -288,14 +299,14 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        '变量名称 "user-name" 格式无效，只能包含字母、数字和下划线'
+        '变量名称 "user-name" 格式无效，只能包含字母、数字和下划线',
       );
     });
 
@@ -312,7 +323,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       // 模拟空分类的情况
@@ -347,7 +358,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         manyTags,
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
@@ -368,7 +379,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.validateTemplate(template);
@@ -390,7 +401,7 @@ describe('TemplateDomainService', () => {
       expect(result).toBe(true);
       expect(mockTemplateRepository.findByName).toHaveBeenCalledWith(
         templateName,
-        tenantId.toString()
+        tenantId.toString(),
       );
     });
 
@@ -406,7 +417,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
       mockTemplateRepository.findByName.mockResolvedValue(existingTemplate);
 
@@ -427,14 +438,14 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
       mockTemplateRepository.findByName.mockResolvedValue(existingTemplate);
 
       const result = await service.validateTemplateName(
         templateName,
         tenantId,
-        existingTemplate.id.toString()
+        existingTemplate.id.toString(),
       );
 
       expect(result).toBe(true);
@@ -454,7 +465,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       const result = service.checkTemplateReviewStatus(template);
@@ -478,7 +489,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
       template.submitForReview();
 
@@ -502,7 +513,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
       template.submitForReview();
       template.approve(Uuid.generate(), 'approved');
@@ -599,7 +610,7 @@ describe('TemplateDomainService', () => {
       expect(mockTemplateRepository.getStatistics).toHaveBeenCalledWith(
         tenantId.toString(),
         fromDate,
-        toDate
+        toDate,
       );
     });
   });
@@ -623,7 +634,7 @@ describe('TemplateDomainService', () => {
         'Original Subject',
         ['original'],
         { original: true },
-        Uuid.generate()
+        Uuid.generate(),
       );
     });
 
@@ -635,7 +646,7 @@ describe('TemplateDomainService', () => {
         originalTemplate.id,
         newName,
         tenantId,
-        createdBy
+        createdBy,
       );
 
       expect(result.name).toBe(newName);
@@ -659,8 +670,8 @@ describe('TemplateDomainService', () => {
           Uuid.generate(),
           newName,
           tenantId,
-          createdBy
-        )
+          createdBy,
+        ),
       ).rejects.toThrow('模板');
     });
 
@@ -673,8 +684,8 @@ describe('TemplateDomainService', () => {
           originalTemplate.id,
           newName,
           tenantId,
-          createdBy
-        )
+          createdBy,
+        ),
       ).rejects.toThrow(`模板名称 "${newName}" 已存在`);
     });
   });
@@ -704,7 +715,7 @@ describe('TemplateDomainService', () => {
           'Welcome',
           ['welcome'],
           {},
-          Uuid.generate()
+          Uuid.generate(),
         ),
       ];
 
@@ -717,7 +728,7 @@ describe('TemplateDomainService', () => {
         tenantId.toString(),
         searchCriteria,
         20,
-        0
+        0,
       );
     });
 
@@ -730,7 +741,7 @@ describe('TemplateDomainService', () => {
         tenantId.toString(),
         searchCriteria,
         50,
-        10
+        10,
       );
     });
   });
@@ -751,7 +762,7 @@ describe('TemplateDomainService', () => {
         'Test Subject',
         [],
         {},
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       // 添加版本历史
@@ -759,12 +770,15 @@ describe('TemplateDomainService', () => {
         'Updated content {{userName}}',
         ['userName', 'company'],
         'Updated Subject',
-        Uuid.generate()
+        Uuid.generate(),
       );
 
       mockTemplateRepository.findById.mockResolvedValue(template);
 
-      const result = await service.getTemplateVersionHistory(templateId, tenantId);
+      const result = await service.getTemplateVersionHistory(
+        templateId,
+        tenantId,
+      );
 
       expect(result).toHaveLength(1); // 只有当前版本
       expect(result[0].version).toBe(1);
@@ -775,7 +789,7 @@ describe('TemplateDomainService', () => {
       mockTemplateRepository.findById.mockResolvedValue(null);
 
       await expect(
-        service.getTemplateVersionHistory(templateId, tenantId)
+        service.getTemplateVersionHistory(templateId, tenantId),
       ).rejects.toThrow('模板');
     });
   });

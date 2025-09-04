@@ -80,7 +80,7 @@ export class UserUpdatedEvent extends DomainEvent {
       website?: string;
     },
     public readonly success: boolean = true,
-    public readonly errorMessage?: string
+    public readonly errorMessage?: string,
   ) {
     super('UserUpdated', {
       userId,
@@ -94,7 +94,7 @@ export class UserUpdatedEvent extends DomainEvent {
       profile,
       success,
       errorMessage,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
     this.aggregateId = userId;
   }
@@ -115,7 +115,7 @@ export class UserUpdatedEvent extends DomainEvent {
       organizationId: this.organizationId,
       departmentIds: this.departmentIds,
       profile: this.profile,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   }
 

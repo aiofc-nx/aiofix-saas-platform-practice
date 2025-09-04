@@ -1,16 +1,23 @@
 import { registerAs } from '@nestjs/config';
 
+// Define the types locally since we can't import from the logging module yet
+type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+
+// 使用字符串字面量类型而不是枚举，避免私有名称问题
+type LogFormat = 'json' | 'text' | 'simple';
+
 /**
  * Logging Configuration
  *
  * 日志配置模块，定义IAM系统的日志策略和输出参数。
- * 支持结构化日志、多级别日志、日志聚合等功能。
+ * 使用自定义的@aiofix/logging模块，支持结构化日志、多级别日志、日志聚合等功能。
  *
  * 主要原理与机制如下：
  * 1. 使用@nestjs/config的registerAs创建命名空间配置
  * 2. 从环境变量读取日志参数
  * 3. 提供默认值确保配置的完整性
  * 4. 支持多环境日志策略
+ * 5. 集成@aiofix/logging模块的配置接口
  *
  * 功能与业务规则：
  * 1. 日志级别配置
@@ -28,32 +35,32 @@ export default registerAs('logging', () => ({
     /**
      * 默认日志级别
      */
-    default: process.env.LOG_LEVEL || 'info',
+    default: (process.env.LOG_LEVEL || 'info') as LogLevel,
 
     /**
      * 应用日志级别
      */
-    app: process.env.LOG_LEVEL_APP || 'info',
+    app: (process.env.LOG_LEVEL_APP || 'info') as LogLevel,
 
     /**
      * 数据库日志级别
      */
-    database: process.env.LOG_LEVEL_DATABASE || 'warn',
+    database: (process.env.LOG_LEVEL_DATABASE || 'warn') as LogLevel,
 
     /**
      * HTTP请求日志级别
      */
-    http: process.env.LOG_LEVEL_HTTP || 'info',
+    http: (process.env.LOG_LEVEL_HTTP || 'info') as LogLevel,
 
     /**
      * 安全日志级别
      */
-    security: process.env.LOG_LEVEL_SECURITY || 'warn',
+    security: (process.env.LOG_LEVEL_SECURITY || 'warn') as LogLevel,
 
     /**
      * 性能日志级别
      */
-    performance: process.env.LOG_LEVEL_PERFORMANCE || 'info',
+    performance: (process.env.LOG_LEVEL_PERFORMANCE || 'info') as LogLevel,
   },
 
   /**
@@ -63,7 +70,7 @@ export default registerAs('logging', () => ({
     /**
      * 日志格式类型
      */
-    type: process.env.LOG_FORMAT || 'json',
+    type: (process.env.LOG_FORMAT || 'json') as LogFormat,
 
     /**
      * 是否启用时间戳
@@ -110,7 +117,7 @@ export default registerAs('logging', () => ({
      */
     console: {
       enabled: process.env.LOG_CONSOLE_ENABLED !== 'false',
-      level: process.env.LOG_CONSOLE_LEVEL || 'info',
+      level: (process.env.LOG_CONSOLE_LEVEL || 'info') as LogLevel,
     },
 
     /**
@@ -118,7 +125,7 @@ export default registerAs('logging', () => ({
      */
     file: {
       enabled: process.env.LOG_FILE_ENABLED === 'true',
-      level: process.env.LOG_FILE_LEVEL || 'info',
+      level: (process.env.LOG_FILE_LEVEL || 'info') as LogLevel,
       path: process.env.LOG_FILE_PATH || 'logs/app.log',
       maxSize: process.env.LOG_FILE_MAX_SIZE || '10m',
       maxFiles: parseInt(process.env.LOG_FILE_MAX_FILES || '5', 10),
@@ -130,7 +137,7 @@ export default registerAs('logging', () => ({
      */
     remote: {
       enabled: process.env.LOG_REMOTE_ENABLED === 'true',
-      level: process.env.LOG_REMOTE_LEVEL || 'error',
+      level: (process.env.LOG_REMOTE_LEVEL || 'error') as LogLevel,
       url: process.env.LOG_REMOTE_URL || '',
       token: process.env.LOG_REMOTE_TOKEN || '',
       timeout: parseInt(process.env.LOG_REMOTE_TIMEOUT || '5000', 10),
@@ -244,5 +251,60 @@ export default registerAs('logging', () => ({
      * 清理间隔（小时）
      */
     cleanupInterval: parseInt(process.env.LOG_CLEANUP_INTERVAL || '24', 10),
+  },
+
+  /**
+   * 日志上下文配置
+   */
+  context: {
+    /**
+     * 是否启用HTTP请求上下文
+     */
+    httpRequest: process.env.LOG_CONTEXT_HTTP_REQUEST !== 'false',
+
+    /**
+     * 是否启用数据库上下文
+     */
+    database: process.env.LOG_CONTEXT_DATABASE !== 'false',
+
+    /**
+     * 是否启用业务上下文
+     */
+    business: process.env.LOG_CONTEXT_BUSINESS !== 'false',
+
+    /**
+     * 是否启用认证上下文
+     */
+    auth: process.env.LOG_CONTEXT_AUTH !== 'false',
+
+    /**
+     * 是否启用配置上下文
+     */
+    config: process.env.LOG_CONTEXT_CONFIG !== 'false',
+
+    /**
+     * 是否启用缓存上下文
+     */
+    cache: process.env.LOG_CONTEXT_CACHE !== 'false',
+
+    /**
+     * 是否启用事件上下文
+     */
+    event: process.env.LOG_CONTEXT_EVENT !== 'false',
+
+    /**
+     * 是否启用系统上下文
+     */
+    system: process.env.LOG_CONTEXT_SYSTEM !== 'false',
+
+    /**
+     * 是否启用外部服务上下文
+     */
+    external: process.env.LOG_CONTEXT_EXTERNAL !== 'false',
+
+    /**
+     * 是否启用性能监控上下文
+     */
+    performance: process.env.LOG_CONTEXT_PERFORMANCE !== 'false',
   },
 }));

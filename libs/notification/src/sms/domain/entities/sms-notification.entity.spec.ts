@@ -5,12 +5,16 @@
 
 import { SmsNotification } from './sms-notification.entity';
 import { Uuid } from '@aiofix/shared';
-import { NotificationType, NotificationStatus, NotificationPriority } from '@aiofix/shared';
+import {
+  NotificationType,
+  NotificationStatus,
+  NotificationPriority,
+} from '@aiofix/shared';
 
 // Mock PhoneNumber
 class MockPhoneNumber {
   constructor(public readonly value: string) {}
-  
+
   static create(phone: string): MockPhoneNumber {
     return new MockPhoneNumber(phone);
   }
@@ -44,7 +48,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.type).toBe(NotificationType.SMS);
@@ -65,7 +69,7 @@ describe('SmsNotification', () => {
         recipients,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
 
       expect(notification.scheduledAt).toEqual(scheduledAt);
@@ -80,7 +84,7 @@ describe('SmsNotification', () => {
         data,
         priority,
         undefined,
-        metadata
+        metadata,
       );
 
       expect(notification.metadata).toEqual(metadata);
@@ -93,7 +97,7 @@ describe('SmsNotification', () => {
         templateId,
         recipientPhones,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipientPhones).toEqual(recipientPhones);
@@ -101,13 +105,15 @@ describe('SmsNotification', () => {
     });
 
     it('应该拒绝创建没有收件人的SMS通知', () => {
-      expect(() => SmsNotification.createFromStrings(
-        tenantId,
-        templateId,
-        [],
-        data,
-        priority
-      )).toThrow('SMS通知必须包含至少一个收件人');
+      expect(() =>
+        SmsNotification.createFromStrings(
+          tenantId,
+          templateId,
+          [],
+          data,
+          priority,
+        ),
+      ).toThrow('SMS通知必须包含至少一个收件人');
     });
   });
 
@@ -120,7 +126,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -135,7 +141,7 @@ describe('SmsNotification', () => {
         deliveryStatus: 'delivered',
         provider: 'sms-gateway',
         providerMessageId: 'provider-msg-123',
-        retryCount: 0
+        retryCount: 0,
       };
 
       notification.markAsSent(sendParams);
@@ -157,7 +163,7 @@ describe('SmsNotification', () => {
         provider: 'sms-gateway',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       };
 
       notification.markAsFailed(failParams);
@@ -179,7 +185,7 @@ describe('SmsNotification', () => {
         provider: 'sms-gateway',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.retry();
@@ -197,7 +203,7 @@ describe('SmsNotification', () => {
         provider: 'sms-gateway',
         retryCount: 1,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       notification.resetForRetry();
@@ -230,38 +236,44 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
     it('应该拒绝从非待发送状态标记为发送中', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSending()).toThrow('只有待发送状态的通知才能标记为发送中');
+
+      expect(() => notification.markAsSending()).toThrow(
+        '只有待发送状态的通知才能标记为发送中',
+      );
     });
 
     it('应该拒绝从非待发送状态标记为已发送', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsSent({
-        messageId: 'msg-123',
-        deliveryStatus: 'delivered',
-        provider: 'sms-gateway',
-        retryCount: 0
-      })).toThrow('只有待发送状态的通知才能标记为已发送');
+
+      expect(() =>
+        notification.markAsSent({
+          messageId: 'msg-123',
+          deliveryStatus: 'delivered',
+          provider: 'sms-gateway',
+          retryCount: 0,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为已发送');
     });
 
     it('应该拒绝从非待发送状态标记为失败', () => {
       notification.markAsSending();
-      
-      expect(() => notification.markAsFailed({
-        errorCode: 'SMS_GATEWAY_ERROR',
-        errorMessage: '网关连接失败',
-        provider: 'sms-gateway',
-        retryCount: 0,
-        maxRetries: 3,
-        canRetry: true
-      })).toThrow('只有待发送状态的通知才能标记为失败');
+
+      expect(() =>
+        notification.markAsFailed({
+          errorCode: 'SMS_GATEWAY_ERROR',
+          errorMessage: '网关连接失败',
+          provider: 'sms-gateway',
+          retryCount: 0,
+          maxRetries: 3,
+          canRetry: true,
+        }),
+      ).toThrow('只有待发送状态的通知才能标记为失败');
     });
 
     it('应该拒绝从非失败状态重试', () => {
@@ -269,7 +281,9 @@ describe('SmsNotification', () => {
     });
 
     it('应该拒绝从非失败状态重置重试', () => {
-      expect(() => notification.resetForRetry()).toThrow('只有失败状态的通知才能重试');
+      expect(() => notification.resetForRetry()).toThrow(
+        '只有失败状态的通知才能重试',
+      );
     });
 
     it('应该拒绝重试超过最大次数', () => {
@@ -280,7 +294,7 @@ describe('SmsNotification', () => {
         provider: 'sms-gateway',
         retryCount: 2,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       // 重试3次，达到最大次数
@@ -291,7 +305,7 @@ describe('SmsNotification', () => {
         provider: 'sms-gateway',
         retryCount: 3,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.retry()).toThrow('已达到最大重试次数');
@@ -302,7 +316,7 @@ describe('SmsNotification', () => {
         messageId: 'msg-123',
         deliveryStatus: 'delivered',
         provider: 'sms-gateway',
-        retryCount: 0
+        retryCount: 0,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -315,7 +329,7 @@ describe('SmsNotification', () => {
         provider: 'sms-gateway',
         retryCount: 0,
         maxRetries: 3,
-        canRetry: true
+        canRetry: true,
       });
 
       expect(() => notification.cancel()).toThrow('已发送的通知不能取消');
@@ -329,7 +343,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
       expect(notification1.isScheduled()).toBe(false);
 
@@ -340,7 +354,7 @@ describe('SmsNotification', () => {
         recipients,
         data,
         priority,
-        scheduledAt
+        scheduledAt,
       );
       expect(notification2.isScheduled()).toBe(true);
     });
@@ -351,7 +365,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
       expect(notification1.shouldSendNow()).toBe(true);
 
@@ -363,7 +377,7 @@ describe('SmsNotification', () => {
         recipients,
         data,
         priority,
-        futureTime
+        futureTime,
       );
       expect(notification2.shouldSendNow()).toBe(false);
 
@@ -375,7 +389,7 @@ describe('SmsNotification', () => {
         recipients,
         data,
         priority,
-        pastTime
+        pastTime,
       );
       expect(notification3.shouldSendNow()).toBe(true);
     });
@@ -388,7 +402,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.validateRecipient()).toBe(true);
@@ -398,7 +412,7 @@ describe('SmsNotification', () => {
       const multipleRecipients = [
         MockPhoneNumber.create('+8613800138000'),
         MockPhoneNumber.create('+8613800138001'),
-        MockPhoneNumber.create('+8613800138002')
+        MockPhoneNumber.create('+8613800138002'),
       ];
 
       const notification = SmsNotification.create(
@@ -406,23 +420,25 @@ describe('SmsNotification', () => {
         templateId,
         multipleRecipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(multipleRecipients);
       expect(notification.recipientPhones).toEqual([
         '+8613800138000',
         '+8613800138001',
-        '+8613800138002'
+        '+8613800138002',
       ]);
-      expect(notification.recipient).toBe('+8613800138000,+8613800138001,+8613800138002');
+      expect(notification.recipient).toBe(
+        '+8613800138000,+8613800138001,+8613800138002',
+      );
     });
 
     it('应该处理国际电话号码格式', () => {
       const internationalRecipients = [
         MockPhoneNumber.create('+1-555-123-4567'),
         MockPhoneNumber.create('+44-20-7946-0958'),
-        MockPhoneNumber.create('+81-3-1234-5678')
+        MockPhoneNumber.create('+81-3-1234-5678'),
       ];
 
       const notification = SmsNotification.create(
@@ -430,14 +446,14 @@ describe('SmsNotification', () => {
         templateId,
         internationalRecipients,
         data,
-        priority
+        priority,
       );
 
       expect(notification.recipients).toEqual(internationalRecipients);
       expect(notification.recipientPhones).toEqual([
         '+1-555-123-4567',
         '+44-20-7946-0958',
-        '+81-3-1234-5678'
+        '+81-3-1234-5678',
       ]);
     });
   });
@@ -451,7 +467,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -488,7 +504,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         data,
-        priority
+        priority,
       );
     });
 
@@ -502,7 +518,7 @@ describe('SmsNotification', () => {
         'INVALID_PHONE_NUMBER',
         'MESSAGE_TOO_LONG',
         'RATE_LIMIT_EXCEEDED',
-        'INSUFFICIENT_CREDITS'
+        'INSUFFICIENT_CREDITS',
       ];
 
       smsErrorCodes.forEach(errorCode => {
@@ -512,11 +528,11 @@ describe('SmsNotification', () => {
           provider: 'sms-gateway',
           retryCount: 0,
           maxRetries: 3,
-          canRetry: true
+          canRetry: true,
         });
 
         expect(notification.errorCode).toBe(errorCode);
-        
+
         // 重置状态以便下次测试
         notification.resetForRetry();
       });
@@ -528,7 +544,7 @@ describe('SmsNotification', () => {
         'twilio',
         'nexmo',
         'aws-sns',
-        'aliyun-sms'
+        'aliyun-sms',
       ];
 
       smsProviders.forEach(provider => {
@@ -536,18 +552,18 @@ describe('SmsNotification', () => {
           messageId: 'msg-123',
           deliveryStatus: 'delivered',
           provider,
-          retryCount: 0
+          retryCount: 0,
         });
 
         expect(notification.provider).toBe(provider);
-        
+
         // 重置状态以便下次测试
         notification = SmsNotification.create(
           tenantId,
           templateId,
           recipients,
           data,
-          priority
+          priority,
         );
       });
     });
@@ -555,13 +571,9 @@ describe('SmsNotification', () => {
 
   describe('边界情况', () => {
     it('应该处理空收件人列表', () => {
-      expect(() => SmsNotification.create(
-        tenantId,
-        templateId,
-        [],
-        data,
-        priority
-      )).toThrow('SMS通知必须包含至少一个收件人');
+      expect(() =>
+        SmsNotification.create(tenantId, templateId, [], data, priority),
+      ).toThrow('SMS通知必须包含至少一个收件人');
     });
 
     it('应该处理空数据对象', () => {
@@ -570,7 +582,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         {},
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual({});
@@ -584,7 +596,7 @@ describe('SmsNotification', () => {
         data,
         priority,
         undefined,
-        {}
+        {},
       );
 
       expect(notification.metadata).toEqual({});
@@ -594,7 +606,7 @@ describe('SmsNotification', () => {
       const specialData = {
         userName: '张三🎉',
         company: '测试公司🚀',
-        message: '包含特殊字符: !@#$%^&*()'
+        message: '包含特殊字符: !@#$%^&*()',
       };
 
       const notification = SmsNotification.create(
@@ -602,7 +614,7 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         specialData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(specialData);
@@ -617,11 +629,10 @@ describe('SmsNotification', () => {
         templateId,
         recipients,
         longData,
-        priority
+        priority,
       );
 
       expect(notification.data).toEqual(longData);
     });
   });
 });
-

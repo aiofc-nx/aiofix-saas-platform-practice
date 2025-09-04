@@ -5,22 +5,32 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "clean": "rimraf dist",
+    "build": "pnpm run clean && tsc",
+    "build:no-clean": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "lint:check": "eslint src --ext .ts --max-warnings 0"
   },
   "dependencies": {
+    "@aiofix/config": "workspace:*",
     "@aiofix/database": "workspace:*",
     "@aiofix/iam": "workspace:*",
+    "@aiofix/logging": "workspace:*",
     "@aiofix/shared": "workspace:*",
+    "@mikro-orm/core": "^6.5.1",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/cqrs": "^11.0.3",
+    "@nestjs/swagger": "^8.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "fastify": "^5.5.0",
+    "rxjs": "^7.8.2",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

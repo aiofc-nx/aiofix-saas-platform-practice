@@ -67,7 +67,7 @@ export interface CacheKey {
  * @interface CacheValue<T>
  * @description 缓存值接口
  */
-export interface CacheValue<T = any> {
+export interface CacheValue<T = unknown> {
   /** 实际值 */
   value: T;
   /** 创建时间 */
@@ -90,7 +90,7 @@ export interface CacheValue<T = any> {
  * @interface CacheEntry<T>
  * @description 缓存条目接口
  */
-export interface CacheEntry<T = any> {
+export interface CacheEntry<T = unknown> {
   /** 缓存键 */
   key: CacheKey;
   /** 缓存值 */

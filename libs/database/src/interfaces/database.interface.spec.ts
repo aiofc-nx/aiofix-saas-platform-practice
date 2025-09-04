@@ -47,7 +47,7 @@ describe('Database Interfaces', () => {
           password: 'test',
           database: 'test',
         },
-        instance: {} as any,
+        instance: {} as unknown,
         lastActivity: new Date(),
       };
 
@@ -70,7 +70,7 @@ describe('Database Interfaces', () => {
           password: 'test',
           database: 'test',
         },
-        instance: {} as any,
+        instance: {} as unknown,
         lastActivity: new Date(),
         error: 'Connection failed',
       };
@@ -243,19 +243,19 @@ describe('Database Interfaces', () => {
       const adapter: IDatabaseAdapter = {
         name: 'test-adapter',
         type: 'postgresql',
-        eventEmitter: {} as any,
-        config: {} as any,
+        eventEmitter: {} as unknown,
+        config: {} as unknown,
         isConnected: true,
-        connect: jest.fn() as any,
-        disconnect: jest.fn() as any,
-        query: jest.fn() as any,
-        execute: jest.fn() as any,
-        transaction: jest.fn() as any,
-        getHealth: jest.fn() as any,
-        getStats: jest.fn() as any,
-        getConnection: jest.fn() as any,
-        ping: jest.fn() as any,
-        resetStats: jest.fn() as any,
+        connect: jest.fn() as unknown,
+        disconnect: jest.fn() as unknown,
+        query: jest.fn() as unknown,
+        execute: jest.fn() as unknown,
+        transaction: jest.fn() as unknown,
+        getHealth: jest.fn() as unknown,
+        getStats: jest.fn() as unknown,
+        getConnection: jest.fn() as unknown,
+        ping: jest.fn() as unknown,
+        resetStats: jest.fn() as unknown,
       };
 
       expect(adapter.name).toBeDefined();
@@ -281,14 +281,14 @@ describe('Database Interfaces', () => {
         name: 'test-manager',
         adapterCount: 0,
         isInitialized: false,
-        addAdapter: jest.fn() as any,
-        removeAdapter: jest.fn() as any,
-        getAdapter: jest.fn() as any,
-        getDefaultAdapter: jest.fn() as any,
-        connectAll: jest.fn() as any,
-        disconnectAll: jest.fn() as any,
-        getHealth: jest.fn() as any,
-        getStats: jest.fn() as any,
+        addAdapter: jest.fn() as unknown,
+        removeAdapter: jest.fn() as unknown,
+        getAdapter: jest.fn() as unknown,
+        getDefaultAdapter: jest.fn() as unknown,
+        connectAll: jest.fn() as unknown,
+        disconnectAll: jest.fn() as unknown,
+        getHealth: jest.fn() as unknown,
+        getStats: jest.fn() as unknown,
       };
 
       expect(manager.name).toBeDefined();
@@ -309,9 +309,9 @@ describe('Database Interfaces', () => {
     it('应该定义所有必需的工厂方法', () => {
       // 这是一个类型检查测试，确保接口定义了所有必需的方法
       const factory: IDatabaseFactory = {
-        createAdapter: jest.fn() as any,
-        createManager: jest.fn() as any,
-        validateConfig: jest.fn() as any,
+        createAdapter: jest.fn() as unknown,
+        createManager: jest.fn() as unknown,
+        validateConfig: jest.fn() as unknown,
       };
 
       expect(typeof factory.createAdapter).toBe('function');

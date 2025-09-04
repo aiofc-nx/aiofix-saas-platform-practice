@@ -23,10 +23,10 @@ describe('DateRange', () => {
 
     it('should throw error for end date before start date', () => {
       expect(() => new DateRange(startDate, invalidEndDate)).toThrow(
-        InvalidDateRangeError
+        InvalidDateRangeError,
       );
       expect(() => new DateRange(startDate, invalidEndDate)).toThrow(
-        'Start date cannot be later than end date'
+        'Start date cannot be later than end date',
       );
     });
 
@@ -36,11 +36,11 @@ describe('DateRange', () => {
     });
 
     it('should throw error for invalid dates', () => {
-      expect(() => new DateRange('invalid' as any, endDate)).toThrow(
-        InvalidDateRangeError
+      expect(() => new DateRange('invalid' as unknown, endDate)).toThrow(
+        InvalidDateRangeError,
       );
-      expect(() => new DateRange(startDate, 'invalid' as any)).toThrow(
-        InvalidDateRangeError
+      expect(() => new DateRange(startDate, 'invalid' as unknown)).toThrow(
+        InvalidDateRangeError,
       );
     });
 
@@ -115,7 +115,7 @@ describe('DateRange', () => {
     it('should throw error for invalid JSON', () => {
       const range = new DateRange(startDate, endDate);
       expect(() => range.fromJSON('invalid json')).toThrow(
-        InvalidDateRangeError
+        InvalidDateRangeError,
       );
     });
   });
@@ -204,7 +204,7 @@ describe('DateRange', () => {
         const range1 = new DateRange(startDate, endDate);
         const range2 = new DateRange(
           new Date('2024-06-01T00:00:00Z'),
-          new Date('2025-06-01T00:00:00Z')
+          new Date('2025-06-01T00:00:00Z'),
         );
         expect(range1.overlaps(range2)).toBe(true);
       });
@@ -219,7 +219,7 @@ describe('DateRange', () => {
         const range1 = new DateRange(startDate, endDate);
         const range2 = new DateRange(
           new Date('2025-01-01T00:00:00Z'),
-          new Date('2025-12-31T23:59:59Z')
+          new Date('2025-12-31T23:59:59Z'),
         );
         expect(range1.overlaps(range2)).toBe(false);
       });
@@ -230,14 +230,14 @@ describe('DateRange', () => {
         const range1 = new DateRange(startDate, endDate);
         const range2 = new DateRange(
           new Date('2024-06-01T00:00:00Z'),
-          new Date('2025-06-01T00:00:00Z')
+          new Date('2025-06-01T00:00:00Z'),
         );
         // 如果方法不存在，跳过测试
         if (typeof range1.intersection === 'function') {
           const intersection = range1.intersection(range2);
           expect(intersection).not.toBeNull();
           expect(intersection!.startDate).toEqual(
-            new Date('2024-06-01T00:00:00Z')
+            new Date('2024-06-01T00:00:00Z'),
           );
           expect(intersection!.endDate).toEqual(endDate);
         }
@@ -247,7 +247,7 @@ describe('DateRange', () => {
         const range1 = new DateRange(startDate, endDate);
         const range2 = new DateRange(
           new Date('2025-01-01T00:00:00Z'),
-          new Date('2025-12-31T23:59:59Z')
+          new Date('2025-12-31T23:59:59Z'),
         );
         // 如果方法不存在，跳过测试
         if (typeof range1.intersection === 'function') {
@@ -261,7 +261,7 @@ describe('DateRange', () => {
         const range1 = new DateRange(startDate, endDate);
         const range2 = new DateRange(
           new Date('2024-06-01T00:00:00Z'),
-          new Date('2025-06-01T00:00:00Z')
+          new Date('2025-06-01T00:00:00Z'),
         );
         // 如果方法不存在，跳过测试
         if (typeof range1.union === 'function') {
@@ -286,7 +286,7 @@ describe('DateRange', () => {
         const range1 = new DateRange(startDate, endDate);
         const range2 = new DateRange(
           new Date('2025-01-01T00:00:00Z'),
-          new Date('2025-12-31T23:59:59Z')
+          new Date('2025-12-31T23:59:59Z'),
         );
         // 如果方法不存在，跳过测试
         if (typeof range1.union === 'function') {
@@ -374,10 +374,10 @@ describe('DateRange', () => {
         // 如果静态方法不存在，跳过测试
         if (typeof DateRange.fromString === 'function') {
           expect(() => DateRange.fromString('invalid')).toThrow(
-            InvalidDateRangeError
+            InvalidDateRangeError,
           );
           expect(() => DateRange.fromString('2024-01-01')).toThrow(
-            InvalidDateRangeError
+            InvalidDateRangeError,
           );
         }
       });
@@ -411,7 +411,7 @@ describe('DateRange', () => {
 
       it('should throw error for invalid JSON', () => {
         expect(() => DateRange.fromJSON('invalid json')).toThrow(
-          InvalidDateRangeError
+          InvalidDateRangeError,
         );
       });
     });
@@ -471,7 +471,7 @@ describe('DateRange', () => {
           const range = DateRange.fromDuration(
             startDate,
             30,
-            DateRangeUnit.DAYS
+            DateRangeUnit.DAYS,
           );
           expect(range.startDate).toEqual(startDate);
           expect(range.getDurationInDays()).toBe(30);
@@ -484,7 +484,7 @@ describe('DateRange', () => {
           const range = DateRange.fromDuration(
             startDate,
             1,
-            DateRangeUnit.YEARS
+            DateRangeUnit.YEARS,
           );
           expect(range.startDate).toEqual(startDate);
           expect(range.getDurationInDays()).toBeGreaterThan(365);
@@ -497,7 +497,7 @@ describe('DateRange', () => {
     it('should not throw for valid date range', () => {
       const range = new DateRange(startDate, endDate);
       expect(() => {
-        (range as any).validateInvariants();
+        (range as unknown).validateInvariants();
       }).not.toThrow();
     });
   });

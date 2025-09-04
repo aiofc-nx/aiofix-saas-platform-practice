@@ -30,7 +30,7 @@ describe('PlatformConfiguration', () => {
       false,
       'Test configuration',
       DataPrivacyLevel.PROTECTED,
-      testId
+      testId,
     );
   });
 
@@ -43,7 +43,7 @@ describe('PlatformConfiguration', () => {
         true,
         'Application name',
         DataPrivacyLevel.SHARED,
-        testId
+        testId,
       );
 
       expect(config.id).toBe(testId);
@@ -59,7 +59,7 @@ describe('PlatformConfiguration', () => {
       const config = new PlatformConfiguration(
         'default.key',
         'default-value',
-        'default-category'
+        'default-category',
       );
 
       expect(config.key).toBe('default.key');
@@ -75,7 +75,7 @@ describe('PlatformConfiguration', () => {
         'partial.key',
         'partial-value',
         'partial-category',
-        true
+        true,
       );
 
       expect(config.key).toBe('partial.key');
@@ -129,7 +129,7 @@ describe('PlatformConfiguration', () => {
       setTimeout(() => {
         testConfig.updateValue('new-value');
         expect(testConfig.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -179,7 +179,7 @@ describe('PlatformConfiguration', () => {
       setTimeout(() => {
         testConfig.updateDescription('New description');
         expect(testConfig.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });
@@ -214,7 +214,7 @@ describe('PlatformConfiguration', () => {
       const configWithoutDescription = new PlatformConfiguration(
         'no-desc.key',
         'no-desc-value',
-        'no-desc-category'
+        'no-desc-category',
       );
 
       const data = configWithoutDescription.toData();
@@ -228,7 +228,7 @@ describe('PlatformConfiguration', () => {
         'system-value',
         'system-category',
         true,
-        'System configuration'
+        'System configuration',
       );
 
       const data = systemConfig.toData();
@@ -240,7 +240,11 @@ describe('PlatformConfiguration', () => {
   describe('isPlatformAdmin', () => {
     it('should return false by default', () => {
       // 由于isPlatformAdmin是protected方法，我们通过canAccess来测试
-      const targetConfig = new PlatformConfiguration('target.key', 'target-value', 'test');
+      const targetConfig = new PlatformConfiguration(
+        'target.key',
+        'target-value',
+        'test',
+      );
       expect(testConfig.canAccess(targetConfig)).toBe(false);
     });
   });
@@ -252,7 +256,7 @@ describe('PlatformConfiguration', () => {
           'system.key',
           'system-value',
           'system-category',
-          'System configuration'
+          'System configuration',
         );
 
         expect(systemConfig.key).toBe('system.key');
@@ -267,7 +271,7 @@ describe('PlatformConfiguration', () => {
         const systemConfig = PlatformConfiguration.createSystemConfig(
           'system.key',
           'system-value',
-          'system-category'
+          'system-category',
         );
 
         expect(systemConfig.isSystem).toBe(true);
@@ -281,7 +285,7 @@ describe('PlatformConfiguration', () => {
           'public.key',
           'public-value',
           'public-category',
-          'Public configuration'
+          'Public configuration',
         );
 
         expect(publicConfig.key).toBe('public.key');
@@ -296,7 +300,7 @@ describe('PlatformConfiguration', () => {
         const publicConfig = PlatformConfiguration.createPublicConfig(
           'public.key',
           'public-value',
-          'public-category'
+          'public-category',
         );
 
         expect(publicConfig.isSystem).toBe(false);
@@ -337,7 +341,7 @@ describe('PlatformConfiguration', () => {
         'shared-category',
         false,
         undefined,
-        DataPrivacyLevel.SHARED
+        DataPrivacyLevel.SHARED,
       );
 
       expect(sharedConfig.isSharedData()).toBe(true);
@@ -355,7 +359,7 @@ describe('PlatformConfiguration', () => {
       const config = new PlatformConfiguration(
         '',
         'empty-key-value',
-        'empty-category'
+        'empty-category',
       );
       expect(config.key).toBe('');
     });

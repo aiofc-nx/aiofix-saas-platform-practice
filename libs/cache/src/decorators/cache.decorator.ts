@@ -77,7 +77,7 @@ export const CacheOptions = (options: Partial<ICacheOptions>) =>
  * @returns {Function} 装饰器函数
  */
 export const CacheEvict = (
-  keys: string | string[] | ((args: unknown[]) => string | string[])
+  keys: string | string[] | ((args: unknown[]) => string | string[]),
 ) => SetMetadata(CACHE_EVICT_METADATA, keys);
 
 /**
@@ -100,12 +100,12 @@ export const CacheEvictAll = (namespace?: string) =>
 export const Cacheable = (
   key: string | ((args: unknown[]) => string),
   ttl?: number,
-  options?: Partial<ICacheOptions>
+  options?: Partial<ICacheOptions>,
 ) => {
   return (
     target: unknown,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) => {
     // 应用缓存键装饰器
     CacheKey(key)(target as object, propertyKey, descriptor);
@@ -133,12 +133,12 @@ export const Cacheable = (
  */
 export const CacheEvictable = (
   keys?: string | string[] | ((args: unknown[]) => string | string[]),
-  namespace?: string
+  namespace?: string,
 ) => {
   return (
     target: unknown,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) => {
     // 应用键失效装饰器（如果提供）
     if (keys) {
@@ -184,7 +184,7 @@ export const CacheKeyFromArgs = (argNames: string[], prefix = '') => {
         const value = args[index];
         return value !== undefined ? `${name}:${value}` : '';
       })
-      .filter((part) => part.length > 0);
+      .filter(part => part.length > 0);
 
     return prefix ? `${prefix}:${keyParts.join(':')}` : keyParts.join(':');
   });
@@ -210,11 +210,11 @@ export const CacheKeyFromMethod = (prefix = '') => {
 /**
  * @function CacheCondition
  * @description 缓存条件装饰器
- * @param {(args: any[], result: any) => boolean} condition 缓存条件函数
+ * @param {(args: any[], _result: unknown) => boolean} condition 缓存条件函数
  * @returns {Function} 装饰器函数
  */
 export const CacheCondition = (
-  condition: (args: any[], result: any) => boolean
+  condition: (args: any[], _result: unknown) => boolean,
 ) => {
   return SetMetadata('cache_condition', condition);
 };
@@ -222,11 +222,11 @@ export const CacheCondition = (
 /**
  * @function CacheUnless
  * @description 缓存排除条件装饰器
- * @param {(args: any[], result: any) => boolean} condition 排除条件函数
+ * @param {(args: any[], _result: unknown) => boolean} condition 排除条件函数
  * @returns {Function} 装饰器函数
  */
 export const CacheUnless = (
-  condition: (args: any[], result: any) => boolean
+  condition: (args: any[], _result: unknown) => boolean,
 ) => {
   return SetMetadata('cache_unless', condition);
 };
@@ -240,9 +240,13 @@ export const CacheUnless = (
  */
 export const CacheSync = (
   key: string | ((args: any[]) => string),
-  ttl?: number
+  ttl?: number,
 ) => {
-  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+  return (
+    _target: unknown,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) => {
     const originalMethod = descriptor.value;
 
     descriptor.value = function (...args: any[]) {

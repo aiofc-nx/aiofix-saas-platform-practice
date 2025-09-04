@@ -113,8 +113,8 @@ describe('BaseEntity', () => {
     });
 
     it('should return false for null or undefined', () => {
-      expect(() => testEntity.equals(null as any)).toThrow();
-      expect(() => testEntity.equals(undefined as any)).toThrow();
+      expect(() => testEntity.equals(null as unknown)).toThrow();
+      expect(() => testEntity.equals(undefined as unknown)).toThrow();
     });
   });
 
@@ -128,7 +128,7 @@ describe('BaseEntity', () => {
         testEntity.update();
 
         expect(testEntity.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
         expect(testEntity.version).toBe(originalVersion + 1);
       }, 1);
@@ -216,7 +216,7 @@ describe('BaseEntity', () => {
       setTimeout(() => {
         testEntity.update();
         expect(testEntity.updatedAt.getTime()).toBeGreaterThan(
-          originalUpdatedAt.getTime()
+          originalUpdatedAt.getTime(),
         );
       }, 1);
     });

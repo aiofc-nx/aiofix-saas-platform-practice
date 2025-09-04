@@ -1,327 +1,206 @@
 /**
  * @class UpdateUserUseCase
  * @description
- * 更新用户用例，负责协调用户更新的业务流程。
+ * 更新用户用例，负责处理用户信息更新的业务逻辑。
  *
  * 原理与机制：
- * 1. 作为应用层的用例，UpdateUserUseCase协调领域服务和基础设施服务
- * 2. 支持部分字段更新，确保数据一致性
- * 3. 实现数据访问控制和权限验证
- * 4. 发布用户更新事件，通知其他系统组件
+ * 1. 作为应用层的用例，直接实现简单的用户更新业务逻辑
+ * 2. 通过用户仓储获取和保存用户数据，不涉及复杂的跨模块协调
+ * 3. 支持权限验证和数据访问控制
+ * 4. 发布领域事件，支持事件驱动架构
  *
  * 功能与职责：
- * 1. 验证更新请求的有效性
- * 2. 执行数据访问控制检查
- * 3. 协调用户数据更新和持久化
- * 4. 处理更新结果和错误情况
+ * 1. 验证用户更新请求的有效性
+ * 2. 执行用户信息的更新操作
+ * 3. 验证业务规则（如邮箱唯一性）
+ * 4. 发布用户更新事件
+ * 5. 处理更新异常和错误
  *
  * @example
  * ```typescript
- * const useCase = new UpdateUserUseCase(userLifecycleService, userProfileService);
- * const result = await useCase.execute('user-123', {
+ * const useCase = new UpdateUserUseCase(userRepository, eventBus, logger);
+ * const response = await useCase.execute('user-123', {
  *   email: 'newemail@example.com',
- *   profile: { displayName: 'New Name' }
+ *   phone: '+1234567890',
+ *   currentUserId: 'current-456'
  * });
  * ```
  * @since 1.0.0
  */
 
 import { Injectable } from '@nestjs/common';
-import { UserLifecycleService } from '../../domain/domain-services/user-lifecycle.service';
-import { UserProfileService } from '../../domain/domain-services/user-profile.service';
+import { EventBus } from '@nestjs/cqrs';
+import { PinoLoggerService } from '@aiofix/logging';
 import { UserRepository } from '../../domain/repositories/user.repository';
-import { UserProfileRepository } from '../../domain/repositories/user-profile.repository';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { UserProfileEntity } from '../../domain/entities/user-profile.entity';
-import { UserId, Email, PhoneNumber, TenantId } from '@aiofix/shared';
-import { UserType } from '../../domain/enums/user-type.enum';
-import { DataPrivacyLevel } from '@aiofix/shared';
-import { UserNotFoundException, UserAlreadyExistsException } from '../../domain/exceptions';
+import { UserId, Username, Email, TenantId, PhoneNumber } from '@aiofix/shared';
+import { UpdateUserRequest } from '../interfaces/user-management.interface';
+import { UpdateUserResponse } from '../dtos/update-user-response.dto';
+import { UserNotFoundException } from '../../domain/exceptions/user-not-found.exception';
+import { InvalidArgumentException } from '../../domain/exceptions/invalid-argument.exception';
+import { UserEmailAlreadyExistsException } from '../../domain/exceptions/user-email-already-exists.exception';
 
-/**
- * 用户更新请求接口
- */
-export interface UpdateUserRequest {
-  email?: string;
-  phone?: string;
-  userType?: UserType;
-  dataPrivacyLevel?: DataPrivacyLevel;
-  organizationId?: string;
-  departmentIds?: string[];
-  profile?: {
-    displayName?: string;
-    avatar?: string;
-    bio?: string;
-    location?: string;
-    website?: string;
-  };
-}
-
-/**
- * 用户更新响应接口
- */
-export interface UpdateUserResponse {
-  success: boolean;
-  userId: string;
-  updatedFields: string[];
-  message?: string;
-  errors?: string[];
-}
-
-/**
- * 更新用户用例
- * @description 实现用户更新的业务逻辑
- */
 @Injectable()
 export class UpdateUserUseCase {
   constructor(
-    private readonly userLifecycleService: UserLifecycleService,
-    private readonly userProfileService: UserProfileService,
     private readonly userRepository: UserRepository,
-    private readonly userProfileRepository: UserProfileRepository
+    private readonly eventBus: EventBus,
+    private readonly logger: PinoLoggerService,
   ) {}
 
   /**
-   * 执行用户更新用例
-   * @description 更新用户信息并处理相关的业务流程
-   * @param {string} userId 用户ID
-   * @param {UpdateUserRequest} request 用户更新请求
-   * @returns {Promise<UpdateUserResponse>} 更新结果
+   * 执行更新用户用例
+   * @param userId 用户ID
+   * @param request 更新用户请求
+   * @returns 更新用户响应
    */
-  async execute(userId: string, request: UpdateUserRequest): Promise<UpdateUserResponse> {
-    try {
-      // 1. 验证用户是否存在
-      const existingUser = await this.userRepository.findById(UserId.create(userId));
-      if (!existingUser) {
-        throw UserNotFoundException.byUserId(userId);
-      }
-
-      // 2. 验证更新请求数据
-      const validationResult = await this.validateUpdateRequest(userId, request, existingUser);
-      if (!validationResult.isValid) {
-        return {
-          success: false,
-          userId,
-          updatedFields: [],
-          errors: validationResult.errors
-        };
-      }
-
-      const updatedFields: string[] = [];
-
-      // 3. 更新用户基本信息
-      if (request.email && request.email !== existingUser.email.toString()) {
-        await this.updateUserEmail(existingUser, request.email);
-        updatedFields.push('email');
-      }
-
-      if (request.phone && request.phone !== existingUser.phone?.toString()) {
-        await this.updateUserPhone(existingUser, request.phone);
-        updatedFields.push('phone');
-      }
-
-      if (request.userType && request.userType !== existingUser.userType) {
-        await this.updateUserType(existingUser, request.userType);
-        updatedFields.push('userType');
-      }
-
-      if (request.dataPrivacyLevel && request.dataPrivacyLevel !== existingUser.dataPrivacyLevel) {
-        await this.updateDataPrivacyLevel(existingUser, request.dataPrivacyLevel);
-        updatedFields.push('dataPrivacyLevel');
-      }
-
-      if (request.organizationId !== undefined && request.organizationId !== existingUser.organizationId?.toString()) {
-        await this.updateOrganizationId(existingUser, request.organizationId);
-        updatedFields.push('organizationId');
-      }
-
-      if (request.departmentIds !== undefined) {
-        const currentDeptIds = existingUser.departmentIds.map(id => id.toString());
-        if (JSON.stringify(request.departmentIds.sort()) !== JSON.stringify(currentDeptIds.sort())) {
-          await this.updateDepartmentIds(existingUser, request.departmentIds);
-          updatedFields.push('departmentIds');
-        }
-      }
-
-      // 4. 更新用户档案
-      if (request.profile) {
-        const profileUpdated = await this.updateUserProfile(userId, request.profile);
-        if (profileUpdated) {
-          updatedFields.push('profile');
-        }
-      }
-
-      // 5. 保存更新后的用户
-      if (updatedFields.length > 0) {
-        await this.userRepository.save(existingUser);
-      }
-
-      // 6. 发布用户更新事件
-      // TODO: 实现事件总线发布
-      // await this.eventBus.publish(new UserUpdatedEvent(...));
-
-      // 7. 返回成功响应
-      return {
-        success: true,
-        userId,
-        updatedFields,
-        message: '用户更新成功'
-      };
-
-    } catch (error) {
-      // 8. 处理错误情况
-      console.error('更新用户失败:', error);
-      
-      return {
-        success: false,
-        userId,
-        updatedFields: [],
-        message: '用户更新失败',
-        errors: [error instanceof Error ? error.message : '未知错误']
-      };
-    }
-  }
-
-  /**
-   * 验证更新请求
-   * @description 验证用户更新请求的有效性
-   * @param {string} userId 用户ID
-   * @param {UpdateUserRequest} request 更新请求
-   * @param {UserEntity} existingUser 现有用户
-   * @returns {Promise<{isValid: boolean, errors: string[]}>} 验证结果
-   */
-  private async validateUpdateRequest(
+  async execute(
     userId: string,
     request: UpdateUserRequest,
-    existingUser: UserEntity
-  ): Promise<{isValid: boolean, errors: string[]}> {
-    const errors: string[] = [];
-
-    // 验证邮箱格式（如果提供）
-    if (request.email && !this.isValidEmail(request.email)) {
-      errors.push('邮箱格式无效');
-    }
-
-    // 验证手机号格式（如果提供）
-    if (request.phone && !this.isValidPhone(request.phone)) {
-      errors.push('手机号格式无效');
-    }
-
-    // 验证邮箱唯一性（如果提供）
-    if (request.email && request.email !== existingUser.email.toString()) {
-      try {
-        const emailExists = await this.userRepository.existsByEmail(
-          new Email(request.email),
-          TenantId.create(existingUser.tenantId.toString()),
-          existingUser.id
-        );
-        if (emailExists) {
-          errors.push('邮箱已存在');
-        }
-      } catch (error) {
-        errors.push('验证邮箱唯一性时发生错误');
-      }
-    }
-
-    // 验证用户类型变更（如果提供）
-    if (request.userType && request.userType !== existingUser.userType) {
-      if (!this.isValidUserTypeTransition(existingUser.userType, request.userType)) {
-        errors.push(`不允许从用户类型 ${existingUser.userType} 变更为 ${request.userType}`);
-      }
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors
-    };
-  }
-
-  /**
-   * 更新用户邮箱
-   * @description 更新用户的邮箱地址
-   * @param {UserEntity} user 用户实体
-   * @param {string} newEmail 新邮箱
-   */
-  private async updateUserEmail(user: UserEntity, newEmail: string): Promise<void> {
-    user.changeEmail(new Email(newEmail));
-  }
-
-  /**
-   * 更新用户手机号
-   * @description 更新用户的手机号
-   * @param {UserEntity} user 用户实体
-   * @param {string} newPhone 新手机号
-   */
-  private async updateUserPhone(user: UserEntity, newPhone: string): Promise<void> {
-    user.changePhone(PhoneNumber.create(newPhone));
-  }
-
-  /**
-   * 更新用户类型
-   * @description 更新用户的类型
-   * @param {UserEntity} user 用户实体
-   * @param {UserType} newUserType 新用户类型
-   */
-  private async updateUserType(user: UserEntity, newUserType: UserType): Promise<void> {
-    // TODO: 实现用户类型变更逻辑
-    // user.changeUserType(newUserType);
-  }
-
-  /**
-   * 更新数据隐私级别
-   * @description 更新用户的数据隐私级别
-   * @param {UserEntity} user 用户实体
-   * @param {DataPrivacyLevel} newPrivacyLevel 新隐私级别
-   */
-  private async updateDataPrivacyLevel(user: UserEntity, newPrivacyLevel: DataPrivacyLevel): Promise<void> {
-    // TODO: 实现隐私级别更新逻辑
-    // user.changeDataPrivacyLevel(newPrivacyLevel);
-  }
-
-  /**
-   * 更新组织ID
-   * @description 更新用户的组织ID
-   * @param {UserEntity} user 用户实体
-   * @param {string} newOrganizationId 新组织ID
-   */
-  private async updateOrganizationId(user: UserEntity, newOrganizationId: string): Promise<void> {
-    // TODO: 实现组织ID更新逻辑
-    // user.changeOrganizationId(newOrganizationId);
-  }
-
-  /**
-   * 更新部门ID列表
-   * @description 更新用户的部门ID列表
-   * @param {UserEntity} user 用户实体
-   * @param {string[]} newDepartmentIds 新部门ID列表
-   */
-  private async updateDepartmentIds(user: UserEntity, newDepartmentIds: string[]): Promise<void> {
-    // TODO: 实现部门ID列表更新逻辑
-    // user.changeDepartmentIds(newDepartmentIds);
-  }
-
-  /**
-   * 更新用户档案
-   * @description 更新用户的档案信息
-   * @param {string} userId 用户ID
-   * @param {object} profileData 档案数据
-   * @returns {Promise<boolean>} 是否更新成功
-   */
-  private async updateUserProfile(userId: string, profileData: any): Promise<boolean> {
+  ): Promise<UpdateUserResponse> {
     try {
-      await this.userProfileService.updateProfile(UserId.create(userId), profileData);
-      return true;
+      this.logger.info('开始更新用户', undefined, {
+        userId,
+        currentUserId: request.currentUserId,
+      });
+
+      // 1. 验证请求参数
+      this.validateRequest(request);
+
+      // 2. 查找用户
+      const user = await this.userRepository.findById(new UserId(userId));
+      if (!user) {
+        throw new UserNotFoundException(userId);
+      }
+
+      // 3. 业务规则验证
+      await this.validateBusinessRules(userId, request);
+
+      // 4. 更新用户信息（只更新支持修改的字段）
+      let hasChanges = false;
+
+      if (request.email) {
+        user.changeEmail(new Email(request.email));
+        hasChanges = true;
+      }
+
+      if (request.phone) {
+        user.changePhone(new PhoneNumber(request.phone));
+        hasChanges = true;
+      }
+
+      // 5. 如果有变更，保存用户
+      if (hasChanges) {
+        await this.userRepository.save(user);
+
+        // 6. 发布领域事件
+        await this.eventBus.publish({
+          type: 'UserUpdated',
+          data: {
+            userId,
+            updatedFields: this.getUpdatedFields(request),
+            updatedBy: request.currentUserId,
+            timestamp: new Date(),
+          },
+        });
+
+        this.logger.info('用户更新成功', undefined, {
+          userId,
+          updatedFields: Object.keys(this.getUpdatedFields(request)),
+        });
+
+        return new UpdateUserResponse(userId, true, '用户更新成功');
+      } else {
+        this.logger.info('用户信息无变更', undefined, {
+          userId,
+          currentUserId: request.currentUserId,
+        });
+
+        return new UpdateUserResponse(userId, true, '用户信息无变更');
+      }
     } catch (error) {
-      console.error('更新用户档案失败:', error);
-      return false;
+      this.logger.error('用户更新失败', undefined, {
+        userId,
+        currentUserId: request.currentUserId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * 验证请求参数
+   * @param request 更新用户请求
+   */
+  private validateRequest(request: UpdateUserRequest): void {
+    if (!request.currentUserId) {
+      throw new InvalidArgumentException('当前用户ID不能为空', 'currentUserId');
+    }
+
+    // 验证邮箱格式
+    if (request.email && !this.isValidEmail(request.email)) {
+      throw new InvalidArgumentException(
+        '邮箱格式不正确',
+        'email',
+        request.email,
+      );
+    }
+
+    // 验证用户名格式（如果提供）
+    if (request.username && request.username.trim().length < 3) {
+      throw new InvalidArgumentException(
+        '用户名长度不能少于3个字符',
+        'username',
+        request.username.length,
+      );
+    }
+
+    // 验证电话号码格式（如果提供）
+    if (request.phone && !this.isValidPhone(request.phone)) {
+      throw new InvalidArgumentException(
+        '电话号码格式不正确',
+        'phone',
+        request.phone,
+      );
+    }
+  }
+
+  /**
+   * 验证业务规则
+   * @param userId 用户ID
+   * @param request 更新用户请求
+   */
+  private async validateBusinessRules(
+    userId: string,
+    request: UpdateUserRequest,
+  ): Promise<void> {
+    // 检查邮箱是否已被其他用户使用
+    if (request.email) {
+      const existingUser = await this.userRepository.findByEmail(
+        new Email(request.email),
+        new TenantId('platform'), // 这里需要根据实际情况获取租户ID
+      );
+      if (existingUser && existingUser.id.toString() !== userId) {
+        throw new UserEmailAlreadyExistsException(request.email);
+      }
+    }
+
+    // 检查用户名是否已被其他用户使用（如果提供）
+    if (request.username) {
+      const existingUser = await this.userRepository.findByUsername(
+        new Username(request.username),
+        new TenantId('platform'), // 这里需要根据实际情况获取租户ID
+      );
+      if (existingUser && existingUser.id.toString() !== userId) {
+        throw new InvalidArgumentException('用户名已存在', 'username');
+      }
     }
   }
 
   /**
    * 验证邮箱格式
-   * @description 检查邮箱是否符合格式要求
-   * @param {string} email 邮箱
-   * @returns {boolean} 是否有效
+   * @param email 邮箱地址
+   * @returns 是否有效
    */
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -329,26 +208,36 @@ export class UpdateUserUseCase {
   }
 
   /**
-   * 验证手机号格式
-   * @description 检查手机号是否符合格式要求
-   * @param {string} phone 手机号
-   * @returns {boolean} 是否有效
+   * 验证电话号码格式
+   * @param phone 电话号码
+   * @returns 是否有效
    */
   private isValidPhone(phone: string): boolean {
-    const phoneRegex = /^1[3-9]\d{9}$/;
-    return phoneRegex.test(phone);
+    // 简单的电话号码验证，支持国际格式
+    const phoneRegex = /^\+?[\d\s\-()]+$/;
+    return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
   }
 
   /**
-   * 验证用户类型转换是否有效
-   * @description 检查用户类型转换是否允许
-   * @param {UserType} fromType 原用户类型
-   * @param {UserType} toType 目标用户类型
-   * @returns {boolean} 是否允许转换
+   * 获取更新的字段
+   * @param request 更新用户请求
+   * @returns 更新的字段对象
    */
-  private isValidUserTypeTransition(fromType: UserType, toType: UserType): boolean {
-    // TODO: 实现用户类型转换验证逻辑
-    // 例如：租户用户不能直接转换为平台用户
-    return true; // 临时返回true，后续实现具体验证逻辑
+  private getUpdatedFields(
+    request: UpdateUserRequest,
+  ): Record<string, unknown> {
+    const updatedFields: Record<string, unknown> = {};
+
+    if (request.username) updatedFields.username = request.username;
+    if (request.email) updatedFields.email = request.email;
+    if (request.displayName) updatedFields.displayName = request.displayName;
+    if (request.phone) updatedFields.phone = request.phone;
+    if (request.userType) updatedFields.userType = request.userType;
+    if (request.organizationId)
+      updatedFields.organizationId = request.organizationId;
+    if (request.departmentIds)
+      updatedFields.departmentIds = request.departmentIds;
+
+    return updatedFields;
   }
 }

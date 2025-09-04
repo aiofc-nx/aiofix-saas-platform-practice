@@ -4,7 +4,11 @@
  */
 
 import { EmailNotificationCreatedEvent } from './email-notification-created.event';
-import { NotificationType, NotificationStatus, NotificationPriority } from '@aiofix/shared';
+import {
+  NotificationType,
+  NotificationStatus,
+  NotificationPriority,
+} from '@aiofix/shared';
 
 describe('EmailNotificationCreatedEvent', () => {
   let event: EmailNotificationCreatedEvent;
@@ -47,7 +51,7 @@ describe('EmailNotificationCreatedEvent', () => {
         subject,
         scheduledAt,
         metadata,
-        operatorId
+        operatorId,
       );
 
       expect(event.notificationId).toBe(notificationId);
@@ -75,7 +79,7 @@ describe('EmailNotificationCreatedEvent', () => {
         undefined,
         scheduledAt,
         metadata,
-        operatorId
+        operatorId,
       );
 
       expect(event.subject).toBeUndefined();
@@ -93,7 +97,7 @@ describe('EmailNotificationCreatedEvent', () => {
         subject,
         undefined,
         metadata,
-        operatorId
+        operatorId,
       );
 
       expect(event.scheduledAt).toBeUndefined();
@@ -111,7 +115,7 @@ describe('EmailNotificationCreatedEvent', () => {
         subject,
         scheduledAt,
         undefined,
-        operatorId
+        operatorId,
       );
 
       expect(event.eventMetadata).toEqual({});
@@ -128,7 +132,7 @@ describe('EmailNotificationCreatedEvent', () => {
         status,
         subject,
         scheduledAt,
-        metadata
+        metadata,
       );
 
       expect(event.eventMetadata).toEqual(metadata);
@@ -142,7 +146,7 @@ describe('EmailNotificationCreatedEvent', () => {
         recipients,
         data,
         priority,
-        status
+        status,
       );
 
       expect(event.notificationId).toBe(notificationId);
@@ -171,7 +175,7 @@ describe('EmailNotificationCreatedEvent', () => {
         subject,
         scheduledAt,
         metadata,
-        operatorId
+        operatorId,
       );
     });
 
@@ -222,7 +226,7 @@ describe('EmailNotificationCreatedEvent', () => {
         subject,
         scheduledAt,
         metadata,
-        operatorId
+        operatorId,
       );
     });
 
@@ -252,7 +256,7 @@ describe('EmailNotificationCreatedEvent', () => {
         recipients,
         data,
         priority,
-        status
+        status,
       );
 
       const eventData = eventWithoutOptionals.getEventData();
@@ -286,7 +290,7 @@ describe('EmailNotificationCreatedEvent', () => {
         subject,
         scheduledAt,
         metadata,
-        operatorId
+        operatorId,
       );
     });
 
@@ -306,7 +310,7 @@ describe('EmailNotificationCreatedEvent', () => {
         recipients,
         data,
         priority,
-        status
+        status,
       );
 
       expect(event.eventId).not.toBe(event2.eventId);
@@ -330,7 +334,7 @@ describe('EmailNotificationCreatedEvent', () => {
         subject,
         scheduledAt,
         metadata,
-        operatorId
+        operatorId,
       );
 
       expect(event).toBeInstanceOf(EmailNotificationCreatedEvent);
@@ -347,7 +351,7 @@ describe('EmailNotificationCreatedEvent', () => {
         recipients,
         data,
         priority,
-        status
+        status,
       );
 
       expect(event).toBeInstanceOf(EmailNotificationCreatedEvent);
@@ -366,7 +370,7 @@ describe('EmailNotificationCreatedEvent', () => {
         [],
         data,
         priority,
-        status
+        status,
       );
 
       expect(event.recipients).toEqual([]);
@@ -380,7 +384,7 @@ describe('EmailNotificationCreatedEvent', () => {
         recipients,
         {},
         priority,
-        status
+        status,
       );
 
       expect(event.data).toEqual({});
@@ -397,7 +401,7 @@ describe('EmailNotificationCreatedEvent', () => {
         status,
         subject,
         scheduledAt,
-        {}
+        {},
       );
 
       expect(event.eventMetadata).toEqual({});
@@ -407,7 +411,7 @@ describe('EmailNotificationCreatedEvent', () => {
       const specialData = {
         userName: '张三🎉',
         company: '测试公司🚀',
-        message: '包含特殊字符: !@#$%^&*()'
+        message: '包含特殊字符: !@#$%^&*()',
       };
 
       event = new EmailNotificationCreatedEvent(
@@ -417,11 +421,10 @@ describe('EmailNotificationCreatedEvent', () => {
         recipients,
         specialData,
         priority,
-        status
+        status,
       );
 
       expect(event.data).toEqual(specialData);
     });
   });
 });
-

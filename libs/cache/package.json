@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "prebuild": "pnpm run clean",
-    "build": "tsc",
+    "build": "pnpm run clean && tsc",
+    "build:no-clean": "tsc",
     "dev": "tsc --watch",
     "test": "jest",
     "test:watch": "jest --watch",

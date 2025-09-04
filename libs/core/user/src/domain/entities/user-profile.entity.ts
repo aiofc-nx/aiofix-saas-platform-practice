@@ -30,7 +30,12 @@
  * @since 1.0.0
  */
 
-import { DataIsolationAwareEntity, DataIsolationLevel, DataPrivacyLevel, Uuid } from '@aiofix/shared';
+import {
+  DataIsolationAwareEntity,
+  DataIsolationLevel,
+  DataPrivacyLevel,
+  Uuid,
+} from '@aiofix/shared';
 
 /**
  * 用户档案数据接口
@@ -112,7 +117,7 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
     userId: string,
     organizationId?: string,
     departmentIds: string[] = [],
-    dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED
+    dataPrivacyLevel: DataPrivacyLevel = DataPrivacyLevel.PROTECTED,
   ) {
     // 调用父类构造函数，设置数据隔离信息
     super(
@@ -122,7 +127,7 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
       new Uuid(id),
       organizationId ? new Uuid(organizationId) : undefined,
       departmentIds.map(deptId => new Uuid(deptId)),
-      new Uuid(userId)
+      new Uuid(userId),
     );
 
     this._displayName = displayName;
@@ -145,7 +150,7 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
     tenantId: string,
     userId: string,
     organizationId?: string,
-    departmentIds: string[] = []
+    departmentIds: string[] = [],
   ): UserProfileEntity {
     return new UserProfileEntity(
       id,
@@ -154,7 +159,7 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
       userId,
       organizationId,
       departmentIds,
-      DataPrivacyLevel.SHARED
+      DataPrivacyLevel.SHARED,
     );
   }
 
@@ -175,7 +180,7 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
     tenantId: string,
     userId: string,
     organizationId?: string,
-    departmentIds: string[] = []
+    departmentIds: string[] = [],
   ): UserProfileEntity {
     return new UserProfileEntity(
       id,
@@ -184,7 +189,7 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
       userId,
       organizationId,
       departmentIds,
-      DataPrivacyLevel.PROTECTED
+      DataPrivacyLevel.PROTECTED,
     );
   }
 
@@ -237,7 +242,11 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
    */
   public updateWebsite(website: string): void {
     // 简单的URL格式验证
-    if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
+    if (
+      website &&
+      !website.startsWith('http://') &&
+      !website.startsWith('https://')
+    ) {
       throw new Error('网站URL必须以http://或https://开头');
     }
     this._website = website;
@@ -307,7 +316,7 @@ export class UserProfileEntity extends DataIsolationAwareEntity {
       location: this._location,
       website: this._website,
       socialLinks: { ...this._socialLinks },
-      preferences: { ...this._preferences }
+      preferences: { ...this._preferences },
     };
   }
 

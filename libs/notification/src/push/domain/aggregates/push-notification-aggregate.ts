@@ -94,7 +94,7 @@ export class PushNotificationAggregate extends AggregateRoot {
   private notification: PushNotification | null = null;
 
   constructor(
-    private readonly pushNotificationRepository: PushNotificationRepository
+    private readonly pushNotificationRepository: PushNotificationRepository,
   ) {
     super();
   }
@@ -104,7 +104,7 @@ export class PushNotificationAggregate extends AggregateRoot {
    * @description 创建推送通知
    */
   async createPushNotification(
-    command: CreatePushNotificationCommand
+    command: CreatePushNotificationCommand,
   ): Promise<PushNotification> {
     // 1. 创建推送通知实体
     const tenantId = Uuid.fromString(command.tenantId);
@@ -116,7 +116,7 @@ export class PushNotificationAggregate extends AggregateRoot {
       command.data,
       command.priority,
       command.scheduledAt,
-      command.metadata
+      command.metadata,
     );
 
     // 2. 保存到仓储
@@ -130,7 +130,7 @@ export class PushNotificationAggregate extends AggregateRoot {
    * @description 发送推送通知
    */
   async sendPushNotification(
-    command: SendPushNotificationCommand
+    command: SendPushNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('推送通知不存在');
@@ -159,7 +159,7 @@ export class PushNotificationAggregate extends AggregateRoot {
    * @description 推送通知发送失败
    */
   async failPushNotification(
-    command: FailPushNotificationCommand
+    command: FailPushNotificationCommand,
   ): Promise<void> {
     if (!this.notification) {
       throw new Error('推送通知不存在');
@@ -168,7 +168,7 @@ export class PushNotificationAggregate extends AggregateRoot {
     // 1. 验证通知状态
     if (this.notification.status !== NotificationStatus.PENDING) {
       throw new Error(
-        `无法标记状态为 ${this.notification.status} 的推送通知为失败`
+        `无法标记状态为 ${this.notification.status} 的推送通知为失败`,
       );
     }
 

@@ -187,13 +187,11 @@ export class CacheInvalidationService {
    */
   private monitoringTimer?: NodeJS.Timeout;
 
-
-
   constructor(
     @Inject('CACHE_INVALIDATION_CONFIG') config: CacheInvalidationConfig,
     @Inject('ICacheKeyFactory') private readonly keyFactory: ICacheKeyFactory,
     private readonly eventEmitter: EventEmitter2,
-    logger: PinoLoggerService
+    logger: PinoLoggerService,
   ) {
     this.logger = logger;
     this.config = {
@@ -225,7 +223,7 @@ export class CacheInvalidationService {
     this.cacheService = cacheService;
     this.logger.info(
       'Cache service set for invalidation service',
-      LogContext.CACHE
+      LogContext.CACHE,
     );
   }
 
@@ -238,15 +236,14 @@ export class CacheInvalidationService {
   addRule(
     rule: Omit<InvalidationRule, 'id' | 'createdAt' | 'updatedAt'> & {
       id?: string;
-    }
+    },
   ): boolean {
     try {
       const ruleId = rule.id || uuidv4();
       const now = new Date();
 
-      const { id: _, ...rest } = rule;
       const fullRule: InvalidationRule = {
-        ...rest,
+        ...rule,
         id: ruleId,
         createdAt: now,
         updatedAt: now,
@@ -256,7 +253,7 @@ export class CacheInvalidationService {
 
       this.logger.info(
         `Added invalidation rule: ${rule.name}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       this.emitEvent('rule_added', { rule: fullRule });
       return true;
@@ -265,7 +262,7 @@ export class CacheInvalidationService {
         `Failed to add invalidation rule: ${rule.name}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -282,7 +279,7 @@ export class CacheInvalidationService {
       if (!this.rules.has(ruleId)) {
         this.logger.warn(
           `Invalidation rule not found: ${ruleId}`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
         return false;
       }
@@ -295,7 +292,7 @@ export class CacheInvalidationService {
 
       this.logger.info(
         `Removed invalidation rule: ${rule.name}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       this.emitEvent('rule_removed', { rule });
       return true;
@@ -304,7 +301,7 @@ export class CacheInvalidationService {
         `Failed to remove invalidation rule: ${ruleId}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -319,13 +316,13 @@ export class CacheInvalidationService {
    */
   updateRule(
     ruleId: string,
-    updates: Partial<Omit<InvalidationRule, 'id' | 'createdAt'>>
+    updates: Partial<Omit<InvalidationRule, 'id' | 'createdAt'>>,
   ): boolean {
     try {
       if (!this.rules.has(ruleId)) {
         this.logger.warn(
           `Invalidation rule not found: ${ruleId}`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
         return false;
       }
@@ -341,7 +338,7 @@ export class CacheInvalidationService {
 
       this.logger.info(
         `Updated invalidation rule: ${updatedRule.name}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       this.emitEvent('rule_updated', { rule: updatedRule });
       return true;
@@ -350,7 +347,7 @@ export class CacheInvalidationService {
         `Failed to update invalidation rule: ${ruleId}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -376,7 +373,7 @@ export class CacheInvalidationService {
     const rules = Array.from(this.rules.values());
 
     if (enabledOnly) {
-      return rules.filter((rule) => rule.enabled);
+      return rules.filter(rule => rule.enabled);
     }
 
     return rules;
@@ -398,8 +395,8 @@ export class CacheInvalidationService {
       tags?: string[];
       timeout?: number;
       retries?: number;
-      metadata?: Record<string, any>;
-    }
+      metadata?: Record<string, unknown>;
+    },
   ): Promise<InvalidationResult> {
     const startTime = Date.now();
     const targets = Array.isArray(target) ? target : [target];
@@ -463,7 +460,7 @@ export class CacheInvalidationService {
 
       this.logger.info(
         `Cache invalidation completed: ${result.invalidatedKeys} keys, ${result.executionTime}ms`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       this.emitEvent('invalidation_completed', { result, strategy });
 
@@ -476,7 +473,7 @@ export class CacheInvalidationService {
         `Cache invalidation failed: ${(error as Error).message}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       this.emitEvent('invalidation_failed', { error, strategy, targets });
 
@@ -500,12 +497,12 @@ export class CacheInvalidationService {
    * @method invalidateByRule
    * @description 根据规则执行缓存失效
    * @param ruleId 规则ID
-   * @param context 执行上下文
+   * @param _context 执行上下文
    * @returns {Promise<InvalidationResult>} 失效结果
    */
   async invalidateByRule(
     ruleId: string,
-    context?: Record<string, any>
+    _context?: Record<string, unknown>,
   ): Promise<InvalidationResult> {
     const rule = this.getRule(ruleId);
     if (!rule) {
@@ -515,7 +512,7 @@ export class CacheInvalidationService {
     if (!rule.enabled) {
       this.logger.warn(
         `Invalidation rule is disabled: ${rule.name}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       return {
         invalidatedKeys: 0,
@@ -532,10 +529,10 @@ export class CacheInvalidationService {
     }
 
     // 检查条件
-    if (rule.condition && !this.evaluateCondition(rule.condition, context)) {
+    if (rule.condition && !this.evaluateCondition(rule.condition, _context)) {
       this.logger.debug(
         `Invalidation rule condition not met: ${rule.name}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
       return {
         invalidatedKeys: 0,
@@ -555,10 +552,10 @@ export class CacheInvalidationService {
     if (rule.dependencies && rule.dependencies.length > 0) {
       for (const depId of rule.dependencies) {
         const depRule = this.getRule(depId);
-        if (!depRule || !depRule.enabled) {
+        if (!depRule?.enabled) {
           this.logger.warn(
             `Dependency rule not found or disabled: ${depId}`,
-            LogContext.CACHE
+            LogContext.CACHE,
           );
           return {
             invalidatedKeys: 0,
@@ -577,7 +574,7 @@ export class CacheInvalidationService {
     }
 
     return this.invalidate(rule.pattern, rule.strategy, {
-      metadata: { ruleId, ruleName: rule.name, context },
+      metadata: { ruleId, ruleName: rule.name, _context },
     });
   }
 
@@ -630,14 +627,14 @@ export class CacheInvalidationService {
           acc[strategy] = 0;
           return acc;
         },
-        {} as Record<InvalidationStrategy, number>
+        {} as Record<InvalidationStrategy, number>,
       ),
       triggerUsage: Object.values(InvalidationTrigger).reduce(
         (acc, trigger) => {
           acc[trigger] = 0;
           return acc;
         },
-        {} as Record<InvalidationTrigger, number>
+        {} as Record<InvalidationTrigger, number>,
       ),
     };
   }
@@ -665,7 +662,7 @@ export class CacheInvalidationService {
           `Failed to invalidate exact key: ${key}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -696,7 +693,7 @@ export class CacheInvalidationService {
           `Failed to invalidate prefix: ${prefix}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -708,10 +705,10 @@ export class CacheInvalidationService {
    * @private
    * @method invalidateSuffix
    * @description 后缀匹配失效
-   * @param suffixes 后缀列表
+   * @param _suffixes 后缀列表
    * @returns {Promise<string[]>} 失效的键列表
    */
-  private async invalidateSuffix(suffixes: string[]): Promise<string[]> {
+  private async invalidateSuffix(_suffixes: string[]): Promise<string[]> {
     // 简化实现，实际需要缓存服务支持后缀查询
     const invalidatedKeys: string[] = [];
 
@@ -736,14 +733,14 @@ export class CacheInvalidationService {
         // 仅记录模式，实际匹配依赖具体缓存实现
         this.logger.debug(
           `Wildcard invalidation pattern: ${pattern}`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
       } catch (error) {
         this.logger.warn(
           `Failed to invalidate wildcard pattern: ${pattern}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -766,14 +763,14 @@ export class CacheInvalidationService {
         // 仅记录模式，实际匹配依赖具体缓存实现
         this.logger.debug(
           `Regex invalidation pattern: ${pattern}`,
-          LogContext.CACHE
+          LogContext.CACHE,
         );
       } catch (error) {
         this.logger.warn(
           `Failed to invalidate regex pattern: ${pattern}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -802,7 +799,7 @@ export class CacheInvalidationService {
           `Failed to invalidate tag: ${tag}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -831,7 +828,7 @@ export class CacheInvalidationService {
           `Failed to invalidate namespace: ${namespace}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -862,7 +859,7 @@ export class CacheInvalidationService {
           `Failed to invalidate batch ${i / batchSize + 1}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -875,12 +872,12 @@ export class CacheInvalidationService {
    * @method evaluateCondition
    * @description 评估条件表达式
    * @param condition 条件表达式
-   * @param context 执行上下文
+   * @param _context 执行上下文
    * @returns {boolean} 条件是否满足
    */
   private evaluateCondition(
     condition: string,
-    context?: Record<string, any>
+    _context?: Record<string, unknown>,
   ): boolean {
     try {
       // 简化实现，实际可以使用表达式引擎
@@ -891,7 +888,7 @@ export class CacheInvalidationService {
         `Failed to evaluate condition: ${condition}`,
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
       return false;
     }
@@ -910,7 +907,7 @@ export class CacheInvalidationService {
     strategy: InvalidationStrategy,
     executionTime: number,
     invalidatedKeys: number,
-    failed = false
+    failed = false,
   ): void {
     this.stats.totalInvalidations++;
 
@@ -928,7 +925,7 @@ export class CacheInvalidationService {
 
     this.stats.lastInvalidation = new Date();
     this.stats.activeRules = Array.from(this.rules.values()).filter(
-      (rule) => rule.enabled
+      rule => rule.enabled,
     ).length;
 
     if (this.stats.strategyUsage[strategy] !== undefined) {
@@ -941,14 +938,14 @@ export class CacheInvalidationService {
    * @method emitEvent
    * @description 发送失效事件
    * @param type 事件类型
-   * @param data 事件数据
+   * @param _data 事件数据
    */
-  private emitEvent(type: string, data: any): void {
+  private emitEvent(type: string, _data: Record<string, unknown>): void {
     if (this.config.enableEvents) {
       try {
         this.eventEmitter.emit(`cache.invalidation.${type}`, {
           type,
-          data,
+          data: _data,
           timestamp: new Date(),
           serviceId: 'cache-invalidation',
         });
@@ -957,7 +954,7 @@ export class CacheInvalidationService {
           `Failed to emit invalidation event: ${type}`,
           LogContext.CACHE,
           undefined,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -978,14 +975,14 @@ export class CacheInvalidationService {
             'Invalidation monitoring failed',
             LogContext.CACHE,
             undefined,
-            error as Error
+            error as Error,
           );
         }
       }, this.config.monitoringInterval);
 
       this.logger.info(
         `Started invalidation monitoring, interval: ${this.config.monitoringInterval}ms`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
     }
   }
@@ -1015,18 +1012,18 @@ export class CacheInvalidationService {
 
       // 检查活跃规则
       const activeRules = Array.from(this.rules.values()).filter(
-        (rule) => rule.enabled
+        rule => rule.enabled,
       );
       this.logger.debug(
         `Active invalidation rules: ${activeRules.length}`,
-        LogContext.CACHE
+        LogContext.CACHE,
       );
     } catch (error) {
       this.logger.error(
         'Invalidation monitoring execution failed',
         LogContext.CACHE,
         undefined,
-        error as Error
+        error as Error,
       );
     }
   }

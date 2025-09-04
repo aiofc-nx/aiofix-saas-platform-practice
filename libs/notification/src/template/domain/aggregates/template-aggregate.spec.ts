@@ -1,5 +1,10 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { TemplateAggregate, CreateTemplateCommand, UpdateTemplateCommand, ReviewTemplateCommand } from './template-aggregate';
+import {
+  TemplateAggregate,
+  CreateTemplateCommand,
+  UpdateTemplateCommand,
+  ReviewTemplateCommand,
+} from './template-aggregate';
 import { Template, ReviewStatus } from '../entities/template.entity';
 import { TemplateRepository } from '../repositories/template.repository';
 import { NotificationType, TemplateStatus } from '@aiofix/shared';
@@ -11,7 +16,7 @@ const mockTemplateRepository = {
   findById: jest.fn(),
   findByName: jest.fn(),
   delete: jest.fn(),
-} as any;
+} as unknown;
 
 describe('TemplateAggregate', () => {
   let aggregate: TemplateAggregate;
@@ -30,19 +35,19 @@ describe('TemplateAggregate', () => {
   });
 
   describe('createTemplate', () => {
-      const createCommand: CreateTemplateCommand = {
-    tenantId: Uuid.generate().toString(),
-    name: '测试模板',
-    type: NotificationType.EMAIL,
-    content: 'Hello {{userName}}, welcome to {{company}}!',
-    variables: ['userName', 'company'],
-    language: 'zh-CN',
-    category: 'email-template',
-    subject: '{{subject}}',
-    tags: ['welcome'],
-    metadata: { category: 'notification' },
-    createdBy: Uuid.generate().toString(),
-  };
+    const createCommand: CreateTemplateCommand = {
+      tenantId: Uuid.generate().toString(),
+      name: '测试模板',
+      type: NotificationType.EMAIL,
+      content: 'Hello {{userName}}, welcome to {{company}}!',
+      variables: ['userName', 'company'],
+      language: 'zh-CN',
+      category: 'email-template',
+      subject: '{{subject}}',
+      tags: ['welcome'],
+      metadata: { category: 'notification' },
+      createdBy: Uuid.generate().toString(),
+    };
 
     it('应该成功创建模板', async () => {
       // Arrange
@@ -56,9 +61,14 @@ describe('TemplateAggregate', () => {
       expect(result).toBeInstanceOf(Template);
       expect(result.name).toBe('测试模板');
       expect(result.type).toBe(NotificationType.EMAIL);
-      expect(result.content).toBe('Hello {{userName}}, welcome to {{company}}!');
+      expect(result.content).toBe(
+        'Hello {{userName}}, welcome to {{company}}!',
+      );
       expect(result.variables).toEqual(['userName', 'company']);
-      expect(mockTemplateRepository.findByName).toHaveBeenCalledWith('测试模板', createCommand.tenantId);
+      expect(mockTemplateRepository.findByName).toHaveBeenCalledWith(
+        '测试模板',
+        createCommand.tenantId,
+      );
       expect(mockTemplateRepository.save).toHaveBeenCalledWith(result);
     });
 
@@ -77,13 +87,14 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       mockTemplateRepository.findByName.mockResolvedValue(existingTemplate);
 
       // Act & Assert
-      await expect(aggregate.createTemplate(createCommand))
-        .rejects.toThrow('模板名称 "测试模板" 已存在');
+      await expect(aggregate.createTemplate(createCommand)).rejects.toThrow(
+        '模板名称 "测试模板" 已存在',
+      );
     });
   });
 
@@ -111,7 +122,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       mockTemplateRepository.findById.mockResolvedValue(template);
       await aggregate.loadTemplate(template.id.toString());
@@ -127,8 +138,14 @@ describe('TemplateAggregate', () => {
       // Assert
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.content).toBe('Updated content {{userName}}');
-      expect(updatedTemplate?.variables).toEqual(['userName', 'company', 'date']);
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(updatedTemplate?.variables).toEqual([
+        'userName',
+        'company',
+        'date',
+      ]);
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
 
     it('应该拒绝更新不存在的模板', async () => {
@@ -136,8 +153,9 @@ describe('TemplateAggregate', () => {
       const emptyAggregate = new TemplateAggregate(mockTemplateRepository);
 
       // Act & Assert
-      await expect(emptyAggregate.updateTemplate(updateCommand))
-        .rejects.toThrow('模板不存在');
+      await expect(
+        emptyAggregate.updateTemplate(updateCommand),
+      ).rejects.toThrow('模板不存在');
     });
 
     it('应该拒绝更新已归档的模板', async () => {
@@ -146,8 +164,9 @@ describe('TemplateAggregate', () => {
       mockTemplateRepository.save.mockResolvedValue();
 
       // Act & Assert
-      await expect(aggregate.updateTemplate(updateCommand))
-        .rejects.toThrow('已归档的模板不能更新');
+      await expect(aggregate.updateTemplate(updateCommand)).rejects.toThrow(
+        '已归档的模板不能更新',
+      );
     });
   });
 
@@ -168,7 +187,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       mockTemplateRepository.findById.mockResolvedValue(template);
       await aggregate.loadTemplate(template.id.toString());
@@ -184,7 +203,9 @@ describe('TemplateAggregate', () => {
       // Assert
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.reviewStatus).toBe(ReviewStatus.UNDER_REVIEW);
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
 
     it('应该拒绝提交不存在的模板', async () => {
@@ -192,8 +213,9 @@ describe('TemplateAggregate', () => {
       const emptyAggregate = new TemplateAggregate(mockTemplateRepository);
 
       // Act & Assert
-      await expect(emptyAggregate.submitForReview('non-existent-id'))
-        .rejects.toThrow('模板不存在');
+      await expect(
+        emptyAggregate.submitForReview('non-existent-id'),
+      ).rejects.toThrow('模板不存在');
     });
 
     it('应该拒绝提交非草稿状态的模板', async () => {
@@ -204,8 +226,9 @@ describe('TemplateAggregate', () => {
       mockTemplateRepository.save.mockResolvedValue();
 
       // Act & Assert
-      await expect(aggregate.submitForReview(template.id.toString()))
-        .rejects.toThrow('只有草稿状态的模板才能提交审核');
+      await expect(
+        aggregate.submitForReview(template.id.toString()),
+      ).rejects.toThrow('只有草稿状态的模板才能提交审核');
     });
   });
 
@@ -239,7 +262,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       template.submitForReview();
       mockTemplateRepository.findById.mockResolvedValue(template);
@@ -257,7 +280,9 @@ describe('TemplateAggregate', () => {
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.reviewStatus).toBe(ReviewStatus.APPROVED);
       expect(updatedTemplate?.reviewComments).toBe('审核通过');
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
 
     it('应该成功拒绝审核', async () => {
@@ -271,7 +296,9 @@ describe('TemplateAggregate', () => {
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.reviewStatus).toBe(ReviewStatus.REJECTED);
       expect(updatedTemplate?.reviewComments).toBe('内容不符合规范');
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
 
     it('应该拒绝审核非审核中状态的模板', async () => {
@@ -279,8 +306,9 @@ describe('TemplateAggregate', () => {
       template.approve(reviewerId, 'already approved');
 
       // Act & Assert
-      await expect(aggregate.reviewTemplate(approveCommand))
-        .rejects.toThrow('只有审核中的模板才能进行审核操作');
+      await expect(aggregate.reviewTemplate(approveCommand)).rejects.toThrow(
+        '只有审核中的模板才能进行审核操作',
+      );
     });
 
     it('应该拒绝审核时提供拒绝原因', async () => {
@@ -292,8 +320,9 @@ describe('TemplateAggregate', () => {
       };
 
       // Act & Assert
-      await expect(aggregate.reviewTemplate(rejectWithoutComments))
-        .rejects.toThrow('拒绝审核必须提供拒绝原因');
+      await expect(
+        aggregate.reviewTemplate(rejectWithoutComments),
+      ).rejects.toThrow('拒绝审核必须提供拒绝原因');
     });
   });
 
@@ -314,7 +343,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       template.submitForReview();
       template.approve(reviewerId, 'approved');
@@ -332,7 +361,9 @@ describe('TemplateAggregate', () => {
       // Assert
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.status).toBe(TemplateStatus.ACTIVE);
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
 
     it('应该拒绝激活非审核通过状态的模板', async () => {
@@ -343,8 +374,9 @@ describe('TemplateAggregate', () => {
       await aggregate.loadTemplate(template.id.toString());
 
       // Act & Assert
-      await expect(aggregate.activateTemplate(template.id.toString()))
-        .rejects.toThrow('只有审核通过的模板才能激活');
+      await expect(
+        aggregate.activateTemplate(template.id.toString()),
+      ).rejects.toThrow('只有审核通过的模板才能激活');
     });
   });
 
@@ -365,7 +397,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       template.submitForReview();
       template.approve(reviewerId, 'approved');
@@ -384,7 +416,9 @@ describe('TemplateAggregate', () => {
       // Assert
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.status).toBe(TemplateStatus.INACTIVE);
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
   });
 
@@ -405,7 +439,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       template.submitForReview();
       template.approve(reviewerId, 'approved');
@@ -425,7 +459,9 @@ describe('TemplateAggregate', () => {
       // Assert
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.status).toBe(TemplateStatus.ARCHIVED);
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
   });
 
@@ -446,7 +482,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       mockTemplateRepository.findById.mockResolvedValue(template);
       await aggregate.loadTemplate(template.id.toString());
@@ -473,8 +509,9 @@ describe('TemplateAggregate', () => {
       await aggregate.loadTemplate(template.id.toString());
 
       // Act & Assert
-      await expect(aggregate.deleteTemplate(template.id.toString()))
-        .rejects.toThrow('激活状态的模板不能删除，请先停用');
+      await expect(
+        aggregate.deleteTemplate(template.id.toString()),
+      ).rejects.toThrow('激活状态的模板不能删除，请先停用');
     });
   });
 
@@ -494,7 +531,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
 
       // Act
@@ -536,7 +573,7 @@ describe('TemplateAggregate', () => {
         [],
         {},
         createdBy,
-        createdBy
+        createdBy,
       );
       mockTemplateRepository.findById.mockResolvedValue(template);
       await aggregate.loadTemplate(template.id.toString());
@@ -552,7 +589,9 @@ describe('TemplateAggregate', () => {
       // Assert
       const updatedTemplate = aggregate.getTemplate();
       expect(updatedTemplate?.usageCount).toBe(1);
-      expect(mockTemplateRepository.save).toHaveBeenCalledWith(expect.any(Template));
+      expect(mockTemplateRepository.save).toHaveBeenCalledWith(
+        expect.unknown(Template),
+      );
     });
   });
 });

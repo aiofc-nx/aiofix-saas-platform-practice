@@ -51,11 +51,15 @@ describe('DeviceToken', () => {
     });
 
     it('should throw error for null token', () => {
-      expect(() => new DeviceToken(null as any)).toThrow('设备令牌不能为空');
+      expect(() => new DeviceToken(null as unknown)).toThrow(
+        '设备令牌不能为空',
+      );
     });
 
     it('should throw error for undefined token', () => {
-      expect(() => new DeviceToken(undefined as any)).toThrow('设备令牌不能为空');
+      expect(() => new DeviceToken(undefined as unknown)).toThrow(
+        '设备令牌不能为空',
+      );
     });
 
     it('should throw error for token with only spaces', () => {
@@ -63,15 +67,21 @@ describe('DeviceToken', () => {
     });
 
     it('should throw error for token too short', () => {
-      expect(() => new DeviceToken(invalidTokenTooShort)).toThrow('设备令牌长度不能少于32个字符');
+      expect(() => new DeviceToken(invalidTokenTooShort)).toThrow(
+        '设备令牌长度不能少于32个字符',
+      );
     });
 
     it('should throw error for token too long', () => {
-      expect(() => new DeviceToken(invalidTokenTooLong)).toThrow('设备令牌长度不能超过256个字符');
+      expect(() => new DeviceToken(invalidTokenTooLong)).toThrow(
+        '设备令牌长度不能超过256个字符',
+      );
     });
 
     it('should throw error for token with control characters', () => {
-      expect(() => new DeviceToken(invalidTokenWithControlChars)).toThrow('设备令牌包含控制字符');
+      expect(() => new DeviceToken(invalidTokenWithControlChars)).toThrow(
+        '设备令牌包含控制字符',
+      );
     });
 
     it('should trim whitespace from token', () => {
@@ -101,7 +111,9 @@ describe('DeviceToken', () => {
     });
 
     it('should throw error for non-iOS token', () => {
-      expect(() => DeviceToken.createIOS(validAndroidToken)).toThrow('无效的iOS设备令牌格式');
+      expect(() => DeviceToken.createIOS(validAndroidToken)).toThrow(
+        '无效的iOS设备令牌格式',
+      );
     });
   });
 
@@ -113,7 +125,9 @@ describe('DeviceToken', () => {
     });
 
     it('should throw error for non-Android token', () => {
-      expect(() => DeviceToken.createAndroid(validIOSToken)).toThrow('无效的Android设备令牌格式');
+      expect(() => DeviceToken.createAndroid(validIOSToken)).toThrow(
+        '无效的Android设备令牌格式',
+      );
     });
   });
 
@@ -125,7 +139,9 @@ describe('DeviceToken', () => {
     });
 
     it('should throw error for non-Web token', () => {
-      expect(() => DeviceToken.createWeb(validIOSToken)).toThrow('无效的Web设备令牌格式');
+      expect(() => DeviceToken.createWeb(validIOSToken)).toThrow(
+        '无效的Web设备令牌格式',
+      );
     });
   });
 
@@ -289,7 +305,7 @@ describe('DeviceToken', () => {
     it('should return readonly value', () => {
       const token = new DeviceToken(validIOSToken);
       expect(() => {
-        (token as any).value = 'new-value';
+        (token as unknown).value = 'new-value';
       }).toThrow();
     });
   });

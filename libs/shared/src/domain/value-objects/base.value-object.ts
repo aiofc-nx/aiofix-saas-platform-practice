@@ -27,7 +27,7 @@ export class InvalidValueObjectError extends Error {
   constructor(
     message: string,
     public readonly valueObjectType: string,
-    public readonly value?: unknown
+    public readonly value?: unknown,
   ) {
     super(message);
     this.name = 'InvalidValueObjectError';

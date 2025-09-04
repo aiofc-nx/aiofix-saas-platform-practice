@@ -63,7 +63,7 @@ export class UserRelationshipChangedEvent extends DomainEvent {
     public readonly oldStatus: string,
     public readonly newStatus: string,
     public readonly tenantId: string = '',
-    public readonly changedAt: Date = new Date()
+    public readonly changedAt: Date = new Date(),
   ) {
     super('UserRelationshipChanged', {
       userId,
@@ -73,7 +73,7 @@ export class UserRelationshipChangedEvent extends DomainEvent {
       oldStatus,
       newStatus,
       tenantId,
-      changedAt
+      changedAt,
     });
   }
 
@@ -91,7 +91,7 @@ export class UserRelationshipChangedEvent extends DomainEvent {
       oldStatus: this.oldStatus,
       newStatus: this.newStatus,
       tenantId: this.tenantId,
-      changedAt: this.changedAt
+      changedAt: this.changedAt,
     };
   }
 

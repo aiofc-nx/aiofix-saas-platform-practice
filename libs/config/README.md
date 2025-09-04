@@ -22,14 +22,14 @@ pnpm add @aiofix/config
 ### 使用
 
 ```typescript
-import { ConfigModule } from '@aiofix/config';
+import { ConfigModule } from "@aiofix/config";
 
 @Module({
   imports: [
     ConfigModule.register({
       // 配置选项
-    })
-  ]
+    }),
+  ],
 })
 export class AppModule {}
 ```

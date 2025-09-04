@@ -12,12 +12,23 @@
 
 import { SmsNotificationDomainService } from './sms-notification-domain.service';
 import { SmsNotification } from '../entities/sms-notification.entity';
-import { PhoneNumber, NotificationStatus, NotificationPriority, Uuid } from '@aiofix/shared';
+import {
+  PhoneNumber,
+  NotificationStatus,
+  NotificationPriority,
+  Uuid,
+} from '@aiofix/shared';
 
 // 模拟 SmsNotificationRepository 接口
 interface SmsNotificationRepository {
-  getStatistics(tenantId: string, fromDate?: Date, toDate?: Date): Promise<any>;
-  countByPriority(tenantId: string): Promise<Record<NotificationPriority, number>>;
+  getStatistics(
+    tenantId: string,
+    fromDate?: Date,
+    toDate?: Date,
+  ): Promise<unknown>;
+  countByPriority(
+    tenantId: string,
+  ): Promise<Record<NotificationPriority, number>>;
   countByStatus(tenantId: string): Promise<Record<NotificationStatus, number>>;
 }
 
@@ -32,8 +43,8 @@ describe('SmsNotificationDomainService', () => {
       countByStatus: jest.fn(),
     };
 
-    service = new SmsNotificationDomainService(mockRepository as any);
-    mockSmsNotificationRepository = mockRepository as any;
+    service = new SmsNotificationDomainService(mockRepository as unknown);
+    mockSmsNotificationRepository = mockRepository as unknown;
   });
 
   describe('validateSmsNotification', () => {
@@ -45,7 +56,7 @@ describe('SmsNotificationDomainService', () => {
         Uuid.generate(),
         [PhoneNumber.create('13800138000')],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -63,10 +74,12 @@ describe('SmsNotificationDomainService', () => {
         Uuid.generate(),
         [],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.validateSmsNotification(notificationWithNoRecipients);
+      const result = service.validateSmsNotification(
+        notificationWithNoRecipients,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('短信通知必须包含至少一个收件人');
@@ -75,13 +88,15 @@ describe('SmsNotificationDomainService', () => {
     it('应该检测无效的手机号码', () => {
       const notificationWithInvalidPhone = {
         ...validNotification,
-        recipients: [{ value: 'invalid-phone' } as any],
+        recipients: [{ value: 'invalid-phone' } as unknown],
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateSmsNotification(notificationWithInvalidPhone);
+      const result = service.validateSmsNotification(
+        notificationWithInvalidPhone,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('无效的手机号码: invalid-phone');
@@ -90,13 +105,15 @@ describe('SmsNotificationDomainService', () => {
     it('应该检测无效的优先级', () => {
       const notificationWithInvalidPriority = {
         ...validNotification,
-        priority: 'INVALID_PRIORITY' as any,
+        priority: 'INVALID_PRIORITY' as unknown,
         recipients: validNotification.recipients,
         data: validNotification.data,
         templateId: validNotification.templateId,
-      } as any;
+      } as unknown;
 
-      const result = service.validateSmsNotification(notificationWithInvalidPriority);
+      const result = service.validateSmsNotification(
+        notificationWithInvalidPriority,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('短信通知必须包含有效的优先级');
@@ -113,9 +130,11 @@ describe('SmsNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateSmsNotification(notificationWithPastSchedule);
+      const result = service.validateSmsNotification(
+        notificationWithPastSchedule,
+      );
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('计划发送时间必须晚于当前时间');
@@ -129,7 +148,7 @@ describe('SmsNotificationDomainService', () => {
         recipients: validNotification.recipients,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
       const result = service.validateSmsNotification(notificationWithLargeData);
 
@@ -138,8 +157,8 @@ describe('SmsNotificationDomainService', () => {
     });
 
     it('应该检测过多的收件人', () => {
-      const manyRecipients = Array.from({ length: 101 }, (_, i) => 
-        PhoneNumber.create(`138001380${i.toString().padStart(2, '0')}`)
+      const manyRecipients = Array.from({ length: 101 }, (_, i) =>
+        PhoneNumber.create(`138001380${i.toString().padStart(2, '0')}`),
       );
       const notificationWithManyRecipients = {
         ...validNotification,
@@ -147,9 +166,11 @@ describe('SmsNotificationDomainService', () => {
         data: validNotification.data,
         templateId: validNotification.templateId,
         priority: validNotification.priority,
-      } as any;
+      } as unknown;
 
-      const result = service.validateSmsNotification(notificationWithManyRecipients);
+      const result = service.validateSmsNotification(
+        notificationWithManyRecipients,
+      );
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain('收件人数量过多，建议分批发送');
@@ -165,7 +186,7 @@ describe('SmsNotificationDomainService', () => {
         Uuid.generate(),
         [PhoneNumber.create('13800138000')],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
@@ -216,12 +237,15 @@ describe('SmsNotificationDomainService', () => {
         Uuid.generate(),
         [PhoneNumber.create('13800138000')],
         { userName: 'John' },
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
     });
 
     it('应该允许重试临时错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
@@ -229,14 +253,20 @@ describe('SmsNotificationDomainService', () => {
     });
 
     it('应该允许重试频率限制错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'RATE_LIMIT_EXCEEDED');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'RATE_LIMIT_EXCEEDED',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBeGreaterThan(0);
     });
 
     it('不应该重试永久错误', () => {
-      const result = service.calculateRetryStrategy(validNotification, 'INVALID_PHONE');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'INVALID_PHONE',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -249,7 +279,10 @@ describe('SmsNotificationDomainService', () => {
         maxRetries: 3,
       } as SmsNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithMaxRetries, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithMaxRetries,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);
@@ -261,7 +294,10 @@ describe('SmsNotificationDomainService', () => {
         retryCount: 2,
       } as SmsNotification;
 
-      const result = service.calculateRetryStrategy(notificationWithRetryCount, 'TEMPORARY_FAILURE');
+      const result = service.calculateRetryStrategy(
+        notificationWithRetryCount,
+        'TEMPORARY_FAILURE',
+      );
 
       expect(result.shouldRetry).toBe(true);
       expect(result.retryDelay).toBe(120000); // 2分钟 (60 * 2^1)
@@ -278,21 +314,21 @@ describe('SmsNotificationDomainService', () => {
           Uuid.generate(),
           [PhoneNumber.create('13800138001')],
           {},
-          NotificationPriority.HIGH
+          NotificationPriority.HIGH,
         ),
         SmsNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           [PhoneNumber.create('13800138002')],
           {},
-          NotificationPriority.NORMAL
+          NotificationPriority.NORMAL,
         ),
         SmsNotification.create(
           Uuid.generate(),
           Uuid.generate(),
           [PhoneNumber.create('13800138003')],
           {},
-          NotificationPriority.LOW
+          NotificationPriority.LOW,
         ),
       ];
     });
@@ -315,7 +351,10 @@ describe('SmsNotificationDomainService', () => {
     });
 
     it('应该处理单个通知', async () => {
-      const batches = await service.optimizeBatchSending([notifications[0]], 10);
+      const batches = await service.optimizeBatchSending(
+        [notifications[0]],
+        10,
+      );
 
       expect(batches).toHaveLength(1);
       expect(batches[0]).toHaveLength(1);
@@ -378,7 +417,7 @@ describe('SmsNotificationDomainService', () => {
       expect(mockSmsNotificationRepository.getStatistics).toHaveBeenCalledWith(
         tenantId,
         fromDate,
-        toDate
+        toDate,
       );
     });
   });
@@ -387,7 +426,9 @@ describe('SmsNotificationDomainService', () => {
     it('应该处理无效的短信通知对象', () => {
       const invalidNotification = {} as SmsNotification;
 
-      expect(() => service.validateSmsNotification(invalidNotification)).toThrow();
+      expect(() =>
+        service.validateSmsNotification(invalidNotification),
+      ).toThrow();
     });
 
     it('应该处理空的路由设置', () => {
@@ -396,7 +437,7 @@ describe('SmsNotificationDomainService', () => {
         Uuid.generate(),
         [PhoneNumber.create('13800138000')],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
       const result = service.determineSmsRouting(validNotification, {});
@@ -411,10 +452,13 @@ describe('SmsNotificationDomainService', () => {
         Uuid.generate(),
         [PhoneNumber.create('13800138000')],
         {},
-        NotificationPriority.NORMAL
+        NotificationPriority.NORMAL,
       );
 
-      const result = service.calculateRetryStrategy(validNotification, 'UNKNOWN_ERROR');
+      const result = service.calculateRetryStrategy(
+        validNotification,
+        'UNKNOWN_ERROR',
+      );
 
       expect(result.shouldRetry).toBe(false);
       expect(result.retryDelay).toBe(0);

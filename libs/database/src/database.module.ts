@@ -96,13 +96,13 @@ export class DatabaseModule {
                 useFactory: (
                   config: DatabaseConfig,
                   eventEmitter: EventEmitter2,
-                  logger: PinoLoggerService
+                  logger: PinoLoggerService,
                 ) => {
                   return new PostgreSQLAdapter(
                     config,
                     'postgresql',
                     eventEmitter,
-                    logger
+                    logger,
                   );
                 },
                 inject: ['DATABASE_CONFIG', EventEmitter2, PinoLoggerService],

@@ -50,14 +50,13 @@ export class AuthToken extends BaseValueObject {
   constructor(
     value: string,
     type: TokenType | string = TokenType.JWT,
-    expiresAt?: Date
+    expiresAt?: Date,
   ) {
     super();
     this.validate(value);
     this._value = value;
-    this._type = (typeof type === 'string'
-      ? (type as TokenType)
-      : type) ?? TokenType.JWT;
+    this._type =
+      (typeof type === 'string' ? (type as TokenType) : type) ?? TokenType.JWT;
     this._expiresAt = expiresAt ?? new Date(Date.now() + 24 * 60 * 60 * 1000); // 默认24小时
     this.validateInvariants();
   }
@@ -141,7 +140,7 @@ export class AuthToken extends BaseValueObject {
     return new AuthToken(
       data.value,
       data.type,
-      new Date(data.expiresAt)
+      new Date(data.expiresAt),
     ) as this;
   }
 
@@ -154,7 +153,7 @@ export class AuthToken extends BaseValueObject {
     return new AuthToken(
       this._value,
       this._type,
-      new Date(this._expiresAt)
+      new Date(this._expiresAt),
     ) as this;
   }
 
@@ -176,7 +175,7 @@ export class AuthToken extends BaseValueObject {
   isExpiringSoon(minutes = 30): boolean {
     const now = new Date();
     const expiringTime = new Date(
-      this._expiresAt.getTime() - minutes * 60 * 1000
+      this._expiresAt.getTime() - minutes * 60 * 1000,
     );
     return now > expiringTime;
   }
@@ -299,7 +298,7 @@ export class AuthToken extends BaseValueObject {
   static create(
     value: string,
     type: TokenType = TokenType.JWT,
-    expiresAt?: Date
+    expiresAt?: Date,
   ): AuthToken {
     return new AuthToken(value, type, expiresAt);
   }
@@ -314,7 +313,7 @@ export class AuthToken extends BaseValueObject {
    */
   static generate(
     type: TokenType = TokenType.JWT,
-    expiresInMinutes = 1440
+    expiresInMinutes = 1440,
   ): AuthToken {
     // 生成随机字符串
     const chars =

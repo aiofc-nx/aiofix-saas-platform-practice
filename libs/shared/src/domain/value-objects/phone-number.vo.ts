@@ -295,12 +295,12 @@ export class PhoneNumber extends BaseValueObject {
     if (/^\+\d{1,3}-\d{3}-\d{4}-\d{4}$/.test(trimmed)) {
       return trimmed;
     }
-    const cc = (countryCode || '+86');
+    const cc = countryCode || '+86';
     // 组装为 +cc-xxx-xxxx-xxxx 的格式（仅针对11位中国手机号简化处理）
     const digits = trimmed.replace(/\D/g, '');
     const national = digits.replace(/^86/, '');
     if (national.length === 11) {
-      return `${cc}-${national.slice(0,3)}-${national.slice(3,7)}-${national.slice(7)}`;
+      return `${cc}-${national.slice(0, 3)}-${national.slice(3, 7)}-${national.slice(7)}`;
     }
     return `${cc}-${national}`;
   }

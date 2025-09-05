@@ -1,5 +1,5 @@
 /**
- * @description Department聚合根索引文件
+ * @description 部门模块领域层聚合根导出
  * @author 江郎
  * @since 2.1.0
  */

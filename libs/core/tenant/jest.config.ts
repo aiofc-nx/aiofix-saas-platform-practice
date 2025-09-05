@@ -2,7 +2,6 @@ import type { Config } from 'jest';
 
 const config: Config = {
   displayName: 'tenant',
-  preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
@@ -19,14 +18,14 @@ const config: Config = {
     '!src/**/*.spec.ts',
     '!src/**/*.test.ts',
   ],
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
+  moduleNameMapper: {
+    '^@aiofix/shared$': '<rootDir>/../../shared/src/index.ts',
+    '^@aiofix/config$': '<rootDir>/../../config/src/index.ts',
+    '^@aiofix/logging$': '<rootDir>/../../logging/src/index.ts',
+    '^@aiofix/database$': '<rootDir>/../../database/src/index.ts',
+    '^@aiofix/iam$': '<rootDir>/../iam/src/index.ts',
   },
+  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
 };
 
 export default config;

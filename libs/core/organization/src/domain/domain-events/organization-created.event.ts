@@ -1,9 +1,93 @@
 /**
+ * @class OrganizationCreatedEvent
  * @description 组织创建事件
- * @author 江郎
+ *
+ * 原理与机制：
+ * 1. 继承DomainEvent基类
+ * 2. 包含事件的关键数据
+ * 3. 支持事件溯源和审计
+ * 4. 可以被其他模块订阅
+ *
+ * 功能与职责：
+ * 1. 记录组织创建事件
+ * 2. 传递关键信息
+ * 3. 支持事件溯源和状态重建
+ * 4. 触发相关的业务流程
+ *
+ * @example
+ * ```typescript
+ * const event = new OrganizationCreatedEvent(
+ *   'org-123',
+ *   'Sales Department',
+ *   'SALES',
+ *   'BUSINESS',
+ *   'tenant-456',
+ *   'user-789'
+ * );
+ * ```
  * @since 2.1.0
  */
 
-export class OrganizationCreatedEvent {
-  // TODO: 实现组织创建事件
+import { DomainEvent } from '@aiofix/shared';
+import { OrganizationType } from '../enums';
+
+/**
+ * 组织创建事件数据接口
+ */
+export interface OrganizationCreatedEventData {
+  organizationId: string;
+  name: string;
+  code: string;
+  type: OrganizationType;
+  tenantId: string;
+  createdBy: string;
+  timestamp: Date;
+}
+
+/**
+ * 组织创建事件类
+ */
+export class OrganizationCreatedEvent extends DomainEvent {
+  public readonly eventType = 'OrganizationCreated';
+  public readonly eventVersion = '1.0.0';
+  public readonly aggregateId: string;
+  public readonly aggregateType = 'Organization';
+  public readonly version = 1;
+
+  constructor(
+    public readonly organizationId: string,
+    public readonly name: string,
+    public readonly code: string,
+    public readonly type: OrganizationType,
+    public readonly tenantId: string,
+    public readonly createdBy: string,
+    public readonly timestamp: Date = new Date(),
+  ) {
+    super('OrganizationCreated', {
+      organizationId,
+      name,
+      code,
+      type,
+      tenantId,
+      createdBy,
+      timestamp,
+    });
+    this.aggregateId = organizationId;
+  }
+
+  /**
+   * 获取事件数据
+   * @returns 事件数据
+   */
+  public getEventData(): OrganizationCreatedEventData {
+    return {
+      organizationId: this.organizationId,
+      name: this.name,
+      code: this.code,
+      type: this.type,
+      tenantId: this.tenantId,
+      createdBy: this.createdBy,
+      timestamp: this.timestamp,
+    };
+  }
 }

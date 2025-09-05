@@ -4,6 +4,5 @@
  * @since 2.1.0
  */
 
-export class OrganizationId {
-  // TODO: 实现组织ID值对象
-}
+// 重新导出shared模块中的OrganizationId，保持模块内部的一致性
+export { OrganizationId, InvalidOrganizationIdError } from '@aiofix/shared';

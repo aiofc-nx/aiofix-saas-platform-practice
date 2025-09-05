@@ -5,3 +5,7 @@
  */
 
 export * from './organization-created.event';
+export * from './organization-activated.event';
+export * from './organization-suspended.event';
+export * from './organization-deactivated.event';
+export * from './organization-updated.event';

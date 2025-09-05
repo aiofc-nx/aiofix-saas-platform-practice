@@ -9,14 +9,16 @@
     "baseUrl": ".",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": [],
+    "types": ["jest", "node"],
     "paths": {
       "@aiofix/tenant/*": ["src/*"],
       "@aiofix/shared": ["../../shared/src"],
+      "@aiofix/logging/*": ["../../logging/src/*"],
       "@aiofix/database/*": ["../../database/src/*"],
-      "@aiofix/iam/*": ["../iam/src/*"]
+      "@aiofix/iam/*": ["../iam/src/*"],
+      "@aiofix/config/*": ["../../config/src/*"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist"]
 }

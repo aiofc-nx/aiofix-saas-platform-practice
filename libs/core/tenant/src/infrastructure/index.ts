@@ -11,3 +11,4 @@ export * from './services';
 export * from './external';
 export * from './config';
 export * from './migrations';
+export * from './events';

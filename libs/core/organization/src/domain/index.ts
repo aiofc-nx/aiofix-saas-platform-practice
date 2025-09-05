@@ -12,4 +12,4 @@ export * from './domain-services';
 export * from './repositories';
 export * from './exceptions';
 export * from './enums';
-export * from './types';
+// export * from './types';

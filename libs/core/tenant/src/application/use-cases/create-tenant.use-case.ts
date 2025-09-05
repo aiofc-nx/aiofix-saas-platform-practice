@@ -21,7 +21,7 @@
  * @since 1.0.0
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { TenantId, TenantName, TenantCode, TenantDomain } from '@aiofix/shared';
 import { ITenantRepository } from '../../domain/repositories/tenant.repository';
 import { TenantAggregate } from '../../domain/aggregates/tenant.aggregate';
@@ -37,7 +37,10 @@ import {
  */
 @Injectable()
 export class CreateTenantUseCase {
-  constructor(private readonly tenantRepository: ITenantRepository) {}
+  constructor(
+    @Inject('ITenantRepository')
+    private readonly tenantRepository: ITenantRepository,
+  ) {}
 
   /**
    * 执行创建租户用例

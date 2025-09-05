@@ -6,3 +6,6 @@
 
 export * from './create-tenant.use-case';
 export * from './activate-tenant.use-case';
+export * from './suspend-tenant.use-case';
+export * from './delete-tenant.use-case';
+export * from './update-tenant-config.use-case';

@@ -5,3 +5,5 @@
  */
 
 export * from './platform-id.vo';
+export * from './platform-name.vo';
+export * from './platform-version.vo';

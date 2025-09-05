@@ -25,6 +25,31 @@ export { TenantName, InvalidTenantNameError } from './tenant-name.vo';
 export { TenantCode, InvalidTenantCodeError } from './tenant-code.vo';
 export { TenantDomain, InvalidTenantDomainError } from './tenant-domain.vo';
 
+// 组织相关值对象
+export {
+  OrganizationId,
+  InvalidOrganizationIdError,
+} from './organization-id.vo';
+export {
+  OrganizationName,
+  InvalidOrganizationNameError,
+} from './organization-name.vo';
+export {
+  OrganizationCode,
+  InvalidOrganizationCodeError,
+} from './organization-code.vo';
+
+// 部门相关值对象
+export { DepartmentId, InvalidDepartmentIdError } from './department-id.vo';
+export {
+  DepartmentName,
+  InvalidDepartmentNameError,
+} from './department-name.vo';
+export {
+  DepartmentCode,
+  InvalidDepartmentCodeError,
+} from './department-code.vo';
+
 // 新增通用值对象
 export { WebhookUrl } from './webhook-url.vo';
 export type { WebhookProtocol, WebhookUrlInfo } from './webhook-url.vo';

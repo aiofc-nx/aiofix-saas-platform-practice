@@ -4,4 +4,5 @@
  * @since 2.1.0
  */
 
+export * from './platform.aggregate';
 export * from './platform-config.aggregate';

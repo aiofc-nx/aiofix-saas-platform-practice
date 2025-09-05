@@ -336,6 +336,10 @@ export class TenantEntity extends DataIsolationAwareEntity {
    * @throws {InvalidTenantStateException} 当租户状态不允许激活时抛出异常
    */
   activate(): void {
+    if (this._status === TenantStatus.ACTIVE) {
+      return; // 已经是激活状态，直接返回
+    }
+
     if (this._status !== TenantStatus.PENDING) {
       throw new Error(`租户状态为 ${this._status}，不能激活`);
     }
@@ -349,6 +353,10 @@ export class TenantEntity extends DataIsolationAwareEntity {
    * @throws {InvalidTenantStateException} 当租户状态不允许暂停时抛出异常
    */
   suspend(): void {
+    if (this._status === TenantStatus.SUSPENDED) {
+      return; // 已经是暂停状态，直接返回
+    }
+
     if (!this.canTransitionTo(TenantStatus.SUSPENDED)) {
       throw new Error(`租户状态为 ${this._status}，不能暂停`);
     }
@@ -493,7 +501,11 @@ export class TenantEntity extends DataIsolationAwareEntity {
    * @returns {boolean} 是否有效
    */
   isValid(): boolean {
-    return this._status === TenantStatus.ACTIVE && !this.isExpired();
+    return (
+      (this._status === TenantStatus.ACTIVE ||
+        this._status === TenantStatus.PENDING) &&
+      !this.isExpired()
+    );
   }
 
   // Getter方法

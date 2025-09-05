@@ -14,7 +14,9 @@
       "@aiofix/organization/*": ["src/*"],
       "@aiofix/shared/*": ["../../shared/src/*"],
       "@aiofix/database/*": ["../../database/src/*"],
-      "@aiofix/iam/*": ["../iam/src/*"]
+      "@aiofix/logging/*": ["../../logging/src/*"],
+      "@aiofix/iam/*": ["../iam/src/*"],
+      "@aiofix/config/*": ["../../config/src/*"]
     }
   },
   "include": ["src/**/*"],

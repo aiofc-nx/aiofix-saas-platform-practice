@@ -236,16 +236,15 @@ export class TenantAggregate extends AggregateRoot<string> {
    * @throws {Error} 当租户状态不允许激活时抛出异常
    */
   activate(): void {
+    const previousStatus = this._tenant.status;
     this._tenant.activate();
 
-    // 应用租户激活事件
-    this.addDomainEvent(
-      new TenantActivatedEvent(
-        this.id,
-        TenantStatus.PENDING,
-        TenantStatus.ACTIVE,
-      ),
-    );
+    // 只有在状态真正改变时才发布事件
+    if (previousStatus !== this._tenant.status) {
+      this.addDomainEvent(
+        new TenantActivatedEvent(this.id, previousStatus, this._tenant.status),
+      );
+    }
   }
 
   /**
@@ -257,10 +256,12 @@ export class TenantAggregate extends AggregateRoot<string> {
     const previousStatus = this._tenant.status;
     this._tenant.suspend();
 
-    // 应用租户暂停事件
-    this.addDomainEvent(
-      new TenantSuspendedEvent(this.id, previousStatus, TenantStatus.SUSPENDED),
-    );
+    // 只有在状态真正改变时才发布事件
+    if (previousStatus !== this._tenant.status) {
+      this.addDomainEvent(
+        new TenantSuspendedEvent(this.id, previousStatus, this._tenant.status),
+      );
+    }
   }
 
   /**

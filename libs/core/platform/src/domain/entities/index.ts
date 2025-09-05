@@ -5,3 +5,4 @@
  */
 
 export * from './platform-config.entity';
+export * from './platform.entity';

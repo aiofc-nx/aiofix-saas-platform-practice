@@ -1,13 +1,17 @@
 /**
- * @description Department部门管理模块入口文件
+ * @description 部门模块主入口文件
  * @author 江郎
  * @since 2.1.0
  */
 
-// 模块导出
-export * from './department.module';
-
-// 分层导出
+// 领域层
 export * from './domain';
-export * from './infrastructure';
-export * from './presentation';
+
+// 应用层
+export * from './application';
+
+// 基础设施层
+// export * from './infrastructure';
+
+// 表示层
+// export * from './presentation';

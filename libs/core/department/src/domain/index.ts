@@ -1,15 +1,29 @@
 /**
- * @description Department模块领域层索引文件
+ * @description 部门模块领域层导出
  * @author 江郎
  * @since 2.1.0
  */
 
+// 实体
 export * from './entities';
-export * from './value-objects';
+
+// 聚合根
 export * from './aggregates';
-export * from './domain-events';
-export * from './domain-services';
+
+// 仓储接口
 export * from './repositories';
-export * from './exceptions';
+
+// 领域事件
+export * from './domain-events';
+
+// 枚举
 export * from './enums';
-export * from './types';
+
+// 值对象
+export * from './value-objects';
+
+// 异常
+export * from './exceptions';
+
+// 类型定义
+// export * from './types';

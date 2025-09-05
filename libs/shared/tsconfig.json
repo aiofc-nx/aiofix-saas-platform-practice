@@ -16,5 +16,12 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "__tests__", "examples"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "__tests__",
+    "examples",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

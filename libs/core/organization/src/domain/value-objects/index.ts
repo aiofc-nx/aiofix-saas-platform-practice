@@ -5,3 +5,5 @@
  */
 
 export * from './organization-id.vo';
+export * from './organization-name.vo';
+export * from './organization-code.vo';
